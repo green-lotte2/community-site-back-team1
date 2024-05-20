@@ -1,0 +1,30 @@
+spring:
+    application:
+        name: community-site-back-team1
+logging:
+    file:
+        name: logs/zeroPie.log
+    level:
+        jdbc:
+            connection: info
+            resultsettable: info
+            sqlonly: info
+            sqltiming: info
+        root: info
+mybatis:
+    mapper-locations: classpath:mappers/**/*.xml
+
+server:
+    port: 8080
+    servlet:
+        context-path: /zeroPie
+
+# 파일 업로드 설정
+file:
+    # 개발용
+    upload:
+        path: uploads/
+
+        # 배포용
+        #upload:
+        #path: /home/zeroPie/uploads/
