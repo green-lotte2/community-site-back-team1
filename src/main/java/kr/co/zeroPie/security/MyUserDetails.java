@@ -1,7 +1,5 @@
 package kr.co.zeroPie.security;
 
-import kr.co.lotteon.entity.Seller;
-import kr.co.lotteon.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +22,6 @@ import java.util.Map;
 public class MyUserDetails implements UserDetails, OAuth2User {
     // User Entity
     private User user;
-    private Seller seller;
 
 
     @Override
