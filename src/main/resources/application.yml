@@ -1,6 +1,4 @@
-spring:
-    application:
-        name: community-site-back-team1
+
 logging:
     file:
         name: logs/zeroPie.log
@@ -18,6 +16,22 @@ server:
     port: 8080
     servlet:
         context-path: /zeroPie
+spring:
+    application:
+        name: community-site-back-team1
+
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: abc1234!
+        url: jdbc:mysql://3.39.72.175/zeroPie
+        username: team1
+    devtools:
+        livereload:
+            enabled: true
+        restart:
+            enabled: false
+
+    
 
 # 파일 업로드 설정
 file:
