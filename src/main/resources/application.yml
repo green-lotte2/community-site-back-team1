@@ -1,4 +1,3 @@
-
 logging:
     file:
         name: logs/zeropie.log
@@ -16,6 +15,7 @@ server:
     port: 8080
     servlet:
         context-path: /zeropie
+
 spring:
     application:
         name: community-site-back-team1
@@ -39,6 +39,6 @@ file:
     #upload:
      #   path: uploads/
 
-        # 배포용
-     upload:
-        path: /home/zeropie/uploads/
+     #upload:
+        #path: /home/zeropie/uploads/
+
