@@ -35,6 +35,8 @@ public class StfDTO {
 
     private String stfImg;//사원 증명사진
 
+    private String stfRole;//사원 권한
+
     private int dptNo;//부서번호
 
     private int rnkNO;//직급 번호
