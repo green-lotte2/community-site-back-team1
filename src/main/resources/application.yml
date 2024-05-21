@@ -1,7 +1,7 @@
 
 logging:
     file:
-        name: logs/zeroPie.log
+        name: logs/zeropie.log
     level:
         jdbc:
             connection: info
@@ -15,15 +15,15 @@ mybatis:
 server:
     port: 8080
     servlet:
-        context-path: /zeroPie
+        context-path: /zeropie
 spring:
     application:
         name: community-site-back-team1
 
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        password: abc1234!
-        url: jdbc:mysql://15.165.24.202/zeroPie
+        password: Abcd1234!
+        url: jdbc:mysql://15.165.24.202/zeropie
         username: team1
     devtools:
         livereload:
@@ -41,4 +41,4 @@ file:
 
         # 배포용
      upload:
-        path: /home/zeroPie/uploads/
+        path: /home/zeropie/uploads/
