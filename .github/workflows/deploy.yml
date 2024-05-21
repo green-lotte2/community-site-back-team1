@@ -1,0 +1,81 @@
+# workflow의 이름
+name: Deploy
+
+# 해당 workflow가 언제 실행될 것인지에 대한 트리거를 지정
+on:
+  push:
+    branches: [ main ] # main branch로 push 될 때 실행
+
+# 해당 yml 내에서 사용할 key-value 속성
+env:  
+  PROJECT_NAME: community-site-back-team1/zeroPie
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: hyeji-s3-bucket-github-actions
+  CODE_DEPLOY_APPLICATION_NAME: hyeji-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: hyeji-codedeploy-deploy-group
+  
+# workflow는 한개 이상의 job을 가지며, 각 job은 여러 step에 따라 단계를 나눔
+jobs:
+  build:
+    name: CI/CD
+    # 해당 jobs에서 아래의 steps들이 어떠한 환경에서 실행될 것인지를 지정
+    runs-on: ubuntu-latest
+
+    steps:
+     # 작업에서 액세스할 수 있도록 $GITHUB_WORKSPACE에서 저장소를 체크아웃
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '17'
+
+      # application.properties를 프로젝트에 포함
+      - name: add Application.properties
+        run: touch ./src/main/resources/application.properties
+        shell: bash
+        
+      # github secret으로 등록한 properties 내용 덮어쓰기
+      - name: copy Application.properties
+        run: echo "${{ secrets.APP_PROPERTIES }}" > ./src/main/resources/application.properties
+        shell: bash
+        
+      # gradle 권한 설정
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+        
+      # 빌드
+      - name: Build with Gradle
+        run: ./gradlew build
+        shell: bash
+        
+      - name: Make zip file
+        run: zip -r ./$GITHUB_SHA.zip .
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          
+      # script files 복사
+      - name: Copy script
+        run: cp ./scripts/*.sh ./deploy
+      
+      # S3에 빌드 결과 업로드
+      - name: Upload to S3
+        run: aws s3 cp --region $AWS_REGION ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+        
+      # Deploy 실행
+      - name: Deploy
+        run: |
+          aws deploy create-deployment \
+          --application-name $CODE_DEPLOY_APPLICATION_NAME \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP_NAME \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip \
+          --region $AWS_REGION \
