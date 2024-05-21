@@ -42,10 +42,12 @@ public class Stf {
     private Date stfQuit;//퇴사일자
 
     private String stfImg;//사원 증명사진
+    
+    private String stfRole;//사원 권한
 
     private int dptNo;//부서번호
 
-    private int rnkNO;//직급 번호
+    private int rnkNO;//직급번호
 
     private int planStatusNo;//요금제 상태번호
 
