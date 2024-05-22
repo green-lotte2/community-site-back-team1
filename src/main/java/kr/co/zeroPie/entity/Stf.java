@@ -20,7 +20,6 @@ public class Stf {
     //staff(사원)에 관한 테이블
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String stfNo;
     
     private String stfName;
@@ -47,7 +46,7 @@ public class Stf {
 
     private int dptNo;//부서번호
 
-    private int rnkNO;//직급번호
+    private int rnkNo;//직급번호
 
     private int planStatusNo;//요금제 상태번호
 

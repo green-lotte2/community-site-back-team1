@@ -23,7 +23,7 @@ public class QStf extends EntityPathBase<Stf> {
 
     public final NumberPath<Integer> planStatusNo = createNumber("planStatusNo", Integer.class);
 
-    public final NumberPath<Integer> rnkNO = createNumber("rnkNO", Integer.class);
+    public final NumberPath<Integer> rnkNo = createNumber("rnkNo", Integer.class);
 
     public final StringPath stfAddr1 = createString("stfAddr1");
 
