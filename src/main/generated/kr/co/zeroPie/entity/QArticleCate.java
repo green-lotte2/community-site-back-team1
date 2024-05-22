@@ -19,9 +19,15 @@ public class QArticleCate extends EntityPathBase<ArticleCate> {
 
     public static final QArticleCate articleCate = new QArticleCate("articleCate");
 
+    public final StringPath articleCateCoRole = createString("articleCateCoRole");
+
     public final StringPath articleCateName = createString("articleCateName");
 
     public final NumberPath<Integer> articleCateNo = createNumber("articleCateNo", Integer.class);
+
+    public final StringPath articleCateRole = createString("articleCateRole");
+
+    public final NumberPath<Integer> articleCateStatus = createNumber("articleCateStatus", Integer.class);
 
     public QArticleCate(String variable) {
         super(ArticleCate.class, forVariable(variable));

@@ -39,7 +39,7 @@ public class StfDTO {
 
     private int dptNo;//부서번호
 
-    private int rnkNO;//직급 번호
+    private int rnkNo;//직급 번호
 
     private int planStatusNo;//요금제 상태번호
 }

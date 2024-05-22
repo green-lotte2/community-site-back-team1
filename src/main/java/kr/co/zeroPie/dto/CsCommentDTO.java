@@ -3,6 +3,7 @@ package kr.co.zeroPie.dto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,7 +18,7 @@ public class CsCommentDTO {
 
     private String csComContent;//답변 내용
 
-    private LocalDateTime csComRdate;
+    private LocalDate csComRdate;
 
     private int csNo;//고객센터 번호
 
