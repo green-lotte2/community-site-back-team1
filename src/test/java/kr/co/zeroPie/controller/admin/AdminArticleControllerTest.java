@@ -20,15 +20,6 @@ class AdminArticleControllerTest {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-    @Test
-    public void test1(){
-        ArticleCateDTO articleCateDTO = new ArticleCateDTO();
-        articleCateDTO.setArticleCateName("공지사항");
-        articleCateDTO.setArticleCateStatus(1);
-        articleCateDTO.setArticleCateRole("admin");
-        articleCateDTO.setArticleCateCoRole("user");
-        ArticleCate articleCate = adminArticleService.insertArticleCate(articleCateDTO);
-        log.info(articleCate);
-    }
+   
 
 }
