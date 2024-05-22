@@ -1,6 +1,7 @@
 package kr.co.zeroPie.entity;
 
 import jakarta.persistence.*;
+import kr.co.zeroPie.dto.ArticleDTO;
 import lombok.*;
 
 @Getter
@@ -29,6 +30,23 @@ public class Article {
 
     private int articleCateNo;//카테고리 번호(외래키)
 
+    private String writer;             //게시글 작성자
+
+    private String articleThumb;       //게시글 썸네일
+
+    public ArticleDTO toDTO(){
+        return ArticleDTO.builder()
+                .articleNo(articleNo)
+                .stfNo(stfNo)
+                .articleTitle(articleTitle)
+                .articleCnt(articleCnt)
+                .articleRdate(articleRdate)
+                .articleHit(articleHit)
+                .articleCateNo(articleCateNo)
+                .writer(writer)
+                .articleThumb(articleThumb)
+                .build();
+    }
 
 
 }

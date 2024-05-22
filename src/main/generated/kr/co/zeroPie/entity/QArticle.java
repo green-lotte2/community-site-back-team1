@@ -29,9 +29,13 @@ public class QArticle extends EntityPathBase<Article> {
 
     public final StringPath articleRdate = createString("articleRdate");
 
+    public final StringPath articleThumb = createString("articleThumb");
+
     public final StringPath articleTitle = createString("articleTitle");
 
     public final StringPath stfNo = createString("stfNo");
+
+    public final StringPath writer = createString("writer");
 
     public QArticle(String variable) {
         super(Article.class, forVariable(variable));
