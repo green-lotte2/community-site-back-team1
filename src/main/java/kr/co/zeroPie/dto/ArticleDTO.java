@@ -1,6 +1,7 @@
 package kr.co.zeroPie.dto;
 
 
+import kr.co.zeroPie.entity.Article;
 import lombok.*;
 
 @Getter
@@ -24,4 +25,22 @@ public class ArticleDTO {
     private int articleHit;//게시글 조회수
 
     private int articleCateNo;//카테고리 번호(외래키)
+
+    // 추가된것
+    private String writer;             //게시글 작성자
+    private String articleThumb;       //게시글 썸네일
+
+    public Article toEntity(){
+        return Article.builder()
+                .articleNo(articleNo)
+                .stfNo(stfNo)
+                .articleTitle(articleTitle)
+                .articleCnt(articleCnt)
+                .articleRdate(articleRdate)
+                .articleHit(articleHit)
+                .articleCateNo(articleCateNo)
+                .writer(writer)
+                .articleThumb(articleThumb)
+                .build();
+    }
 }
