@@ -1,6 +1,6 @@
 logging:
-    file:
-        name: logs/zeropie.log
+    #file:
+        #name: logs/zeropie.log
     level:
         jdbc:
             connection: info
