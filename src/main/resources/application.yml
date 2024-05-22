@@ -31,6 +31,7 @@ spring:
         restart:
             enabled: false
 
+
     # JPA 설정
     jpa:
         database: mysql
@@ -48,8 +49,6 @@ spring:
             location: uploads/
             max-file-size: 10MB
 
-    thymeleaf:
-        prefix: classpath:/templates
 
 jwt:
     issuer: hyeji111544@gmail.com
