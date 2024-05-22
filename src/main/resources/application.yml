@@ -31,13 +31,38 @@ spring:
         restart:
             enabled: false
 
-    
+    # JPA 설정
+    jpa:
+        database: mysql
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            hibernate:
+                format_sql: true
+                show_sql: true
+
+    servlet:
+        multipart:
+            location: uploads/
+            max-file-size: 10MB
+
+    thymeleaf:
+        prefix: classpath:/templates
+
+jwt:
+    issuer: hyeji111544@gmail.com
+    secret: 4XudNUpSmog3lwI9thJFejF7YfBBQnCI
+
+
+
 
 # 파일 업로드 설정
 file:
     # 개발용
-    #upload:
-     #   path: uploads/
+    upload:
+        path: uploads/
 
      #upload:
         #path: /home/zeropie/uploads/

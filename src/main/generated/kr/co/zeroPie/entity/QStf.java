@@ -45,11 +45,8 @@ public class QStf extends EntityPathBase<Stf> {
 
     public final DateTimePath<java.util.Date> stfQuit = createDateTime("stfQuit", java.util.Date.class);
 
-<<<<<<< HEAD
-=======
     public final StringPath stfRole = createString("stfRole");
 
->>>>>>> f49aac443c3f5f75470e150862b29972675861a3
     public final NumberPath<Integer> stfZip = createNumber("stfZip", Integer.class);
 
     public QStf(String variable) {
