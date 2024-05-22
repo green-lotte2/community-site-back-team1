@@ -50,12 +50,18 @@ spring:
             max-file-size: 10MB
 
 
+jwt:
+    issuer: hyeji111544@gmail.com
+    secret: 4XudNUpSmog3lwI9thJFejF7YfBBQnCI
+
+
+
 
 # 파일 업로드 설정
 file:
     # 개발용
-    #upload:
-     #   path: uploads/
+    upload:
+        path: uploads/
 
      #upload:
         #path: /home/zeropie/uploads/
