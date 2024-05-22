@@ -4,6 +4,7 @@ package kr.co.zeroPie.dto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,7 +23,7 @@ public class CsDTO {
 
     private String csContent;//고객센터 게시글 내용
 
-    private LocalDateTime csRdate;
+    private LocalDate csRdate;
 
     private int csHit;//조회수
 

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -24,7 +25,7 @@ public class CsComment {
     private String csComContent;//답변 내용
 
     @CreationTimestamp
-    private LocalDateTime csComRdate;
+    private LocalDate csComRdate;
     
     private int csNo;//고객센터 번호
     
