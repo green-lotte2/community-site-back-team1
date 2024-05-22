@@ -31,7 +31,25 @@ spring:
         restart:
             enabled: false
 
-    
+
+    # JPA 설정
+    jpa:
+        database: mysql
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            hibernate:
+                format_sql: true
+                show_sql: true
+
+    servlet:
+        multipart:
+            location: uploads/
+            max-file-size: 10MB
+
+
 
 # 파일 업로드 설정
 file:
