@@ -29,15 +29,27 @@ public class AdminArticleController {
 
     // 관리자 - 게시판 관리 - 게시판 삭제
     @DeleteMapping("/admin/deleteCate")
-    public void deleteArticleCate(@RequestParam("articleCateNo") int articleCateNo) {
-
+    public ResponseEntity<?> deleteArticleCate(@RequestParam("articleCateNo") int articleCateNo) {
+        return adminArticleService.deleteArticleCate(articleCateNo);
     }
 
+    // 관리자 - 게시판 관리 - 게시판 수정
+    @PutMapping("/admin/modifyCate")
+    public void modifyArticleCate(ArticleCateDTO articleCateDTO) {
+        adminArticleService.modifyArticleCate(articleCateDTO);
+    }
+
+    // 관리자 - 회원 관리 - 전체 회원 조회
     @GetMapping("/admin/userList")
     public ResponseEntity<?> userList(){
 
         return adminArticleService.selectUserAll();
+    }
 
+    // 관리자 - 회원 관리 - 회원 자세히 조회
+    @GetMapping("/admin/userDatil")
+    public ResponseEntity<?> userDatil(String stfNo){
+        return adminArticleService.selectUser(stfNo);
     }
 
 }
