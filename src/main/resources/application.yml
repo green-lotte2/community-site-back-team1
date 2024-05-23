@@ -68,6 +68,6 @@ file:
 
 
 front:
-    url: 'http://localhost:3000'        # 개발용
-    #url: 'http://192.26.25.100:3000' # 배포용
+    #url: 'http://localhost:3000'        # 개발용
+    url: 'http://zeropie.netlify.app' # 배포용
 
