@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,6 +50,37 @@ public class AdminArticleService {
        return new ResponseEntity<>(articleCates, HttpStatus.OK);
     }
 
+    // 게시물 카테고리 삭제
+    public ResponseEntity<?> deleteArticleCate(int articleCateNo) {
+        try {
+            articleCateRepository.deleteById(articleCateNo);
+            return ResponseEntity.ok().build();
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+
+    // 게시물 카테고리 수정
+    public ResponseEntity<?> modifyArticleCate(ArticleCateDTO articleCateDTO) {
+        int articleCateNo = articleCateDTO.getArticleCateNo();
+
+        Optional<ArticleCate> optArticleCate = articleCateRepository.findById(articleCateNo);
+
+        if (optArticleCate.isPresent()) {
+            ArticleCate articleCate = optArticleCate.get();
+            articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
+            articleCate.setArticleCateStatus(articleCateDTO.getArticleCateStatus());
+            articleCate.setArticleCateRole(articleCateDTO.getArticleCateRole());
+            articleCate.setArticleCateCoRole(articleCateDTO.getArticleCateCoRole());
+            articleCateRepository.save(articleCate);
+
+            return ResponseEntity.ok().body(articleCate);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+
+    }
+
     // 전체 유저 조회
     public ResponseEntity<?> selectUserAll() {
         List<Stf> stfs = (List<Stf>) stfRepository.findAll();
@@ -58,6 +90,12 @@ public class AdminArticleService {
         }
 
         return new ResponseEntity<>(stfs, HttpStatus.OK);
+    }
+
+    // 유저 디테일 조회
+    public ResponseEntity<?> selectUser(String stfNo) {
+      Optional<Stf> stf = stfRepository.findById(stfNo);
+      return ResponseEntity.ok().body(stf);
     }
 
 }

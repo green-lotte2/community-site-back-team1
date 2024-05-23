@@ -1,6 +1,6 @@
 logging:
     #file:
-        #name: logs/zeropie.log
+        #name: logs/onepie.log
     level:
         jdbc:
             connection: info
@@ -14,7 +14,7 @@ mybatis:
 server:
     port: 8080
     servlet:
-        context-path: /zeropie
+        context-path: /onepie
 
 spring:
     application:
@@ -65,4 +65,9 @@ file:
 
      #upload:
         #path: /home/zeropie/uploads/
+
+
+front:
+    #url: 'http://localhost:3000'        # 개발용
+    url: 'http://zeropie.netlify.app' # 배포용
 

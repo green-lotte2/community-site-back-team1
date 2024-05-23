@@ -79,7 +79,7 @@ public class CsService {
 
         log.info("csDTO : " + csDTO);
 
-        csDTO.setCsReply(0);//이거 안넣으면 에러남
+        csDTO.setCsReply(0);//이거 안넣으면 에러남article
 
         csRepository.save(modelMapper.map(csDTO, Cs.class));//받은 정보들 저장
     }
