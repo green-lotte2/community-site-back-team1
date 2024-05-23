@@ -5,9 +5,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
-import kr.co.zeroPie.entity.QArticle;
-import kr.co.zeroPie.entity.QArticleCate;
-import kr.co.zeroPie.entity.QStf;
+import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.custom.ArticleRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,26 +27,24 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     private QStf qStf = QStf.stf;
 
     @Override
-    public Page<Tuple> selectArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable){
+    public Page<Article> selectArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable){
 
         log.info("impl1 : " + pageRequestDTO);
         log.info("impl1 : " + pageable);
         int cate = pageRequestDTO.getArticleCateNo();
 
         // 부가적인 Query 실행 정보를 처리하기 위해 fetchResults()로 실행
-        QueryResults<Tuple> results = jpaQueryFactory
-                .select(qArticle, qStf.stfName)
+        QueryResults<Article> results = jpaQueryFactory
+                .select(qArticle)
                 .from(qArticle)
                 .where(qArticle.articleCateNo.eq(cate))
-                .join(qStf)
-                .on(qArticle.stfNo.eq(qStf.stfNo))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(qArticle.articleNo.desc())
                 .fetchResults();
 
         log.info("results : " + results.getResults());
-        List<Tuple> content = results.getResults();
+        List<Article> content = results.getResults();
         log.info("content : " + content);
         long total = results.getTotal();
 

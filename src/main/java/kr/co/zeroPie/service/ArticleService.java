@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +30,95 @@ public class ArticleService {
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
 
+    // 게시판 글목록 출력(일반)
+    public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO articlePageRequestDTO) {
 
-    // 카테고리 검색(카테고리에 해당하는 Config 엔티티를 찾아 반환)
+        log.info("selectArticles...1");
+        Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
+
+        log.info("selectArticles-pageable : "+pageable);
+
+        log.info("selectArticles...2");
+        Page<Article> pageArticle = articleRepository.selectArticles(articlePageRequestDTO, pageable);
+
+        log.info("selectArticles...3 : " + pageArticle.getContent());
+
+        List<Article> articleList = pageArticle.getContent();
+
+        List<ArticleDTO> articleDTOList = new ArrayList<>();
+        for (Article each : articleList) {
+            articleDTOList.add(modelMapper.map(each, ArticleDTO.class));
+        }
+
+        log.info("selectArticles...4 : " + articleDTOList);
+
+        int total = (int) pageArticle.getTotalElements();
+
+        return ArticlePageResponseDTO.builder()
+                .articlePageRequestDTO(articlePageRequestDTO)
+                .dtoList(articleDTOList)
+                .total(total)
+                .build();
+    }
+
+    // 게시판 글목록 출력(검색)
+    public ArticlePageResponseDTO searchArticles(ArticlePageRequestDTO articlePageRequestDTO) {
+
+        Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
+        Page<Tuple> pageArticle = articleRepository.searchArticles(articlePageRequestDTO, pageable);
+
+        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
+                .map(tuple ->
+                        {
+                            Article article = tuple.get(0, Article.class);
+                            String writer = tuple.get(1, String.class);
+                            article.setWriter(writer);
+
+                            return modelMapper.map(article, ArticleDTO.class);
+                        }
+                )
+                .toList();
+
+        int total = (int) pageArticle.getTotalElements();
+
+        return ArticlePageResponseDTO.builder()
+                .articlePageRequestDTO(articlePageRequestDTO)
+                .dtoList(dtoList)
+                .total(total)
+                .build();
+    }
+
+    // 게시판 글보기
+    public ArticleDTO findById(int articleNo) {
+
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
+
+        ArticleDTO articleDTO = null;
+
+        if (optArticle.isPresent()) {
+
+            Article article = optArticle.get();
+            articleDTO = modelMapper.map(article, ArticleDTO.class);
+        }
+        return articleDTO;
+    }
+
+    public ResponseEntity<?> articleView(int articleNo){
+
+        Optional<?> optionalArticle = articleRepository.findById(articleNo);
+
+        if (optionalArticle.isPresent()) {
+            Article article = modelMapper.map(optionalArticle,Article.class);//게시글번호에 해당하는 게시글 데이터
+
+            return ResponseEntity.status(HttpStatus.OK).body(article);
+        }else{
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+
+/*
+// 카테고리 검색(카테고리에 해당하는 Config 엔티티를 찾아 반환)
     public ArticleCate findArticleCateNo(int cate) {
         Integer cateId;
 
@@ -64,89 +153,9 @@ public class ArticleService {
                 .collect(Collectors.toList());
     }
 
-    // 게시판 글목록 출력(일반)
-    public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO articlePageRequestDTO) {
-
-        log.info("selectArticles...1");
-        Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
-
-        log.info("selectArticles-pageable : "+pageable);
-
-        log.info("selectArticles...2");
-        Page<Tuple> pageArticle = articleRepository.selectArticles(articlePageRequestDTO, pageable);
-
-        log.info("selectArticles...3 : " + pageArticle.getContent());
 
 
-        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
-                .map(tuple ->
-                        {
-                            log.info("tuple : " + tuple);
-                            Article article = tuple.get(0, Article.class);
-                            String writer = tuple.get(1, String.class);
 
-                            article.setWriter(writer);
-                            log.info("article : " + article);
-
-                            return modelMapper.map(article, ArticleDTO.class);
-                        }
-                )
-                .toList();
-
-        log.info("selectArticles...4 : " + dtoList);
-
-        int total = (int) pageArticle.getTotalElements();
-
-        return ArticlePageResponseDTO.builder()
-                .articlePageRequestDTO(articlePageRequestDTO)
-                .dtoList(dtoList)
-                .total(total)
-                .build();
-    }
-
-    // 게시판 글목록 출력(검색)
-    public ArticlePageResponseDTO searchArticles(ArticlePageRequestDTO articlePageRequestDTO) {
-
-        Pageable pageable = articlePageRequestDTO.getPageable("no");
-        Page<Tuple> pageArticle = articleRepository.searchArticles(articlePageRequestDTO, pageable);
-
-        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
-                .map(tuple ->
-                        {
-                            Article article = tuple.get(0, Article.class);
-                            String writer = tuple.get(1, String.class);
-                            article.setWriter(writer);
-
-                            return modelMapper.map(article, ArticleDTO.class);
-                        }
-                )
-                .toList();
-
-        int total = (int) pageArticle.getTotalElements();
-
-        return ArticlePageResponseDTO.builder()
-                .articlePageRequestDTO(articlePageRequestDTO)
-                .dtoList(dtoList)
-                .total(total)
-                .build();
-    }
-
-    // 게시판 글보기
-    public ArticleDTO findById(int no) {
-
-        Optional<Article> optArticle = articleRepository.findById(no);
-
-        ArticleDTO articleDTO = null;
-
-        if (optArticle.isPresent()) {
-
-            Article article = optArticle.get();
-            articleDTO = modelMapper.map(article, ArticleDTO.class);
-        }
-        return articleDTO;
-    }
-
-/*
     public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO pageRequestDTO){
 
         log.info("selectArticles...1");
