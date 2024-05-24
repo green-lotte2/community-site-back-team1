@@ -65,25 +65,22 @@ public class ArticleService {
     public ArticlePageResponseDTO searchArticles(ArticlePageRequestDTO articlePageRequestDTO) {
 
         Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
-        Page<Tuple> pageArticle = articleRepository.searchArticles(articlePageRequestDTO, pageable);
+        articlePageRequestDTO.calculatePeriod();
 
-        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
-                .map(tuple ->
-                        {
-                            Article article = tuple.get(0, Article.class);
-                            String writer = tuple.get(1, String.class);
-                            article.setWriter(writer);
+        Page<Article> pageArticle = articleRepository.searchArticles(articlePageRequestDTO, pageable);
 
-                            return modelMapper.map(article, ArticleDTO.class);
-                        }
-                )
-                .toList();
+        List<Article> articleList = pageArticle.getContent();
+
+        List<ArticleDTO> articleDTOList = new ArrayList<>();
+        for (Article each : articleList) {
+            articleDTOList.add(modelMapper.map(each, ArticleDTO.class));
+        }
 
         int total = (int) pageArticle.getTotalElements();
 
         return ArticlePageResponseDTO.builder()
                 .articlePageRequestDTO(articlePageRequestDTO)
-                .dtoList(dtoList)
+                .dtoList(articleDTOList)
                 .total(total)
                 .build();
     }

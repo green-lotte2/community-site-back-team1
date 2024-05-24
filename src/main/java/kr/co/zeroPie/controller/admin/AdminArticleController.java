@@ -1,6 +1,7 @@
 package kr.co.zeroPie.controller.admin;
 
 import kr.co.zeroPie.dto.ArticleCateDTO;
+import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.service.admin.AdminArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -39,17 +40,5 @@ public class AdminArticleController {
         adminArticleService.modifyArticleCate(articleCateDTO);
     }
 
-    // 관리자 - 회원 관리 - 전체 회원 조회
-    @GetMapping("/admin/userList")
-    public ResponseEntity<?> userList(){
-
-        return adminArticleService.selectUserAll();
-    }
-
-    // 관리자 - 회원 관리 - 회원 자세히 조회
-    @GetMapping("/admin/userDatil")
-    public ResponseEntity<?> userDatil(String stfNo){
-        return adminArticleService.selectUser(stfNo);
-    }
 
 }
