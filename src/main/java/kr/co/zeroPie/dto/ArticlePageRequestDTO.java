@@ -5,6 +5,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,11 +28,25 @@ public class ArticlePageRequestDTO {
 
     private int articleCateNo;            // 카테고리
 
+    // 검색창
     private String type;
     private String keyword;
 
+    // 기간선택
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+
+    // 정렬
+
     public Pageable getPageable(String sort){
-        return PageRequest.of(this.pg - 1, this.size, Sort.by(sort).descending());
+        Sort.Direction direction;
+        if ("ASC".equalsIgnoreCase(sort)) {
+            direction = Sort.Direction.ASC;
+        } else {
+            // 기본값
+            direction = Sort.Direction.DESC;
+        }
+        return PageRequest.of(this.pg - 1, this.size, Sort.by(direction, "createdAt"));
     }
 
 }

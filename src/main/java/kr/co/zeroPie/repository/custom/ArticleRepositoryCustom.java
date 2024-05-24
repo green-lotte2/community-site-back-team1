@@ -8,8 +8,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface ArticleRepositoryCustom {
 
-    public Page<Article>  selectArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable);
+    public Page<Article> selectArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable);
 
-    public Page<Tuple> searchArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable);
+    public Page<Article> searchArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable);
 
 }

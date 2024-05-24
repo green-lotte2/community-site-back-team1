@@ -4,6 +4,9 @@ package kr.co.zeroPie.dto;
 import kr.co.zeroPie.entity.Article;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -20,7 +23,7 @@ public class ArticleDTO {
 
     private String articleCnt;//게시글 내용
 
-    private String articleRdate;//게시글 작성일
+    private LocalDateTime articleRdate;//게시글 작성일
 
     private int articleHit;//게시글 조회수
 
