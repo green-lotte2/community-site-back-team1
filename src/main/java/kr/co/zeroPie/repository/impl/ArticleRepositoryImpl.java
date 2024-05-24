@@ -2,6 +2,7 @@ package kr.co.zeroPie.repository.impl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -54,46 +56,80 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
 
     @Override
-    public Page<Tuple> searchArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable){
+    public Page<Article> searchArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable){
 
         int cate = pageRequestDTO.getArticleCateNo();
+        LocalDate startDate = pageRequestDTO.getStartDate();
+        LocalDate endDate = pageRequestDTO.getEndDate();
+        long period = pageRequestDTO.getPeriod();
+
         String type = pageRequestDTO.getType();
         String keyword = pageRequestDTO.getKeyword();
 
-        BooleanExpression expression = null;
+        BooleanExpression expression1 = null;
+        BooleanExpression expression2 = null;
 
-        // 검색 종류에 따른 where 표현식 생성
-        if(type.equals("title")) {
-            expression = qArticle.articleTitle.contains(keyword);
-
-        }else if(type.equals("content")) {
-            expression = qArticle.articleCnt.contains(keyword);
-
-        }else if(type.equals("title_content")) {
-            BooleanExpression titleContains = qArticle.articleTitle.contains(keyword);
-            BooleanExpression contentContains = qArticle.articleCnt.contains(keyword);
-            expression = titleContains.or(contentContains);
-
-        }else if(type.equals("writer")) {
-            expression = qStf.stfName.contains(keyword);
+        // 검색 종류에 따른 where 표현식 생성(type)
+        switch (type) {
+            case "title":
+                expression1 = qArticle.articleTitle.contains(keyword);
+                break;
+            case "content":
+                expression1 = qArticle.articleCnt.contains(keyword);
+                break;
+            case "title_content":
+                BooleanExpression titleContains = qArticle.articleTitle.contains(keyword);
+                BooleanExpression contentContains = qArticle.articleCnt.contains(keyword);
+                expression1 = titleContains.or(contentContains);
+                break;
+            case "writer":
+                expression1 = qArticle.writer.contains(keyword);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid search type: " + type);
         }
 
-        QueryResults<Tuple> results = jpaQueryFactory
-                .select(qArticle, qStf.stfName)
+        // 검색 기간에 따른 where 표현식 생성()
+        /*
+        switch (period) {
+            case "between":
+                // 시작일과 종료일이 모두 설정된 경우 해당 기간에 포함되는 날짜를 검색
+                if (startDate != null && endDate != null) {
+                    expression2 = qArticle.articleRdate.between(startDate,endDate);
+                } else {
+                    throw new IllegalArgumentException("Invalid period type: " + period);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid period type: " + period);
+        }
+*/
+
+
+
+
+        // 검색 정렬에 따른 where 표현식 생성(sort)
+
+
+
+
+
+
+        QueryResults<Article> results = jpaQueryFactory
+                .select(qArticle)
                 .from(qArticle)
                 .join(qStf)
                 .on(qArticle.writer.eq(qStf.stfName))
-                .where(expression)
+                .where(expression1)
+                .where(expression2)
                 .where(qArticle.articleCateNo.eq(cate))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(qArticle.articleNo.desc())
                 .fetchResults();
 
-
-        List<Tuple> content = results.getResults();
+        List<Article> content = results.getResults();
         long total = results.getTotal();
-
 
         // 페이징 처리를 위해 page 객체 리턴
         return new PageImpl<>(content, pageable, total);
