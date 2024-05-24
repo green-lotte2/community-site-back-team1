@@ -35,7 +35,7 @@ public class StfDTO {
 
     private Date stfQuit;//퇴사일자
 
-    private String stfImg;//사원 증명사진
+    private String stfImg;//사원 증명사진 이름
 
     private String stfRole;//사원 권한
 
@@ -46,11 +46,15 @@ public class StfDTO {
     private int planStatusNo;//요금제 상태번호
 
     @JsonIgnore
-    private MultipartFile thumbFile;
+    private MultipartFile thumbFile;//사원 증명사진이 실제로 들어있음
+    private String oName;//증명사진 원래 이름
+    private String sName;//바뀐 이름
 
     private String profile;
 
     private String strDptNo;//부서번호
 
     private String strRnkNo;//직급 번호
+
+
 }
