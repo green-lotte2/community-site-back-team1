@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Getter
@@ -27,12 +28,15 @@ public class ArticlePageRequestDTO {
 
     private int articleCateNo;            // 카테고리
 
+    // 검색창
     private String type;
     private String keyword;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private long period;
+    // 기간선택
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+
+    // 정렬
 
     public Pageable getPageable(String sort){
         Sort.Direction direction;
@@ -43,28 +47,6 @@ public class ArticlePageRequestDTO {
             direction = Sort.Direction.DESC;
         }
         return PageRequest.of(this.pg - 1, this.size, Sort.by(direction, "createdAt"));
-    }
-
-    // startDate, endDate를 기반으로 period를 계산하는 메서드
-    public void calculatePeriod() {
-        // startDate와 endDate가 null이 아닌지 확인
-        if (startDate != null && endDate != null) {
-            // 두 날짜 사이의 일 수 계산
-            period = ChronoUnit.DAYS.between(startDate, endDate);
-        } else {
-            // startDate 또는 endDate가 null인 경우 예외 처리
-            throw new IllegalArgumentException("startDate 또는 endDate가 null입니다.");
-        }
-    }
-
-    // 년도, 월, 일을 기반으로 startDate 설정
-    public void setStartDate(int startYear, int startMonth, int startDay) {
-        this.startDate = LocalDate.of(startYear, startMonth, startDay);
-    }
-
-    // 년도, 월, 일을 기반으로 endDate 설정
-    public void setEndDate(int endYear, int endMonth, int endDay) {
-        this.endDate = LocalDate.of(endYear, endMonth, endDay);
     }
 
 }

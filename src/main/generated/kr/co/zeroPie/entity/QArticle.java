@@ -27,7 +27,7 @@ public class QArticle extends EntityPathBase<Article> {
 
     public final NumberPath<Integer> articleNo = createNumber("articleNo", Integer.class);
 
-    public final StringPath articleRdate = createString("articleRdate");
+    public final DateTimePath<java.time.LocalDateTime> articleRdate = createDateTime("articleRdate", java.time.LocalDateTime.class);
 
     public final StringPath articleThumb = createString("articleThumb");
 
