@@ -24,7 +24,6 @@ public class AdminArticleService {
 
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
-    private final StfRepository stfRepository;
 
     // 게시물 카테고리 추가
     public ResponseEntity<?> insertArticleCate(ArticleCateDTO articleCateDTO) {
@@ -64,38 +63,21 @@ public class AdminArticleService {
     public ResponseEntity<?> modifyArticleCate(ArticleCateDTO articleCateDTO) {
         int articleCateNo = articleCateDTO.getArticleCateNo();
 
-        Optional<ArticleCate> optArticleCate = articleCateRepository.findById(articleCateNo);
-
-        if (optArticleCate.isPresent()) {
-            ArticleCate articleCate = optArticleCate.get();
-            articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
-            articleCate.setArticleCateStatus(articleCateDTO.getArticleCateStatus());
-            articleCate.setArticleCateRole(articleCateDTO.getArticleCateRole());
-            articleCate.setArticleCateCoRole(articleCateDTO.getArticleCateCoRole());
-            articleCateRepository.save(articleCate);
-
-            return ResponseEntity.ok().body(articleCate);
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
-        }
-
+        return articleCateRepository.findById(articleCateNo)
+                .map(articleCate -> updateArticleCate(articleCate, articleCateDTO))
+                .map(updatedArticleCate -> ResponseEntity.ok().body(updatedArticleCate))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // 전체 유저 조회
-    public ResponseEntity<?> selectUserAll() {
-        List<Stf> stfs = (List<Stf>) stfRepository.findAll();
-
-        if (stfs == null || stfs.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-        return new ResponseEntity<>(stfs, HttpStatus.OK);
-    }
-
-    // 유저 디테일 조회
-    public ResponseEntity<?> selectUser(String stfNo) {
-      Optional<Stf> stf = stfRepository.findById(stfNo);
-      return ResponseEntity.ok().body(stf);
+    private ArticleCate updateArticleCate(ArticleCate articleCate, ArticleCateDTO articleCateDTO) {
+        articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
+        articleCate.setArticleCateStatus(articleCateDTO.getArticleCateStatus());
+        articleCate.setArticleCateRole(articleCateDTO.getArticleCateRole());
+        articleCate.setArticleCateCoRole(articleCateDTO.getArticleCateCoRole());
+        return articleCateRepository.save(articleCate);
     }
 
 }
+
+
+
