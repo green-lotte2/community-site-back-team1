@@ -23,7 +23,7 @@ public class ArticleDTO {
 
     private String articleCnt;//게시글 내용
 
-    private LocalDateTime articleRdate;//게시글 작성일
+    private LocalDate articleRdate;//게시글 작성일
 
     private int articleHit;//게시글 조회수
 
