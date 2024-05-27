@@ -70,5 +70,7 @@ file:
         path: uploads/
 
 front:
-    url: 'http://localhost:3000'  # 개발용
-    #url: 'http://15.165.24.202'  # 배포용
+    url: 'http://localhost:3000'        # 개발용
+    #url: 'http://15.165.24.202' # 배포용
+
+

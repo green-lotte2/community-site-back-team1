@@ -8,7 +8,7 @@ on:
 
 # 해당 yml 내에서 사용할 key-value 속성
 env:  
-  PROJECT_NAME: community-site-back-team1/zeroPie
+  PROJECT_NAME: community-site-back-team1/onepie
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: hyeji-s3-bucket-github-actions
   CODE_DEPLOY_APPLICATION_NAME: hyeji-codedeploy-app
