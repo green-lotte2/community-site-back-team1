@@ -84,6 +84,21 @@ public class ArticleService {
                 .build();
     }
 
+    public ResponseEntity<?> selectArticleCate(int articleCateNo){
+
+        Optional<ArticleCate> articleCate = articleCateRepository.findById(articleCateNo);
+
+        if (articleCate.isPresent()) {
+            log.info("아티클 카테 찾기"+articleCate);
+            return ResponseEntity.status(HttpStatus.OK).body(articleCate.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article category not found");
+        }
+    }
+
+
+
+
     // 게시판 글보기
     public ArticleDTO findById(int articleNo) {
 
@@ -208,6 +223,42 @@ public class ArticleService {
                 .dtoList(dtoList)
                 .total(total)
                 .build();
+    }
+
+
+    // 게시글 조회 (1개)
+    public ResponseEntity<?> articleView(int articleNo) {
+
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
+        ArticleDTO articleDTO = optArticle
+                .map(article -> modelMapper.map(article, ArticleDTO.class))
+                .orElse(null);
+
+        return ResponseEntity.status(HttpStatus.OK).body(articleDTO);
+    }
+
+    // 게시글 작성
+    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+        Article article = modelMapper.map(articleDTO, Article.class);
+        Article savedArticle = articleRepository.save(article);
+
+        if (savedArticle.getArticleContent() != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+
+    // 게시글 삭제
+    public ResponseEntity<?> articleDelete(int articleNo) {
+        articleRepository.deleteById(articleNo);
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
+
+        if (optArticle.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
     }
  */
 }

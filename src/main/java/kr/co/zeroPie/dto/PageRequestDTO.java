@@ -1,6 +1,5 @@
 package kr.co.zeroPie.dto;
 
-
 import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +23,7 @@ public class PageRequestDTO {
     private int size = 10;
 
     private String csCate;
+    private String stfNo;
 
     private String type;
     private String keyword;

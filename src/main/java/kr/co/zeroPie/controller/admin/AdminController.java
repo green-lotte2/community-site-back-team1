@@ -15,10 +15,6 @@ public class AdminController {
         return "/admin/index";
     }
 
-    @GetMapping("/admin/user/list")
-    public String aminUserset() {
-        return "/admin/user/list";
-    }
 
     @GetMapping("/admin/cs/notice")
     public String aminNotice() {

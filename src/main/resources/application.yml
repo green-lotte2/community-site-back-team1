@@ -1,6 +1,4 @@
 logging:
-    #file:
-        #name: logs/onepie.log
     level:
         jdbc:
             connection: info
@@ -8,6 +6,7 @@ logging:
             sqlonly: info
             sqltiming: info
         root: info
+
 mybatis:
     mapper-locations: classpath:mappers/**/*.xml
 
@@ -19,20 +18,17 @@ server:
 spring:
     application:
         name: community-site-back-team1
-
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
         password: Abcd1234!
         url: jdbc:mysql://15.165.24.202/zeropie
         username: team1
-    devtools:
-        livereload:
-            enabled: true
-        restart:
-            enabled: false
 
+    data:
+        redis:
+            host: localhost
+            port: 6379
 
-    # JPA 설정
     jpa:
         database: mysql
         hibernate:
@@ -44,30 +40,37 @@ spring:
                 format_sql: true
                 show_sql: true
 
+    session:
+        store-type: redis
+
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: kdehgogo104@gmail.com
+        password: tovh lfoa vshl lmdd
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    timeout: 5000
+                    starttls:
+                        enable: true
+
     servlet:
         multipart:
             location: uploads/
             max-file-size: 10MB
 
-
 jwt:
     issuer: hyeji111544@gmail.com
     secret: 4XudNUpSmog3lwI9thJFejF7YfBBQnCI
 
-
-
-
-# 파일 업로드 설정
 file:
-    # 개발용
     upload:
         path: uploads/
-
-     #upload:
-        #path: /home/zeropie/uploads/
-
 
 front:
     url: 'http://localhost:3000'        # 개발용
     #url: 'http://15.165.24.202' # 배포용
+
 
