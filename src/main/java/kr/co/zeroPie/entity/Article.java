@@ -3,6 +3,10 @@ package kr.co.zeroPie.entity;
 import jakarta.persistence.*;
 import kr.co.zeroPie.dto.ArticleDTO;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +28,8 @@ public class Article {
 
     private String articleCnt;//게시글 내용
 
-    private String articleRdate;//게시글 작성일
+    @CreationTimestamp
+    private LocalDateTime articleRdate;//게시글 작성일
 
     private int articleHit;//게시글 조회수
 

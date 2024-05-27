@@ -65,7 +65,6 @@ public class ArticleService {
     public ArticlePageResponseDTO searchArticles(ArticlePageRequestDTO articlePageRequestDTO) {
 
         Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
-        articlePageRequestDTO.calculatePeriod();
 
         Page<Article> pageArticle = articleRepository.searchArticles(articlePageRequestDTO, pageable);
 
