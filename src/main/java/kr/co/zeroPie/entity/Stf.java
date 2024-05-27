@@ -44,6 +44,8 @@ public class Stf {
     
     private String stfRole;//사원 권한
 
+    private String stfStatus;//사원 상태
+
     private int dptNo;//부서번호
 
     private int rnkNo;//직급번호

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
+import kr.co.zeroPie.entity.ArticleCate;
 import kr.co.zeroPie.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +42,23 @@ public class ArticleController {
             articlePageResponseDTO = articleService.searchArticles(articlePageRequestDTO);
             log.info("검색글");
         }
-        log.info("articlePageResponseDTO : " + articlePageResponseDTO);
+        //log.info("articlePageResponseDTO : " + articlePageResponseDTO);
         return ResponseEntity.status(HttpStatus.OK).body(articlePageResponseDTO);
     }
+
+    // 게시판 게시판이름(articleTitle) 출력
+    @GetMapping("/article")
+    public ResponseEntity<?> getArticleCate(@RequestParam("articleCateNo") int articleCateNo) {
+
+        return articleService.selectArticleCate(articleCateNo);
+    }
+
+
+
+
+
+
+
 
 
     // 게시판(카드형) 출력(post로 바꾸기)
@@ -98,34 +113,27 @@ public class ArticleController {
 
 
 /*
-    // 글쓰기(기능)
-    @PostMapping("/croptalk/write")
-    public String croptalkWrite(@ModelAttribute ArticleDTO articleDTO, HttpServletRequest request) {
-
-        articleDTO.setRegip(request.getRemoteAddr());
-        articleService.insertArticle(articleDTO);
-
-        log.info(articleDTO.toString());
-
-        return "redirect:/croptalk/list?cate=" + articleDTO.getCate();
+    // 게시글 조회 (1개)
+    @PostMapping("/article/view")
+    public ResponseEntity<?> articleView(@RequestBody Map<String, Integer> request) {
+        int articleNo = request.get("articleNo");
+        log.info("articleNo : " + articleNo);
+        return articleService.articleView(articleNo);
     }
 
-    // 글수정(기능)
-    @PostMapping("/croptalk/modify")
-    public String croptalkModify(ArticleDTO articleDTO) {
-
-        articleService.modifyArticle(articleDTO);
-
-        return "redirect:/croptalk/view?no=" + articleDTO.getNo()+"&cate="+articleDTO.getCate();
+    // 게시글 작성
+    @PostMapping("/article/write")
+    public ResponseEntity<?> articleWrite(@RequestBody ArticleDTO articleDTO) {
+        log.info("articleDTO : " + articleDTO);
+        return articleService.articleWrite(articleDTO);
     }
 
-    // 글삭제(기능)
-    @GetMapping("/croptalk/delete")
-    public String croptalkDelete(int no, String cate) {
-        fileService.deleteFiles(no);
-        articleService.deleteArticle(no);
-
-        return "redirect:/croptalk/list?cate=" + cate;
+    // 게시글 삭제
+    @PostMapping("/article/delete")
+    public ResponseEntity<?> articleDelete(@RequestBody Map<String, Integer> request) {
+        int articleNo = request.get("articleNo");
+        log.info("articleNo : " + articleNo);
+        return articleService.articleDelete(articleNo);
     }
 
 

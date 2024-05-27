@@ -2,6 +2,7 @@ package kr.co.zeroPie.dto;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -15,6 +16,9 @@ public class ArticlePageResponseDTO {
     private int articleCateNo;
     private String type;
     private String keyword;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String sort;
 
     private int pg;
     private int size;
@@ -29,6 +33,9 @@ public class ArticlePageResponseDTO {
         this.articleCateNo = articlePageRequestDTO.getArticleCateNo();
         this.type = articlePageRequestDTO.getType();
         this.keyword = articlePageRequestDTO.getKeyword();
+        this.startDate = articlePageRequestDTO.getStartDate();
+        this.endDate = articlePageRequestDTO.getEndDate();
+        this.sort = articlePageRequestDTO.getSort();
 
         this.pg = articlePageRequestDTO.getPg();
         this.size = articlePageRequestDTO.getSize();

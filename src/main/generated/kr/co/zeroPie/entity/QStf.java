@@ -47,6 +47,8 @@ public class QStf extends EntityPathBase<Stf> {
 
     public final StringPath stfRole = createString("stfRole");
 
+    public final StringPath stfStatus = createString("stfStatus");
+
     public final NumberPath<Integer> stfZip = createNumber("stfZip", Integer.class);
 
     public QStf(String variable) {

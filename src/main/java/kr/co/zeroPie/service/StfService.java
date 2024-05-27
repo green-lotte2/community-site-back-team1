@@ -1,46 +1,65 @@
 package kr.co.zeroPie.service;
 
 
+import jakarta.mail.Message;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.Dpt;
+import kr.co.zeroPie.entity.Rnk;
 import kr.co.zeroPie.entity.Stf;
 import kr.co.zeroPie.repository.DptRepository;
+import kr.co.zeroPie.repository.RnkRepository;
 import kr.co.zeroPie.repository.StfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Log4j2
 @RequiredArgsConstructor
 @Service
 public class StfService {
 
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final StfRepository stfRepository;
     private final DptRepository dptRepository;
+    private final RnkRepository rnkRepository;
     private final ModelMapper modelMapper;
+
+    private final JavaMailSender javaMailSender;
+    // private final RedisTemplate<String, String> redisTemplate;레디스의 흔적...또르륵...(배포해보기)
 
 
     @Value("${file.upload.path}")
     private String fileUploadPath;
 
-    public ResponseEntity<?> register(StfDTO stfDTO) {//암호화 하지않고 저장, 이미지파일이 DTO에 저장되어 있음.
-        //String encoded = passwordEncoder.encode(stfDTO.getStfPass());
-        //stfDTO.setStfPass(encoded);
+    public Stf register(StfDTO stfDTO) {
+
+        String encoded = passwordEncoder.encode(stfDTO.getStfPass());
+        stfDTO.setStfPass(encoded);
+        stfDTO.setStfRole("USER");
+
+        Stf stf = modelMapper.map(stfDTO, Stf.class);
 
         Map<String, Object> map = new HashMap<>();
         try {
-            Stf stf = modelMapper.map(stfDTO, Stf.class);
-
             MultipartFile img1 = stfDTO.getThumbFile();
             if (img1.getOriginalFilename() != null && img1.getOriginalFilename() != "") {
                 StfDTO uploadedImage = uploadReviewImage(img1);
@@ -50,51 +69,72 @@ public class StfService {
 
                     StfDTO imageDTO = uploadedImage;
 
-                    stf.setStfImg(uploadedImage.getSName());
+                    stfDTO.setSName(uploadedImage.getSName());
+                    stfDTO.setStfImg(uploadedImage.getSName());
 
                     log.info("여기는 2번째 if.......");
+                    log.info("imageDTO의 sName : " + stfDTO.getSName());
+                    log.info("imageDTO의 stfImg : " + stfDTO.getStfImg());
                 }
-                switch (stfDTO.getStrDptNo()){
+                switch (stfDTO.getStrDptNo()) {
 
-                    case "인사지원부": stfDTO.setDptNo(1);
+                    case "인사지원부":
+                        stfDTO.setDptNo(1);
                         break;
-                    case "영업부": stfDTO.setDptNo(2);
+                    case "영업부":
+                        stfDTO.setDptNo(2);
                         break;
-                    case "전산부": stfDTO.setDptNo(3);
+                    case "전산부":
+                        stfDTO.setDptNo(3);
                         break;
-                    case "네트워크 관리부": stfDTO.setDptNo(4);
+                    case "네트워크 관리부":
+                        stfDTO.setDptNo(4);
                         break;
-                    case "SW 개발 부서": stfDTO.setDptNo(5);
+                    case "SW 개발 부서":
+                        stfDTO.setDptNo(5);
                         break;
-                    case "고객 지원 부서": stfDTO.setDptNo(6);
+                    case "고객 지원 부서":
+                        stfDTO.setDptNo(6);
                         break;
-                    case "기술 지원부": stfDTO.setDptNo(7);
+                    case "기술 지원부":
+                        stfDTO.setDptNo(7);
                         break;
-                    default: stfDTO.setDptNo(0);
+                    default:
+                        stfDTO.setDptNo(0);
                         break;
                 }
 
-                switch (stfDTO.getStrRnkNo()){
+                switch (stfDTO.getStrRnkNo()) {
 
-                    case "사원": stfDTO.setDptNo(1);
+                    case "사원":
+                        stfDTO.setRnkNo(1);
                         break;
-                    case "대리": stfDTO.setDptNo(2);
+                    case "대리":
+                        stfDTO.setRnkNo(2);
                         break;
-                    case "과장": stfDTO.setDptNo(3);
+                    case "과장":
+                        stfDTO.setRnkNo(3);
                         break;
-                    case "차장": stfDTO.setDptNo(4);
+                    case "차장":
+                        stfDTO.setRnkNo(4);
                         break;
-                    case "부장": stfDTO.setDptNo(5);
+                    case "부장":
+                        stfDTO.setRnkNo(5);
                         break;
-                    case "이사": stfDTO.setDptNo(6);
+                    case "이사":
+                        stfDTO.setRnkNo(6);
                         break;
-                    case "상무": stfDTO.setDptNo(7);
+                    case "상무":
+                        stfDTO.setRnkNo(7);
                         break;
-                    case "전무": stfDTO.setDptNo(8);
+                    case "전무":
+                        stfDTO.setRnkNo(8);
                         break;
-                    case "사장": stfDTO.setDptNo(9);
+                    case "사장":
+                        stfDTO.setRnkNo(9);
                         break;
-                    default: stfDTO.setDptNo(0);
+                    default:
+                        stfDTO.setRnkNo(0);
                         break;
                 }
 
@@ -135,9 +175,13 @@ public class StfService {
                         break;
                 }
 
+                log.info("stfDTO : " + stfDTO);
+
                 Stf stf1 = modelMapper.map(stfDTO, Stf.class);
 
-                log.info("stf : " + stf);
+                log.info("stf1 : " + stf1);
+
+                stf1.setPlanStatusNo(1);
 
                 Stf savedUser = stfRepository.save(stf1);
 
@@ -145,13 +189,12 @@ public class StfService {
 
                 StfDTO stfDTO1 = uploadedImage;//파일 저장경로 설정
 
-                map.put("data", stfDTO1);//
-                return ResponseEntity.ok().body(map);
+                return savedUser;
             }
         } catch (Exception e) {
-            return ResponseEntity.ok().body(e.getMessage());
+            return stf;
         }
-        return ResponseEntity.ok().body(null);
+        return stf;
     }
 
 
@@ -165,7 +208,6 @@ public class StfService {
         // 파일을 저장할 경로 설정
 
         String path = new java.io.File(fileUploadPath).getAbsolutePath();
-
 
         if (!file.isEmpty()) {
             try {
@@ -206,11 +248,74 @@ public class StfService {
 
 
     //부서목록 return
-    public List<Dpt> findPosition(){
+    public List<Dpt> findPosition() {
 
 
         List<Dpt> findPosition = dptRepository.findAll();//부서목록을 모두 출력
 
         return findPosition;
+    }
+
+    //부서목록 return
+    public List<Rnk> findRnk() {
+
+        List<Rnk> findRnk = rnkRepository.findAll();//부서목록을 모두 출력
+
+        return findRnk;
+    }
+
+    //email이 중복인지 체크(같은 이메일이 몇개인지 체크)
+    public int findStf(String email) {
+
+        return stfRepository.countByStfEmail(email);
+    }
+
+    //이메일 보내기 서비스
+    @Value("${spring.mail.username}")//이메일 보내는 사람 주소
+    private String sender;
+
+    //인증코드를 전송
+    public long sendEmailCode(String receiver) {//void->int
+
+        log.info("sender={}", sender);
+
+        //MimeMessage 생성
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        //인증코드 생성 후 세션 저장
+        String code12 = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
+
+        int code = ThreadLocalRandom.current().nextInt(100000, 1000000);
+
+        log.info("생성된 code : " + code);
+
+
+        //redis 사용
+        //ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+
+        //valueOperations.set("code1",code12);
+        long savedCode = ((long) (code + code) * code) - 1; // long 타입으로 변경(숫자가 너무커서 오버플로우가 일어남(-로 표기))
+
+        log.info("savedCode={}", savedCode);
+
+        String title = "lotteShop 인증코드 입니다.";
+        String content = "<h1>인증코드는 " + code + "입니다.<h1>";
+
+        try {
+            message.setSubject(title);
+            message.setFrom(new InternetAddress(sender, "보내는 사람", "UTF-8"));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
+            message.setSubject(title);
+            message.setContent(content, "text/html;charset=UTF-8");
+
+            javaMailSender.send(message);
+
+            return savedCode;
+
+        } catch (Exception e) {
+            log.error("error={}", e.getMessage());
+
+            return 0;
+        }
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,9 +24,9 @@ import java.util.List;
 public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private QArticle qArticle = QArticle.article;
-    private QArticleCate qArticleCate = QArticleCate.articleCate;
-    private QStf qStf = QStf.stf;
+    private final QArticle qArticle = QArticle.article;
+    private final QArticleCate qArticleCate = QArticleCate.articleCate;
+    private final QStf qStf = QStf.stf;
 
     @Override
     public Page<Article> selectArticles(ArticlePageRequestDTO pageRequestDTO, Pageable pageable){
@@ -63,16 +62,19 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
         // 타입 선택
         String type = pageRequestDTO.getType();
+        log.info("type"+type);
         String keyword = pageRequestDTO.getKeyword();
-
+        log.info("keyword"+keyword);
         // 날짜 선택
-        LocalDateTime startDate = pageRequestDTO.getStartDate();
-        LocalDateTime endDate = pageRequestDTO.getEndDate();
+        LocalDate startDate = pageRequestDTO.getStartDate();
 
+        LocalDate endDate = pageRequestDTO.getEndDate();
+        String sort = pageRequestDTO.getSort();
+        log.info("sort" + sort);
         // 정렬 선택
-        pageRequestDTO = new ArticlePageRequestDTO();
-        String sort = "default";
-        pageable = pageRequestDTO.getPageable(sort);
+        //pageRequestDTO = new ArticlePageRequestDTO();
+
+       // pageable = pageRequestDTO.getPageable(sort);
 
         // Querydsl 조건
         BooleanExpression expression = null;
@@ -85,7 +87,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
             case "content":
                 expression = qArticle.articleCnt.contains(keyword);
                 break;
-            case "title_content":
+            case "title+content":
                 BooleanExpression titleContains = qArticle.articleTitle.contains(keyword);
                 BooleanExpression contentContains = qArticle.articleCnt.contains(keyword);
                 expression = titleContains.or(contentContains);
@@ -93,23 +95,18 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
             case "writer":
                 expression = qArticle.writer.contains(keyword);
                 break;
-            default:
         }
+        log.info("expression"+expression);
 
+        BooleanExpression dateExpression = null;
         // 검색 기간에 따른 where 표현식
         if (startDate != null && endDate != null) {
-            log.info("startDate : " + startDate);
-            log.info("endDate : " + endDate);
-            if (expression == null) {
-                // expression이 null인 경우 새로운 표현식 생성
-                expression = qArticle.articleRdate.between(startDate, endDate);
-            } else {
-                // expression이 이미 설정된 경우 해당 조건을 추가하여 연결
-                expression = expression.and(qArticle.articleRdate.between(startDate, endDate));
+            dateExpression = qArticle.articleRdate.between(startDate, endDate);
+            if (dateExpression != null) {
+                expression = (expression != null) ? expression.and(dateExpression) : dateExpression;
             }
-        } else if (startDate != null || endDate != null) {
-            // startDate 또는 endDate 중 하나만 null이 아닌 경우 예외 처리
         }
+
 
         // 검색 정렬에 따른 order 표현식
         OrderSpecifier<?> orderSpecifier = null;
@@ -117,6 +114,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
             case "default":
                 // 기본 정렬: 게시물 번호 내림차순
                 orderSpecifier = qArticle.articleNo.desc();
+
                 break;
             case "hit":
                 // 조회순 오름차순
@@ -129,11 +127,11 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
             default:
                 throw new IllegalArgumentException("Invalid sort type: " + sort);
         }
+        log.info(expression.toString());
 
         QueryResults<Article> results = jpaQueryFactory
                 .select(qArticle)
                 .from(qArticle)
-                .on(qArticle.writer.eq(qStf.stfName))
                 .where(expression)
                 .where(qArticle.articleCateNo.eq(cate))
                 .offset(pageable.getOffset())
