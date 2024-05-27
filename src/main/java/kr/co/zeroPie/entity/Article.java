@@ -31,6 +31,7 @@ public class Article {
     @CreationTimestamp
     private LocalDate articleRdate;//게시글 작성일
 
+
     private int articleHit;//게시글 조회수
 
     private int articleCateNo;//카테고리 번호(외래키)
