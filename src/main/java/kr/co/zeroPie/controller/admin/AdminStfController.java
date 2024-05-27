@@ -1,6 +1,8 @@
 package kr.co.zeroPie.controller.admin;
 
 import kr.co.zeroPie.dto.ArticleCateDTO;
+import kr.co.zeroPie.dto.PageRequestDTO;
+import kr.co.zeroPie.dto.PageResponseDTO;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.service.admin.AdminArticleService;
 import kr.co.zeroPie.service.admin.AdminStfService;
@@ -18,14 +20,27 @@ public class AdminStfController {
 
 
     // 관리자 - 회원 관리 - 전체 회원 조회
-    @GetMapping("/admin/userList")
-    public ResponseEntity<?> userList(){
+    @GetMapping("/admin/user/list")
+    public ResponseEntity<?> userList(PageRequestDTO pageRequestDTO){
 
-        return adminStfService.selectUserAll();
+        return adminStfService.selectUserAll(pageRequestDTO);
     }
 
+    // 관리자 - 회원 관리 - 전체 부서 조회
+    @GetMapping("/admin/user/dptList")
+    public ResponseEntity<?> dptList(){
+        return adminStfService.selectDptList();
+    }
+
+    // 관리자 - 회원 관리 - 전체 직급 조회
+    @GetMapping("/admin/user/rnkList")
+    public ResponseEntity<?> rnkList(){
+        return adminStfService.selectRnkList();
+    }
+
+
     // 관리자 - 회원 관리 - 회원 자세히 조회
-    @GetMapping("/admin/userDatil")
+    @GetMapping("/admin/user/detail")
     public ResponseEntity<?> userDatil(String stfNo){
         return adminStfService.selectUser(stfNo);
     }
