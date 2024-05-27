@@ -33,10 +33,11 @@ public class ArticlePageRequestDTO {
     private String keyword;
 
     // 기간선택
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     // 정렬
+    private String sort;
 
     public Pageable getPageable(String sort){
         Sort.Direction direction;
