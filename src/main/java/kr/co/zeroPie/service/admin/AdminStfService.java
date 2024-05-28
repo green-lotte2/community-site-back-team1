@@ -17,10 +17,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,17 +35,26 @@ public class AdminStfService {
     private final RnkRepository rnkRepository;
 
     // 전체 유저 조회
-    public ResponseEntity<?> selectUserAll(PageRequestDTO pageRequestDTO) {
+    public ResponseEntity<?> selectUserAll(@RequestBody PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable("stfNo");
+        /*
         Page<Stf> stfs = stfRepository.findAll(pageable);
         List<Stf> stfList = stfs.getContent();
         int total = (int) stfs.getTotalElements();
+
 
         List<StfDTO> stfDTOList = new ArrayList<>();
         for (Stf stf : stfList) {
             stfDTOList.add(modelMapper.map(stf, StfDTO.class));
         }
         log.info(stfDTOList.toString());
+        */
+
+        Page<Stf> qslStfList = stfRepository.searchUserTypeAndKeyword(pageRequestDTO, pageable);
+        List<StfDTO> stfDTOList = qslStfList.getContent().stream()
+                .map(stf -> modelMapper.map(stf, StfDTO.class))
+                .toList();
+        int total = (int) qslStfList.getTotalElements();
 
         PageResponseDTO pageResponseDTO = PageResponseDTO.<StfDTO>builder()
                 .pageRequestDTO(pageRequestDTO)

@@ -31,7 +31,7 @@ public class QStf extends EntityPathBase<Stf> {
 
     public final StringPath stfEmail = createString("stfEmail");
 
-    public final DateTimePath<java.util.Date> stfEnt = createDateTime("stfEnt", java.util.Date.class);
+    public final DatePath<java.time.LocalDate> stfEnt = createDate("stfEnt", java.time.LocalDate.class);
 
     public final StringPath stfImg = createString("stfImg");
 
