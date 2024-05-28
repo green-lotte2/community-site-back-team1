@@ -20,9 +20,10 @@ public class AdminStfController {
 
 
     // 관리자 - 회원 관리 - 전체 회원 조회
-    @GetMapping("/admin/user/list")
-    public ResponseEntity<?> userList(PageRequestDTO pageRequestDTO){
-
+    @PostMapping("/admin/user/list")
+    public ResponseEntity<?> userList(@RequestBody PageRequestDTO pageRequestDTO){
+        log.info("리스트 검색!!!!!!!!!!!!");
+        log.info(pageRequestDTO);
         return adminStfService.selectUserAll(pageRequestDTO);
     }
 
