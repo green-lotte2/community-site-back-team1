@@ -328,14 +328,16 @@ public class StfService {
     //약관 찾기
     public List<Terms> findTerms(){
 
-
         List<Terms> termsList= termsRepository.findAll();
-
-        log.info("드드드드드드1"+termsList.get(0).getTerms());
-        log.info("드드드드드드2"+termsList.get(0).getPrivacy());
-
 
         return termsList;
 
+    }
+    
+    //아이디 찾기
+    public String findId(String email,String name){
+
+        return stfRepository.findIdByEmailAndName(email,name);
+        
     }
 }
