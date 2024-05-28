@@ -10,6 +10,7 @@ import kr.co.zeroPie.entity.Dpt;
 import kr.co.zeroPie.entity.Rnk;
 import kr.co.zeroPie.entity.Stf;
 import kr.co.zeroPie.entity.Terms;
+import kr.co.zeroPie.repository.StfRepository;
 import kr.co.zeroPie.security.MyUserDetails;
 import kr.co.zeroPie.service.StfService;
 import kr.co.zeroPie.util.JWTProvider;
@@ -253,11 +254,12 @@ public class StfController {
         }
     }
 
+
     @GetMapping("/findId")
     public ResponseEntity<?> findId(@RequestParam("email")String email, @RequestParam("name")String name){
 
-        log.info("email : "+email);
-        log.info("name : "+name);
+        log.info("email1 : "+email);
+        log.info("name1 : "+name);
 
         String id = stfService.findId(email,name);
 
@@ -265,9 +267,27 @@ public class StfController {
 
         Map<String, String> lists = new HashMap<>();
 
-        lists.put("result", "안뇽");
+        lists.put("result", id);
         return ResponseEntity.ok().body(lists);
 
     }
+
+    @PostMapping("/updatePass")
+    public ResponseEntity<?> updatePass(StfDTO stfDTO){
+
+        log.info("stfDTO( 아이디와 비밀번호가 넘어와야해 ) :"+stfDTO);
+
+        String id = stfDTO.getStfNo();
+
+        String pass = stfDTO.getStfPass();
+
+        stfService.updatePass(id, pass);
+
+        Map<String, String> lists = new HashMap<>();
+
+        lists.put("result", "되는가?");
+        return ResponseEntity.ok().body(lists);
+    }
+
 
 }
