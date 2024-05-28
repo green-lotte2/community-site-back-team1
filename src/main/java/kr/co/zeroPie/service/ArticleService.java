@@ -130,9 +130,11 @@ public class ArticleService {
     // 게시글 작성
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
         Article article = modelMapper.map(articleDTO, Article.class);
+        log.info("서비스 들어오냐? : " + article);             // 여기까진 로그 찍힘
+
         Article savedArticle = articleRepository.save(article);
 
-        log.info("글쓰냐?");
+        log.info("레파지토리 갔다왔냐? : " + savedArticle);        // 로그인 찍힘
         if (savedArticle.getArticleCnt() != null) {
             return ResponseEntity.status(HttpStatus.OK).body(1);
         }else {
