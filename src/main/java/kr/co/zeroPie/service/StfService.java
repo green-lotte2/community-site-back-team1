@@ -337,7 +337,7 @@ public class StfService {
     //아이디 찾기
     public String findId(String email,String name){
 
-        return stfRepository.findIdByEmailAndName(email,name);
+        return stfRepository.findIdByStfEmailAndStfName(email,name);
         
     }
 }

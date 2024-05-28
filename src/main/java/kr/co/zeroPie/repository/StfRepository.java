@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryCustom {
     public int countByStfEmail(String stfEmail);
 
-    public String findIdByEmailAndName(String stfEmail,String stfName);
+    public String findIdByStfEmailAndStfName(String stfEmail,String stfName);
 
 }
