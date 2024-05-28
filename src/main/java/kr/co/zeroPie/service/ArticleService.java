@@ -84,6 +84,8 @@ public class ArticleService {
                 .build();
     }
 
+
+
     public ResponseEntity<?> selectArticleCate(int articleCateNo){
 
         Optional<ArticleCate> articleCate = articleCateRepository.findById(articleCateNo);
@@ -96,12 +98,9 @@ public class ArticleService {
         }
     }
 
-
-
-
     // 게시판 글보기
     public ArticleDTO findById(int articleNo) {
-
+        log.info("게시판 글 ");
         Optional<Article> optArticle = articleRepository.findById(articleNo);
 
         ArticleDTO articleDTO = null;
@@ -124,6 +123,19 @@ public class ArticleService {
             return ResponseEntity.status(HttpStatus.OK).body(article);
         }else{
 
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+
+    // 게시글 작성
+    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+        Article article = modelMapper.map(articleDTO, Article.class);
+        Article savedArticle = articleRepository.save(article);
+
+        log.info("글쓰냐?");
+        if (savedArticle.getArticleCnt() != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
     }
@@ -237,17 +249,7 @@ public class ArticleService {
         return ResponseEntity.status(HttpStatus.OK).body(articleDTO);
     }
 
-    // 게시글 작성
-    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
-        Article article = modelMapper.map(articleDTO, Article.class);
-        Article savedArticle = articleRepository.save(article);
 
-        if (savedArticle.getArticleContent() != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(1);
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
-        }
-    }
 
     // 게시글 삭제
     public ResponseEntity<?> articleDelete(int articleNo) {
