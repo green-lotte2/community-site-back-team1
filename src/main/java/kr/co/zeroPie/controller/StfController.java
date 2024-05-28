@@ -9,6 +9,7 @@ import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.Dpt;
 import kr.co.zeroPie.entity.Rnk;
 import kr.co.zeroPie.entity.Stf;
+import kr.co.zeroPie.entity.Terms;
 import kr.co.zeroPie.security.MyUserDetails;
 import kr.co.zeroPie.service.StfService;
 import kr.co.zeroPie.util.JWTProvider;
@@ -41,6 +42,7 @@ public class StfController {
     private final RedisTemplate<String, String> redisTemplate;
 
 
+    //로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("username") String username, @RequestParam("password") String password) {
 
@@ -89,6 +91,8 @@ public class StfController {
     //회원가입 기능
     @PostMapping("/upload")
     public ResponseEntity<?> register(StfDTO stfDTO) {//파일업로드하는 동시에 아이디를 만들어서 no에 저장도 해야함!
+
+
         log.info("파일이 들어왔네?");
 
         log.info("stfDTO 출력 : " + stfDTO);
@@ -97,7 +101,7 @@ public class StfController {
 
         Stf result = stfService.register(stfDTO);
 
-        log.info("아이디 출력 : "+result.getStfNo());
+        log.info("아이디 출력 : " + result.getStfNo());
 
         Map<String, Object> response = new HashMap<>();
         response.put("stfNo", result.getStfNo());
@@ -164,6 +168,7 @@ public class StfController {
         }
     }
 
+    //사용자가 입력한 코드와 서버에서 보낸코드가 맞는지 확인 기능
     @GetMapping("/verifyCode")
     public ResponseEntity<?> sendVerifyCode(@RequestParam("email") String email, @RequestParam("code") String code, @RequestParam("scode") String scode) {
 
@@ -202,11 +207,20 @@ public class StfController {
 
     }
 
+    //회원 약관 출력 기능
+    @GetMapping("/terms")
+    public ResponseEntity<?> terms() {
+        List<Terms> termsList = stfService.findTerms();
 
-    //회원가입 완료후 아이디를 보여주는 페이지
-    @GetMapping("/showId")
-    public void showId() {
+        String privacy = termsList.get(0).getPrivacy();
+        String terms = termsList.get(0).getTerms();
 
 
+        Map<String, String> lists = new HashMap<>();
+        lists.put("result1", privacy);
+        lists.put("result2", terms);
+
+        return ResponseEntity.ok().body(lists);
     }
+
 }
