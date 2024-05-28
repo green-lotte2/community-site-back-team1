@@ -9,6 +9,8 @@ import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.Dpt;
 import kr.co.zeroPie.entity.Rnk;
 import kr.co.zeroPie.entity.Stf;
+import kr.co.zeroPie.entity.Terms;
+import kr.co.zeroPie.repository.StfRepository;
 import kr.co.zeroPie.security.MyUserDetails;
 import kr.co.zeroPie.service.StfService;
 import kr.co.zeroPie.util.JWTProvider;
@@ -41,6 +43,7 @@ public class StfController {
     private final RedisTemplate<String, String> redisTemplate;
 
 
+    //로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("username") String username, @RequestParam("password") String password) {
 
@@ -89,6 +92,8 @@ public class StfController {
     //회원가입 기능
     @PostMapping("/upload")
     public ResponseEntity<?> register(StfDTO stfDTO) {//파일업로드하는 동시에 아이디를 만들어서 no에 저장도 해야함!
+
+
         log.info("파일이 들어왔네?");
 
         log.info("stfDTO 출력 : " + stfDTO);
@@ -97,7 +102,7 @@ public class StfController {
 
         Stf result = stfService.register(stfDTO);
 
-        log.info("아이디 출력 : "+result.getStfNo());
+        log.info("아이디 출력 : " + result.getStfNo());
 
         Map<String, Object> response = new HashMap<>();
         response.put("stfNo", result.getStfNo());
@@ -164,6 +169,7 @@ public class StfController {
         }
     }
 
+    //사용자가 입력한 코드와 서버에서 보낸코드가 맞는지 확인 기능
     @GetMapping("/verifyCode")
     public ResponseEntity<?> sendVerifyCode(@RequestParam("email") String email, @RequestParam("code") String code, @RequestParam("scode") String scode) {
 
@@ -202,11 +208,86 @@ public class StfController {
 
     }
 
+    //회원 약관 출력 기능
+    @GetMapping("/terms")
+    public ResponseEntity<?> terms() {
+        List<Terms> termsList = stfService.findTerms();
 
-    //회원가입 완료후 아이디를 보여주는 페이지
-    @GetMapping("/showId")
-    public void showId() {
+        String privacy = termsList.get(0).getPrivacy();
+        String terms = termsList.get(0).getTerms();
 
+
+        Map<String, String> lists = new HashMap<>();
+        lists.put("result1", privacy);
+        lists.put("result2", terms);
+
+        return ResponseEntity.ok().body(lists);
+    }
+
+
+    //아이디 찾기에서 이메일 인증 보내기
+    @GetMapping("/findIdAndSendEmail")
+    public ResponseEntity<?> findIdAndSendEmail(@RequestParam("email") String email) {
+
+
+        log.info("일단 들어오니?");
+
+        log.info("email : " + email);
+
+        int count = stfService.findStf(email);//같은 이메일이 몇개인지 체크
+
+        log.info("count={}", count);
+
+        Map<String, String> lists = new HashMap<>();
+
+        if (count >= 1) {//이메일 중복이 없어야됨
+            log.info("email={}", email);
+            long savedCode = stfService.sendEmailCode(email);//이메일을 보내고 서버가 보낸 코드를 저장
+
+            lists.put("result", "성공");
+            lists.put("savedCode", String.valueOf(savedCode));
+            return ResponseEntity.ok().body(lists);
+        } else {
+
+            lists.put("result", "실패");
+            return ResponseEntity.ok().body(lists);
+        }
+    }
+
+
+    @GetMapping("/findId")
+    public ResponseEntity<?> findId(@RequestParam("email")String email, @RequestParam("name")String name){
+
+        log.info("email1 : "+email);
+        log.info("name1 : "+name);
+
+        String id = stfService.findId(email,name);
+
+        log.info("id : "+id);
+
+        Map<String, String> lists = new HashMap<>();
+
+        lists.put("result", id);
+        return ResponseEntity.ok().body(lists);
 
     }
+
+    @PostMapping("/updatePass")
+    public ResponseEntity<?> updatePass(StfDTO stfDTO){
+
+        log.info("stfDTO( 아이디와 비밀번호가 넘어와야해 ) :"+stfDTO);
+
+        String id = stfDTO.getStfNo();
+
+        String pass = stfDTO.getStfPass();
+
+        stfService.updatePass(id, pass);
+
+        Map<String, String> lists = new HashMap<>();
+
+        lists.put("result", "되는가?");
+        return ResponseEntity.ok().body(lists);
+    }
+
+
 }

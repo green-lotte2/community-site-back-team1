@@ -16,7 +16,8 @@ public class ArticleCateDTO {
 
     private int articleCateStatus; // 카테고리 상태
 
-    private String articleCateRole; // 카테고리 권한
+    private String articleCateVRole; // 카테고리 보기 권한
+    private String articleCateWRole; // 카테고리 쓰기 권한
 
     private String articleCateCoRole; // 카테고리 댓글 권한
 }

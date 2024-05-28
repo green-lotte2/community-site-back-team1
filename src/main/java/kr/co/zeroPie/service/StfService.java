@@ -11,9 +11,11 @@ import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.Dpt;
 import kr.co.zeroPie.entity.Rnk;
 import kr.co.zeroPie.entity.Stf;
+import kr.co.zeroPie.entity.Terms;
 import kr.co.zeroPie.repository.DptRepository;
 import kr.co.zeroPie.repository.RnkRepository;
 import kr.co.zeroPie.repository.StfRepository;
+import kr.co.zeroPie.repository.TermsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
@@ -41,6 +43,7 @@ public class StfService {
     private final StfRepository stfRepository;
     private final DptRepository dptRepository;
     private final RnkRepository rnkRepository;
+    private final TermsRepository termsRepository;
     private final ModelMapper modelMapper;
 
     private final JavaMailSender javaMailSender;
@@ -50,6 +53,7 @@ public class StfService {
     @Value("${file.upload.path}")
     private String fileUploadPath;
 
+    //회원 가입기능
     public Stf register(StfDTO stfDTO) {
 
         String encoded = passwordEncoder.encode(stfDTO.getStfPass());
@@ -198,12 +202,14 @@ public class StfService {
     }
 
 
+    //아이디 뒤에 붙는 랜덤숫자 출력해주는곳
     public String randomNumber() {
         int randomNumber = (int) (Math.random() * 9000) + 1000;
         return Integer.toString(randomNumber);
     }
 
 
+    //프로필 이미지 저장
     public StfDTO uploadReviewImage(MultipartFile file) {
         // 파일을 저장할 경로 설정
 
@@ -317,5 +323,49 @@ public class StfService {
 
             return 0;
         }
+    }
+
+    //약관 찾기
+    public List<Terms> findTerms(){
+
+        List<Terms> termsList= termsRepository.findAll();
+
+        return termsList;
+
+    }
+    
+    //아이디 찾기
+public String findId(String email,String name){
+
+    log.info("email2 : "+email);
+    log.info("name2 : "+name);
+
+    Stf stf =  stfRepository.findIdByStfEmailAndStfName(email,name);
+
+
+
+    log.info("아이디 : "+stf.getStfNo());
+
+    return stf.getStfNo();
+    
+}
+
+//비밀번호 변경
+public void updatePass(String id, String pass){
+
+    log.info("비밀번호 변경 id가 들어와? : "+id);
+    log.info("비밀번호 변경 pass가 들어와? : "+pass);
+
+    Optional<Stf> stfOpt = stfRepository.findById(id);
+
+    Stf stf= modelMapper.map(stfOpt,Stf.class);
+
+    log.info("비밀번호 수정전에 한번 출력 : "+stf);
+
+    stf.setStfPass(pass);//비밀번호 변경
+
+    stfRepository.save(stf);
+
+
     }
 }

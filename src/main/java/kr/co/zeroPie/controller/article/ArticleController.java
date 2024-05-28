@@ -46,19 +46,13 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(articlePageResponseDTO);
     }
 
-    // 게시판 게시판이름(articleTitle) 출력
+
+    // 게시판 게시판카테(articleCate) 출력
     @GetMapping("/article")
     public ResponseEntity<?> getArticleCate(@RequestParam("articleCateNo") int articleCateNo) {
 
         return articleService.selectArticleCate(articleCateNo);
     }
-
-
-
-
-
-
-
 
 
     // 게시판(카드형) 출력(post로 바꾸기)
@@ -91,14 +85,19 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body("글쓰기 폼으로 이동");
     }
 
+    // 게시글 작성
+    @PostMapping("/article/write")
+    public ResponseEntity<?> articleWrite(@RequestBody ArticleDTO articleDTO) {
+        log.info("글쓰기 확인용 로그(들어오나?) : " + articleDTO);      // 로그 들어옴
+        return articleService.articleWrite(articleDTO);
+    }
+
     // 게시판 글보기
     @GetMapping("/article/view")
     public ResponseEntity<?> view(@RequestParam("articleNo") int articleNo) {
 
         // 게시글 ID로 게시글 조회
         ArticleDTO articleDTO = articleService.findById(articleNo);
-        log.info(articleDTO.toString());
-        // 조회된 데이터를 articlePageRequestDTO에 설정
 
         // ResponseEntity로 응답 DTO 반환
         return ResponseEntity.status(HttpStatus.OK).body(articleDTO);
@@ -106,27 +105,15 @@ public class ArticleController {
 
     // 게시판 글수정(폼)
     @GetMapping("/article/modify")
-    public ResponseEntity<?> articleModifyFrom(@RequestParam("articleNo") int articleNo){
+    public ResponseEntity<?> modifyForm(@RequestParam("articleNo") int articleNo){
 
         return articleService.articleView(articleNo);
     }
 
 
 /*
-    // 게시글 조회 (1개)
-    @PostMapping("/article/view")
-    public ResponseEntity<?> articleView(@RequestBody Map<String, Integer> request) {
-        int articleNo = request.get("articleNo");
-        log.info("articleNo : " + articleNo);
-        return articleService.articleView(articleNo);
-    }
 
-    // 게시글 작성
-    @PostMapping("/article/write")
-    public ResponseEntity<?> articleWrite(@RequestBody ArticleDTO articleDTO) {
-        log.info("articleDTO : " + articleDTO);
-        return articleService.articleWrite(articleDTO);
-    }
+
 
     // 게시글 삭제
     @PostMapping("/article/delete")
