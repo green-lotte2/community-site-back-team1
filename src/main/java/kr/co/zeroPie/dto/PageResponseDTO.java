@@ -2,6 +2,8 @@ package kr.co.zeroPie.dto;
 
 import lombok.*;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -22,6 +24,12 @@ public class PageResponseDTO<T> {
     private int startNo;
     private int start, end;
     private boolean prev, next;
+
+    private String stfStatus;
+    private int rnkNo;
+    private int dptNo;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @Builder
     public PageResponseDTO(PageRequestDTO pageRequestDTO, List<T> dtoList, int total) {

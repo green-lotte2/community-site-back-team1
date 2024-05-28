@@ -5,6 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.sql.Date;
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,6 +30,13 @@ public class PageRequestDTO {
 
     private String type;
     private String keyword;
+
+    private String stfStatus;
+    private int rnkNo;
+    private int dptNo;
+    private LocalDate startDate;
+    private LocalDate endDate;
+
 
     public Pageable getPageable(String sort){
         return PageRequest.of(this.pg - 1, this.size, Sort.by(sort).descending());

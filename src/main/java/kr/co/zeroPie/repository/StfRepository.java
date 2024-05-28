@@ -7,9 +7,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StfRepository extends JpaRepository<Stf, String> {
+public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryCustom {
     public int countByStfEmail(String stfEmail);
 
+
     public Stf findIdByStfEmailAndStfName(String stfEmail,String stfName);
+
 
 }

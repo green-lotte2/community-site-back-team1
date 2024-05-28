@@ -30,7 +30,8 @@ public class AdminArticleService {
         ArticleCate articleCate = modelMapper.map(articleCateDTO, ArticleCate.class);
         articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
         articleCate.setArticleCateStatus(articleCateDTO.getArticleCateStatus());
-        articleCate.setArticleCateRole(articleCateDTO.getArticleCateRole());
+        articleCate.setArticleCateVRole(articleCateDTO.getArticleCateVRole());
+        articleCate.setArticleCateWRole(articleCateDTO.getArticleCateWRole());
         articleCate.setArticleCateCoRole(articleCateDTO.getArticleCateCoRole());
 
         ArticleCate result = articleCateRepository.save(articleCate);
@@ -72,7 +73,8 @@ public class AdminArticleService {
     private ArticleCate updateArticleCate(ArticleCate articleCate, ArticleCateDTO articleCateDTO) {
         articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
         articleCate.setArticleCateStatus(articleCateDTO.getArticleCateStatus());
-        articleCate.setArticleCateRole(articleCateDTO.getArticleCateRole());
+        articleCate.setArticleCateVRole(articleCateDTO.getArticleCateVRole());
+        articleCate.setArticleCateWRole(articleCateDTO.getArticleCateWRole());
         articleCate.setArticleCateCoRole(articleCateDTO.getArticleCateCoRole());
         return articleCateRepository.save(articleCate);
     }

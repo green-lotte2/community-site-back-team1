@@ -335,36 +335,37 @@ public class StfService {
     }
     
     //아이디 찾기
-    public String findId(String email,String name){
+public String findId(String email,String name){
 
-        log.info("email2 : "+email);
-        log.info("name2 : "+name);
+    log.info("email2 : "+email);
+    log.info("name2 : "+name);
 
-        Stf stf =  stfRepository.findIdByStfEmailAndStfName(email,name);
+    Stf stf =  stfRepository.findIdByStfEmailAndStfName(email,name);
 
 
 
-        log.info("아이디 : "+stf.getStfNo());
+    log.info("아이디 : "+stf.getStfNo());
 
-        return stf.getStfNo();
-        
-    }
+    return stf.getStfNo();
+    
+}
 
-    //비밀번호 변경
-    public void updatePass(String id, String pass){
+//비밀번호 변경
+public void updatePass(String id, String pass){
 
-        log.info("비밀번호 변경 id가 들어와? : "+id);
-        log.info("비밀번호 변경 pass가 들어와? : "+pass);
+    log.info("비밀번호 변경 id가 들어와? : "+id);
+    log.info("비밀번호 변경 pass가 들어와? : "+pass);
 
-        Optional<Stf> stfOpt = stfRepository.findById(id);
+    Optional<Stf> stfOpt = stfRepository.findById(id);
 
-        Stf stf= modelMapper.map(stfOpt,Stf.class);
+    Stf stf= modelMapper.map(stfOpt,Stf.class);
 
-        log.info("비밀번호 수정전에 한번 출력 : "+stf);
-        
-        stf.setStfPass(pass);//비밀번호 변경
+    log.info("비밀번호 수정전에 한번 출력 : "+stf);
 
-        stfRepository.save(stf);
+    stf.setStfPass(pass);//비밀번호 변경
+
+    stfRepository.save(stf);
+
 
     }
 }

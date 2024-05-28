@@ -36,7 +36,8 @@ public class AdminArticleController {
 
     // 관리자 - 게시판 관리 - 게시판 수정
     @PutMapping("/admin/modifyCate")
-    public void modifyArticleCate(ArticleCateDTO articleCateDTO) {
+    public void modifyArticleCate(@RequestBody ArticleCateDTO articleCateDTO) {
+        log.info("수정!!!!! : " + articleCateDTO);
         adminArticleService.modifyArticleCate(articleCateDTO);
     }
 
