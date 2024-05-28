@@ -88,7 +88,7 @@ public class ArticleController {
     // 게시글 작성
     @PostMapping("/article/write")
     public ResponseEntity<?> articleWrite(@RequestBody ArticleDTO articleDTO) {
-        log.info("articleDTO : " + articleDTO);
+        log.info("글쓰기 확인용 로그(들어오나?) : " + articleDTO);      // 로그 들어옴
         return articleService.articleWrite(articleDTO);
     }
 
