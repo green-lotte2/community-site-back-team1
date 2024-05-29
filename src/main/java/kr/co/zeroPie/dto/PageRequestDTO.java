@@ -28,6 +28,8 @@ public class PageRequestDTO {
     private String csCate;
     private String stfNo;
 
+    private String csReply;
+
     private String type;
     private String keyword;
 
