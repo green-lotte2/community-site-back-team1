@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -80,7 +81,7 @@ public class ArticleController {
 
     // 글쓰기(폼)
     @GetMapping("/article/write")
-    public ResponseEntity<?> writeForm(@RequestParam("articleCateNo") String articleCateNo) {
+    public ResponseEntity<?> articleWriteForm(@RequestParam("articleCateNo") String articleCateNo) {
 
         return ResponseEntity.status(HttpStatus.OK).body("글쓰기 폼으로 이동");
     }
@@ -94,7 +95,7 @@ public class ArticleController {
 
     // 게시판 글보기
     @GetMapping("/article/view")
-    public ResponseEntity<?> view(@RequestParam("articleNo") int articleNo) {
+    public ResponseEntity<?> articleView(@RequestParam("articleNo") int articleNo) {
 
         // 게시글 ID로 게시글 조회
         ArticleDTO articleDTO = articleService.findById(articleNo);
@@ -105,16 +106,22 @@ public class ArticleController {
 
     // 게시판 글수정(폼)
     @GetMapping("/article/modify")
-    public ResponseEntity<?> modifyForm(@RequestParam("articleNo") int articleNo){
+    public ResponseEntity<?> articleModifyForm(@RequestParam("articleNo") int articleNo){
+        log.info("modify 들어옴? : " + articleNo);
 
         return articleService.articleView(articleNo);
     }
 
+    /*
+    // 게시판 글수정(기능)
+    @PostMapping("/article/modify")
+    public ResponseEntity<?> articleModifyForm(@RequestParam("articleNo") int articleNo){
+        log.info("modify 들어옴? : " + articleNo);
 
-/*
+        return articleService.articleView(articleNo);
+    }
 
-
-
+     */
     // 게시글 삭제
     @PostMapping("/article/delete")
     public ResponseEntity<?> articleDelete(@RequestBody Map<String, Integer> request) {
@@ -123,9 +130,4 @@ public class ArticleController {
         return articleService.articleDelete(articleNo);
     }
 
-
-
-
-
-     */
 }

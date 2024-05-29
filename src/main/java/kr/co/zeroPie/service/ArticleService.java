@@ -142,7 +142,30 @@ public class ArticleService {
         }
     }
 
+    // 게시글 삭제
+    public ResponseEntity<?> articleDelete(int articleNo) {
+        articleRepository.deleteById(articleNo);
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
+
+        if (optArticle.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
 /*
+    // 게시글 조회 (1개)
+    public ResponseEntity<?> articleView(int articleNo) {
+
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
+        ArticleDTO articleDTO = optArticle
+                .map(article -> modelMapper.map(article, ArticleDTO.class))
+                .orElse(null);
+
+        return ResponseEntity.status(HttpStatus.OK).body(articleDTO);
+    }
+
+
 // 카테고리 검색(카테고리에 해당하는 Config 엔티티를 찾아 반환)
     public ArticleCate findArticleCateNo(int cate) {
         Integer cateId;
@@ -253,16 +276,6 @@ public class ArticleService {
 
 
 
-    // 게시글 삭제
-    public ResponseEntity<?> articleDelete(int articleNo) {
-        articleRepository.deleteById(articleNo);
-        Optional<Article> optArticle = articleRepository.findById(articleNo);
 
-        if (optArticle.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(1);
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
-        }
-    }
  */
 }
