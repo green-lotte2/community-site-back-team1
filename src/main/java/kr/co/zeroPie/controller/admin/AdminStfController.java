@@ -22,8 +22,11 @@ public class AdminStfController {
     // 관리자 - 회원 관리 - 전체 회원 조회
     @PostMapping("/admin/user/list")
     public ResponseEntity<?> userList(@RequestBody PageRequestDTO pageRequestDTO){
-        log.info("리스트 검색!!!!!!!!!!!!");
+
+
+
         log.info(pageRequestDTO);
+
         return adminStfService.selectUserAll(pageRequestDTO);
     }
 
@@ -47,7 +50,8 @@ public class AdminStfController {
     }
 
     @PutMapping("/admin/user/modify")
-    public ResponseEntity<?> userModify(StfDTO stfDTO) {
-        return adminStfService.modifyStf(stfDTO);
+    public ResponseEntity<?> userModify(@RequestBody StfDTO stfDTO) {
+        log.info("변경"+stfDTO);
+        return adminStfService.updateStf(stfDTO);
     }
 }
