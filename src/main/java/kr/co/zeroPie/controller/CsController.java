@@ -28,11 +28,16 @@ public class CsController {
 
 
     //고객센터 리스트 전체 출력
-    @GetMapping("/cs/list")
-    public ResponseEntity<?> csList(PageRequestDTO pageRequestDTO){//문의하기 리스트 띄우기
+    @PostMapping("/cs/list")
+    public ResponseEntity<?> csList(@RequestBody  PageRequestDTO pageRequestDTO){//문의하기 리스트 띄우기
         log.info("문의하기 리스트 띄웁니다.");
-        log.info("pageRequestDTO: {}", pageRequestDTO);
-        return csService.list(pageRequestDTO);
+        log.info("받아온고니 ?  : pageRequestDTO: {}", pageRequestDTO);
+
+        ResponseEntity<?> csList= csService.list(pageRequestDTO);
+
+        log.info("여기는 컨트롤러에 있는 csList: {}", csList.getBody());
+
+        return ResponseEntity.status(HttpStatus.OK).body(csList.getBody());
     }
 
     
@@ -92,5 +97,23 @@ public class CsController {
         log.info("관리자의 게시글 답변  - csCommentDTO : "+csCommentDTO);
 
         return csService.csAnswer(csCommentDTO);
+    }
+
+    @PostMapping("/cs/search")
+    public ResponseEntity<?> search(@RequestBody PageRequestDTO pageRequestDTO){
+
+        log.info("자 검색을 시작하러 가볼까?");
+
+        log.info("이제 search쪽으로 와야제 ? pageRequestDTO: {}", pageRequestDTO);
+
+        PageResponseDTO<?> searchResult = csService.search(pageRequestDTO);
+
+        log.info("자 뭐가 나왔는지 볼까? : "+searchResult.toString());
+
+        Map<String, String> map = new HashMap<>();
+        map.put("list", "되니?");
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+
     }
 }

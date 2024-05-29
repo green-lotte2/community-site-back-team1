@@ -46,7 +46,6 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 .orderBy(qStf.stfEnt.desc())
                 .fetchResults();
 
-        log.info(results.toString());
         List<Stf> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);

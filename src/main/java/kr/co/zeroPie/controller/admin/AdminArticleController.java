@@ -31,6 +31,7 @@ public class AdminArticleController {
     // 관리자 - 게시판 관리 - 게시판 삭제
     @DeleteMapping("/admin/deleteCate")
     public ResponseEntity<?> deleteArticleCate(@RequestParam("articleCateNo") int articleCateNo) {
+        log.info(articleCateNo);
         return adminArticleService.deleteArticleCate(articleCateNo);
     }
 

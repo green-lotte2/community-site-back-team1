@@ -17,6 +17,7 @@ public class PageResponseDTO<T> {
     private String cate;
     private String type;
     private String keyword;
+    private String csReply;
 
     private int pg;
     private int size;
@@ -34,6 +35,7 @@ public class PageResponseDTO<T> {
     @Builder
     public PageResponseDTO(PageRequestDTO pageRequestDTO, List<T> dtoList, int total) {
         this.cate = pageRequestDTO.getCsCate();
+        this.csReply = pageRequestDTO.getCsReply();
         this.type = pageRequestDTO.getType();
         this.keyword = pageRequestDTO.getKeyword();
         this.pg = pageRequestDTO.getPg();

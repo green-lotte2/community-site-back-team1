@@ -55,6 +55,7 @@ public class AdminStfService {
                 .map(stf -> modelMapper.map(stf, StfDTO.class))
                 .toList();
         int total = (int) qslStfList.getTotalElements();
+        log.info(stfDTOList.toString());
 
         PageResponseDTO pageResponseDTO = PageResponseDTO.<StfDTO>builder()
                 .pageRequestDTO(pageRequestDTO)
@@ -85,31 +86,19 @@ public class AdminStfService {
       return ResponseEntity.ok().body(stf);
     }
 
-    public ResponseEntity<?> modifyStf(StfDTO stfDTO) {
+
+    public ResponseEntity<?> updateStf(StfDTO stfDTO){
         String stfNo = stfDTO.getStfNo();
+        Optional<Stf> optionalStf = stfRepository.findById(stfNo);
+        Stf stf = optionalStf.get();
 
-        return stfRepository.findById(stfNo)
-                .map(stf -> {
-                    Stf updatedStf = updateStf(stf, stfDTO);
-                    return ResponseEntity.ok().body(updatedStf);
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-    public Stf updateStf(Stf stf, StfDTO stfDTO){
-        stf.setStfNo(stfDTO.getStfNo());
-        stf.setStfName(stfDTO.getStfName());
-        stf.setStfPass(stfDTO.getStfPass());
-        stf.setStfPh(stfDTO.getStfPh());
-        stf.setStfZip(stfDTO.getStfZip());
-        stf.setStfAddr1(stf.getStfAddr1());
-        stf.setStfAddr2(stf.getStfAddr2());
-        stf.setStfEmail(stfDTO.getStfEmail());
         stf.setStfRole(stfDTO.getStfRole());
-        stf.setDptNo(stf.getDptNo());
-        stf.setRnkNo(stf.getRnkNo());
-        stf.setPlanStatusNo(stf.getPlanStatusNo());
-        return stfRepository.save(stf);
+        stf.setDptNo(stfDTO.getDptNo());
+        stf.setRnkNo(stfDTO.getRnkNo());
+        stf.setStfStatus(stfDTO.getStfStatus());
+        stfRepository.save(stf);
+        log.info(stf.toString());
+        return ResponseEntity.ok().body(stf);
     }
 
 }

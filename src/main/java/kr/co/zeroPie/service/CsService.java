@@ -1,6 +1,7 @@
 package kr.co.zeroPie.service;
 
 
+import com.querydsl.core.Tuple;
 import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.CsCommentDTO;
 import kr.co.zeroPie.dto.CsDTO;
@@ -47,7 +48,7 @@ public class CsService {
 
         Pageable pageable = pageRequestDTO.getPageable("csNo");
 
-        Page<Cs> pageArticle = csRepository.findByCsCate(pageable);//pageRequestDTO.getCsCate(),
+        Page<Cs> pageArticle = csRepository.CsList(pageable);//pageRequestDTO.getCsCate(),
         log.info("pageArticle : " + pageArticle.getContent());
 
         if (!pageArticle.getContent().isEmpty()) {
@@ -157,6 +158,30 @@ public class CsService {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
+    }
+
+
+    //검색을 위한 곳
+    public PageResponseDTO<?> search(PageRequestDTO pageRequestDTO){
+
+        Pageable pageable = pageRequestDTO.getPageable("no");
+
+        log.info("csService - search - pageRequestDTO : " + pageRequestDTO);
+
+       Page<Cs> page = csRepository.search(pageRequestDTO,pageable);
+
+       log.info("CsService - search - page"+page);
+
+       List<Cs> dtoList = page.getContent();
+
+        log.info("csService -search- dtoList : "+dtoList);
+
+        int total = (int) page.getTotalElements();
+
+        log.info("csSerivce - search - total : "+total);
+
+        return new PageResponseDTO<>(pageRequestDTO, dtoList, total);
+
     }
 
 }
