@@ -366,6 +366,5 @@ public void updatePass(String id, String pass){
 
     stfRepository.save(stf);
 
-
     }
 }
