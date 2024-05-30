@@ -9,8 +9,10 @@ import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.dto.PageResponseDTO;
 import kr.co.zeroPie.entity.Cs;
 import kr.co.zeroPie.entity.CsComment;
+import kr.co.zeroPie.entity.Stf;
 import kr.co.zeroPie.repository.CsCommentRepository;
 import kr.co.zeroPie.repository.CsRepository;
+import kr.co.zeroPie.repository.StfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 import java.beans.Transient;
@@ -37,6 +40,7 @@ public class CsService {
 
     private final CsRepository csRepository;
     private final CsCommentRepository csCommentRepository;
+    private final StfRepository stfRepository;
     private final ModelMapper modelMapper;
 
 
@@ -81,6 +85,12 @@ public class CsService {
         log.info("csDTO : " + csDTO);
 
         csDTO.setCsReply(0);//이거 안넣으면 에러남article
+
+        Optional<Stf> optStf = stfRepository.findById(csDTO.getStfNo());
+
+        Stf stf = modelMapper.map(optStf,Stf.class);
+
+        csDTO.setStfName(stf.getStfName());//사용자 이름을 넣음
 
         csRepository.save(modelMapper.map(csDTO, Cs.class));//받은 정보들 저장
     }
@@ -162,26 +172,39 @@ public class CsService {
 
 
     //검색을 위한 곳
-    public PageResponseDTO<?> search(PageRequestDTO pageRequestDTO){
+    public ResponseEntity<?> search(PageRequestDTO pageRequestDTO){
 
         Pageable pageable = pageRequestDTO.getPageable("no");
 
         log.info("csService - search - pageRequestDTO : " + pageRequestDTO);
 
-       Page<Cs> page = csRepository.search(pageRequestDTO,pageable);
+       Page<Cs> pageArticle = csRepository.search(pageRequestDTO,pageable);
 
-       log.info("CsService - search - page"+page);
+       log.info("CsService - search - pageArticle"+pageArticle);
 
-       List<Cs> dtoList = page.getContent();
+        if (!pageArticle.getContent().isEmpty()) {
+            List<CsDTO> dtoList = pageArticle.getContent().stream()
+                    .map(entity -> {
+                        CsDTO dto = modelMapper.map(entity, CsDTO.class);
+                        dto.setStfNo(entity.getStfNo());
+                        return dto;
+                    })
+                    .toList();
 
-        log.info("csService -search- dtoList : "+dtoList);
 
-        int total = (int) page.getTotalElements();
+            log.info("csService - search - dtoList 찍어본다 :"+dtoList);
 
-        log.info("csSerivce - search - total : "+total);
+            int total = (int) pageArticle.getTotalElements();
 
-        return new PageResponseDTO<>(pageRequestDTO, dtoList, total);
+            PageResponseDTO<CsDTO> responseDTO = PageResponseDTO.<CsDTO>builder()
+                    .dtoList(dtoList)
+                    .pageRequestDTO(pageRequestDTO)
+                    .total(total)
+                    .build();
 
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
     }
-
 }

@@ -3,6 +3,7 @@ package kr.co.zeroPie.repository.impl;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.entity.Cs;
@@ -16,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Repository
@@ -50,11 +53,13 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
     //검색기능
     public Page<Cs> search(PageRequestDTO pageRequestDTO, Pageable pageable) {
 
-        BooleanBuilder builder = new BooleanBuilder();
+        BooleanBuilder builder = new BooleanBuilder();//where 절 저장
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();//orderby절 저장
 
 
         // 시작일과 종료일 범위 검색 조건 추가
         if (pageRequestDTO.getStartDate() != null && pageRequestDTO.getEndDate() != null) {
+            log.info("여기는 시작일과 종료일이 있을 때 들어오는곳이야");
             LocalDate startDate = pageRequestDTO.getStartDate();
             LocalDate endDate = pageRequestDTO.getEndDate().plusDays(1); // 종료일은 포함되어야 하므로 하루를 더합니다.
             builder.and(qcs.csRdate.between(startDate, endDate));
@@ -62,12 +67,25 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
 
         // 카테고리 검색 조건 추가
         if (pageRequestDTO.getCsCate() != null && !pageRequestDTO.getCsCate().isEmpty()) {
+            log.info("여기는 카테고리 검색 조건이 있으면 들어오는곳이야");
+
+            log.info("카테고리 값 : "+pageRequestDTO.getCsCate());
+
             builder.and(qcs.csCate.eq(pageRequestDTO.getCsCate()));
+
+            log.info(builder.toString());
         }
 
         // 답변 상태 검색 조건 추가
-        if (pageRequestDTO.getCsReply() != null) {
-            builder.and(qcs.csReply.eq(Integer.valueOf(pageRequestDTO.getCsReply())));
+        if (pageRequestDTO.getCsReply() != null && !pageRequestDTO.getCsReply().isEmpty()) {
+            log.info("여기에 일단 들어오나?여기는 답변상태 쪽이야.");
+            try {
+                builder.and(qcs.csReply.eq(Integer.valueOf(pageRequestDTO.getCsReply())));
+            } catch (NumberFormatException e) {
+
+                //이 예외처리가 없으면 NumberFormatException이 에러가 뜸
+                throw new IllegalArgumentException("Invalid csReply value: " + pageRequestDTO.getCsReply(), e);
+            }
         }
 
         // 제목, 제목 + 내용, 내용 검색 타입에 따른 검색어 조건 추가
@@ -75,26 +93,56 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
             String keyword = pageRequestDTO.getKeyword().trim();
             switch (pageRequestDTO.getType()) {
                 case "title":
+                    log.info("제목으로 검색했네?");
                     builder.and(qcs.csTitle.containsIgnoreCase(keyword));
                     break;
                 case "content":
+                    log.info("내용으로 검색했네?");
                     builder.and(qcs.csContent.containsIgnoreCase(keyword));
                     break;
                 case "title+content":
+                    log.info("제목+내용으로 검색했네?");
                     builder.and(qcs.csTitle.containsIgnoreCase(keyword)
                             .or(qcs.csContent.containsIgnoreCase(keyword)));
                     break;
                 default:
                     // 기본적으로 제목 검색을 수행합니다.
+                    log.info("디폴트는 제목검색이징");
                     builder.and(qcs.csTitle.containsIgnoreCase(keyword));
                     break;
             }
         }
 
+        //최신순
+        if(pageRequestDTO.getLatest()!=null && !pageRequestDTO.getLatest().isEmpty()){
+            if(pageRequestDTO.getLatest().equals("1")){//pageRequestDTO.getLatest()=="1"과 같은거래
+
+                log.info("여기는 최신순 조건이 있으면 들어오는곳이야");
+                orderSpecifiers.add(qcs.csRdate.desc());
+            }else{
+                log.info("최신순 클릭 안함.");
+            }
+
+        }
+
+        //조회순
+        if(pageRequestDTO.getHit()!=null && !pageRequestDTO.getHit().isEmpty()){
+            log.info("여기는 조회순 조건이 있으면 들어오는곳이야");
+
+            if(Objects.equals(pageRequestDTO.getHit(), "1")){
+
+                log.info("여기는 최신순 조건이 있으면 들어오는곳이야");
+                orderSpecifiers.add(qcs.csHit.desc());
+            }else{
+                log.info("조회순 클릭 안함.");
+            }
+
+        }
+
         QueryResults<Cs> results = jpaQueryFactory
                 .selectFrom(qcs)
-
                 .where(builder)
+                .orderBy(orderSpecifiers.toArray(new OrderSpecifier<?>[0]))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
