@@ -90,12 +90,11 @@ public class ArticleController {
     @GetMapping("/article/view")
     public ResponseEntity<?> articleView(@RequestParam("articleNo") int articleNo) {
 
+        // 조회수 증가 로직 추가
+        articleService.updateHit(articleNo);
+
         // 게시글 ID로 게시글 조회
         ArticleDTO articleDTO = articleService.findById(articleNo);
-
-        // 조회수 증가 로직 추가
-        articleDTO.setArticleHit(articleDTO.getArticleHit() + 1);
-        articleService.updateHit(articleDTO);
 
         // ResponseEntity로 응답 DTO 반환
         return ResponseEntity.status(HttpStatus.OK).body(articleDTO);

@@ -152,9 +152,7 @@ public class ArticleService {
         ArticleDTO articleDTO = null;
 
         if (optArticle.isPresent()) {
-
-            Article article = optArticle.get();
-            articleDTO = modelMapper.map(article, ArticleDTO.class);
+            articleDTO = modelMapper.map(optArticle.get(), ArticleDTO.class);
         }
         return articleDTO;
     }
@@ -176,18 +174,13 @@ public class ArticleService {
     }
 
     // 조회수 증가
-    public ArticleDTO updateHit(ArticleDTO articleDTO) {
-        // 게시글 엔터티를 찾습니다.
-        Article article = articleRepository.findById(articleDTO.getArticleNo()).orElse(null);
+    public void updateHit(int articleNo) {
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
 
-        // 만약 게시글 엔터티가 존재한다면 조회수를 업데이트하고 저장합니다.
-        if (article != null) {
-            article.setArticleHit(article.getArticleHit() + 1);
-            articleRepository.save(article);
+        if (optArticle.isPresent()) {
+            optArticle.get().setArticleHit(optArticle.get().getArticleHit()+1);
+            articleRepository.save(optArticle.get());
         }
-
-        // 엔터티를 DTO로 매핑하여 반환합니다.
-        return modelMapper.map(article, ArticleDTO.class);
     }
 
     // 게시글 수정(modify)
