@@ -33,6 +33,9 @@ public class PageRequestDTO {
     private String type;
     private String keyword;
 
+    private String latest;
+    private String hit;
+
     private String stfStatus;
     private int rnkNo;
     private int dptNo;
