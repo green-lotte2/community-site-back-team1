@@ -37,4 +37,7 @@ public class Cs {
     private int csReply;//답변이 달린 수 : 답변이 하나라도 달리면 답변완료로 바꾸어 주기
 
     private String stfNo;//사원번호
+
+    private String stfName;
+
 }

@@ -1,6 +1,5 @@
 package kr.co.zeroPie.service;
 
-import com.querydsl.core.Tuple;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
@@ -15,11 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,18 +29,25 @@ public class ArticleService {
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
 
+    // 게시판 카테고리 표시
+    public ResponseEntity<?> selectArticleCate(int articleCateNo){
+
+        Optional<ArticleCate> articleCate = articleCateRepository.findById(articleCateNo);
+
+        if (articleCate.isPresent()) {
+            log.info("게시판 카테고리 조회 : " + articleCate);
+            return ResponseEntity.status(HttpStatus.OK).body(articleCate.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article category not found");
+        }
+    }
+
     // 게시판 글목록 출력(일반)
     public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO articlePageRequestDTO) {
 
-        log.info("selectArticles...1");
         Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
 
-        log.info("selectArticles-pageable : "+pageable);
-
-        log.info("selectArticles...2");
         Page<Article> pageArticle = articleRepository.selectArticles(articlePageRequestDTO, pageable);
-
-        log.info("selectArticles...3 : " + pageArticle.getContent());
 
         List<Article> articleList = pageArticle.getContent();
 
@@ -84,21 +90,61 @@ public class ArticleService {
                 .build();
     }
 
+    // 게시글 작성(write)
+    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+        articleDTO.setArticleStatus("view");
+        Article article = modelMapper.map(articleDTO, Article.class);
+        log.info("서비스 들어오냐? : " + article); // 여기까진 로그 찍힘
 
+        // articleCnt에서 이미지 추출하여 articleThumb에 저장
+        extractAndSaveArticleThumb(article);
 
-    public ResponseEntity<?> selectArticleCate(int articleCateNo){
+        Article savedArticle = articleRepository.save(article);
 
-        Optional<ArticleCate> articleCate = articleCateRepository.findById(articleCateNo);
-
-        if (articleCate.isPresent()) {
-            log.info("아티클 카테 찾기"+articleCate);
-            return ResponseEntity.status(HttpStatus.OK).body(articleCate.get());
+        log.info("레파지토리 갔다왔냐? : " + savedArticle); // 로그 찍힘
+        if (savedArticle.getArticleCnt() != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Article category not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
     }
 
-    // 게시판 글보기
+    /* 기존
+    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+        articleDTO.setArticleStatus("view");
+        Article article = modelMapper.map(articleDTO, Article.class);
+        log.info("서비스 들어오냐? : " + article);             // 여기까진 로그 찍힘
+
+        Article savedArticle = articleRepository.save(article);
+
+        log.info("레파지토리 갔다왔냐? : " + savedArticle);        // 로그인 찍힘
+        if (savedArticle.getArticleCnt() != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+     */
+
+    // articleCnt에서 이미지 추출하여 articleThumb에 저장하는 함수
+    private void extractAndSaveArticleThumb(Article article) {
+        String articleCnt = article.getArticleCnt();
+        String articleThumb = extractFirstImage(articleCnt);
+        article.setArticleThumb(articleThumb);
+    }
+
+    // articleCnt에서 첫 번째 이미지를 추출하는 함수
+    private String extractFirstImage(String articleCnt) {
+        String imageUrl = null;
+        Pattern pattern = Pattern.compile("<img\\s+[^>]*?src\\s*=\\s*(['\"])(.*?)\\1");
+        Matcher matcher = pattern.matcher(articleCnt);
+        if (matcher.find()) {
+            imageUrl = matcher.group(2);
+        }
+        return imageUrl;
+    }
+
+    // 게시판 글보기(view)
     public ArticleDTO findById(int articleNo) {
         log.info("게시판 글 ");
         Optional<Article> optArticle = articleRepository.findById(articleNo);
@@ -113,6 +159,8 @@ public class ArticleService {
         return articleDTO;
     }
 
+
+    // 수정할 글보기(modifyForm)
     public ResponseEntity<?> articleView(int articleNo){
 
         Optional<?> optionalArticle = articleRepository.findById(articleNo);
@@ -127,22 +175,48 @@ public class ArticleService {
         }
     }
 
-    // 게시글 작성
-    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
-        Article article = modelMapper.map(articleDTO, Article.class);
-        log.info("서비스 들어오냐? : " + article);             // 여기까진 로그 찍힘
+    // 조회수 증가
+    public ArticleDTO updateHit(ArticleDTO articleDTO) {
+        // 게시글 엔터티를 찾습니다.
+        Article article = articleRepository.findById(articleDTO.getArticleNo()).orElse(null);
 
-        Article savedArticle = articleRepository.save(article);
+        // 만약 게시글 엔터티가 존재한다면 조회수를 업데이트하고 저장합니다.
+        if (article != null) {
+            article.setArticleHit(article.getArticleHit() + 1);
+            articleRepository.save(article);
+        }
 
-        log.info("레파지토리 갔다왔냐? : " + savedArticle);        // 로그인 찍힘
-        if (savedArticle.getArticleCnt() != null) {
+        // 엔터티를 DTO로 매핑하여 반환합니다.
+        return modelMapper.map(article, ArticleDTO.class);
+    }
+
+    // 게시글 수정(modify)
+    public ResponseEntity<?> articleModify(ArticleDTO articleDTO) {
+        log.info("서비스 들어옴? : " + articleDTO);
+        try {
+            Optional<Article> optionalArticle = articleRepository.findById(articleDTO.getArticleNo());
+
+            if (!optionalArticle.isPresent()) {
+                return ResponseEntity.status(404).body("Article not found");
+            }
+
+            Article oArticle = optionalArticle.get();
+            ArticleDTO oArticleDTO = modelMapper.map(oArticle, ArticleDTO.class);
+
+            oArticleDTO.setArticleTitle(articleDTO.getArticleTitle());
+            oArticleDTO.setArticleCnt(articleDTO.getArticleCnt());
+
+            Article article = modelMapper.map(oArticleDTO, Article.class);
+            articleRepository.save(article);
+
             return ResponseEntity.status(HttpStatus.OK).body(1);
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("An error occurred while modifying the article");
         }
     }
 
-    // 게시글 삭제
+    // 게시글 삭제(delete)
     public ResponseEntity<?> articleDelete(int articleNo) {
         articleRepository.deleteById(articleNo);
         Optional<Article> optArticle = articleRepository.findById(articleNo);
@@ -153,129 +227,4 @@ public class ArticleService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
     }
-/*
-    // 게시글 조회 (1개)
-    public ResponseEntity<?> articleView(int articleNo) {
-
-        Optional<Article> optArticle = articleRepository.findById(articleNo);
-        ArticleDTO articleDTO = optArticle
-                .map(article -> modelMapper.map(article, ArticleDTO.class))
-                .orElse(null);
-
-        return ResponseEntity.status(HttpStatus.OK).body(articleDTO);
-    }
-
-
-// 카테고리 검색(카테고리에 해당하는 Config 엔티티를 찾아 반환)
-    public ArticleCate findArticleCateNo(int cate) {
-        Integer cateId;
-
-        try {
-            cateId = cate;
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid category id: " + cate, e);
-        }
-        return articleCateRepository.findById(cateId).orElseThrow(() -> new NoSuchElementException("Category not found"));
-    }
-
-
-    // 해당 카테고리의 게시글 목록을 가져옴
-    public List<ArticleDTO> getArticlesByCate(int cate) {
-        List<Article> articles = articleRepository.findByArticleCateNo(cate);
-
-        // Entity를 DTO로 변환하여 반환한다.
-        return articles.stream()
-                .map(article -> {
-                    ArticleDTO dto = new ArticleDTO();
-                    dto.setArticleNo(article.getArticleNo());
-                    dto.setStfNo(article.getStfNo());
-                    dto.setArticleTitle(article.getArticleTitle());
-                    dto.setArticleCnt(article.getArticleCnt());
-                    dto.setArticleRdate(article.getArticleRdate());
-                    dto.setArticleHit(article.getArticleHit());
-                    dto.setArticleCateNo(article.getArticleCateNo());
-                    dto.setArticleThumb(article.getArticleThumb());
-                    dto.setWriter(article.getWriter());
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-
-
-
-    public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO pageRequestDTO){
-
-        log.info("selectArticles...1");
-        Pageable pageable = pageRequestDTO.getPageable("no");
-
-        log.info("selectArticles...2");
-        Page<Tuple> pageArticle = articleRepository.selectArticles(pageRequestDTO, pageable);
-
-        log.info("selectArticles...3 : " + pageArticle);
-        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
-                .map(tuple ->
-                        {
-                            Article article = tuple.get(0, Article.class);
-
-                            String writer = tuple.get(1, String.class);
-                            article.setWriter(writer);
-
-                            return modelMapper.map(article, ArticleDTO.class);
-                        }
-                )
-                .toList();
-
-        int total = (int) pageArticle.getTotalElements();
-
-        return ArticlePageResponseDTO.builder()
-                .articlePageRequestDTO(pageRequestDTO)
-                .dtoList(dtoList)
-                .total(total)
-                .build();
-    }
-
-    public ArticlePageResponseDTO searchArticles(ArticlePageRequestDTO pageRequestDTO){
-
-        Pageable pageable = pageRequestDTO.getPageable("no");
-        Page<Tuple> pageArticle = articleRepository.searchArticles(pageRequestDTO, pageable);
-
-        List<ArticleDTO> dtoList = pageArticle.getContent().stream()
-                .map(tuple ->
-                        {
-                            Article article = tuple.get(0, Article.class);
-
-                            String writer = tuple.get(1, String.class);
-                            article.setWriter(writer);
-
-                            return modelMapper.map(article, ArticleDTO.class);
-                        }
-                )
-                .toList();
-
-        int total = (int) pageArticle.getTotalElements();
-
-        return ArticlePageResponseDTO.builder()
-                .articlePageRequestDTO(pageRequestDTO)
-                .dtoList(dtoList)
-                .total(total)
-                .build();
-    }
-
-
-    // 게시글 조회 (1개)
-    public ResponseEntity<?> articleView(int articleNo) {
-
-        Optional<Article> optArticle = articleRepository.findById(articleNo);
-        ArticleDTO articleDTO = optArticle
-                .map(article -> modelMapper.map(article, ArticleDTO.class))
-                .orElse(null);
-
-        return ResponseEntity.status(HttpStatus.OK).body(articleDTO);
-    }
-
-
-
-
- */
 }

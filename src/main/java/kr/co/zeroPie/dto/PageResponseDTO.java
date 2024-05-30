@@ -18,6 +18,8 @@ public class PageResponseDTO<T> {
     private String type;
     private String keyword;
     private String csReply;
+    private String latest;
+    private String hit;
 
     private int pg;
     private int size;
@@ -38,6 +40,10 @@ public class PageResponseDTO<T> {
         this.csReply = pageRequestDTO.getCsReply();
         this.type = pageRequestDTO.getType();
         this.keyword = pageRequestDTO.getKeyword();
+        this.latest = pageRequestDTO.getLatest();
+        this.hit = pageRequestDTO.getHit();
+
+
         this.pg = pageRequestDTO.getPg();
         this.size = pageRequestDTO.getSize();
         this.total = total;
