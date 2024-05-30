@@ -10,7 +10,4 @@ import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Integer>, ArticleRepositoryCustom {
 
-    //public Page<Article> findByArticleCate(String cate, Pageable pageable);
-
-    List<Article> findByArticleCateNo(int cate);
 }
