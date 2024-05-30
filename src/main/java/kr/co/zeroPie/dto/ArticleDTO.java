@@ -23,6 +23,8 @@ public class ArticleDTO {
 
     private String articleCnt;//게시글 내용
 
+    private String articleStatus;//게시글 상태
+
     private LocalDate articleRdate;//게시글 작성일
 
 
@@ -41,6 +43,7 @@ public class ArticleDTO {
                 .stfNo(stfNo)
                 .articleTitle(articleTitle)
                 .articleCnt(articleCnt)
+                .articleStatus(articleStatus)
                 .articleRdate(articleRdate)
                 .articleHit(articleHit)
                 .articleCateNo(articleCateNo)
