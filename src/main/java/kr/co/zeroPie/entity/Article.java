@@ -31,9 +31,6 @@ public class Article {
 
     private String articleStatus;    // 게시글 상태
 
-    //@ColumnDefault("view")
-    //private String articleStatus;   // 게시글 상태
-
     @CreationTimestamp
     private LocalDate articleRdate;     //게시글 작성일
 

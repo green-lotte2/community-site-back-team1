@@ -3,8 +3,10 @@ package kr.co.zeroPie.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -31,7 +33,7 @@ public class StfDTO {
 
     private String stfEmail;
 
-    private String stfEnt;//입사일자
+    private LocalDate stfEnt;//입사일자
 
     private Date stfQuit;//퇴사일자
 

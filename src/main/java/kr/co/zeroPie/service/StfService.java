@@ -58,7 +58,6 @@ public class StfService {
 
         String encoded = passwordEncoder.encode(stfDTO.getStfPass());
         stfDTO.setStfPass(encoded);
-        stfDTO.setStfRole("USER");
 
         Stf stf = modelMapper.map(stfDTO, Stf.class);
 
@@ -186,6 +185,8 @@ public class StfService {
                 log.info("stf1 : " + stf1);
 
                 stf1.setPlanStatusNo(1);
+
+                stf1.setStfStatus("Active");
 
                 Stf savedUser = stfRepository.save(stf1);
 
@@ -353,6 +354,8 @@ public String findId(String email,String name){
 //비밀번호 변경
 public void updatePass(String id, String pass){
 
+    String encoded = passwordEncoder.encode(pass);
+
     log.info("비밀번호 변경 id가 들어와? : "+id);
     log.info("비밀번호 변경 pass가 들어와? : "+pass);
 
@@ -362,7 +365,7 @@ public void updatePass(String id, String pass){
 
     log.info("비밀번호 수정전에 한번 출력 : "+stf);
 
-    stf.setStfPass(pass);//비밀번호 변경
+    stf.setStfPass(encoded);//비밀번호 변경
 
     stfRepository.save(stf);
 

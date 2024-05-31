@@ -76,7 +76,10 @@ public class StfController {
             // 액세스 토큰 클라이언트 전송
             Map<String, Object> map = new HashMap<>();
             map.put("grantType", "Bearer");
-            map.put("username", user.getStfNo());
+            map.put("userId", user.getStfNo());
+            map.put("username", user.getStfName());
+            map.put("userImg", user.getStfImg());
+            map.put("userRole", user.getStfRole());
             map.put("accessToken", access);
             map.put("refreshToken", refresh);
 
