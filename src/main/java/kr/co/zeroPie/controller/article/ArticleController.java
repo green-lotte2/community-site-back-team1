@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.Map;
 
@@ -21,10 +23,10 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    // 게시판 게시판카테(articleCate) 출력
+    // 게시판 카테고리 출력
     @GetMapping("/article")
     public ResponseEntity<?> getArticleCate(@RequestParam("articleCateNo") int articleCateNo) {
-
+        log.info("현재 카테고리 : " + articleCateNo);
         return articleService.selectArticleCate(articleCateNo);
     }
 
@@ -33,20 +35,18 @@ public class ArticleController {
     public ResponseEntity<?> articleList(@RequestBody ArticlePageRequestDTO articlePageRequestDTO) {
 
         ArticlePageResponseDTO articlePageResponseDTO = new ArticlePageResponseDTO();
-        log.info("articlePageResponseDTO"+ articlePageRequestDTO.toString());
+        log.info("list 출력");
 
         if (articlePageRequestDTO.getType() == null) {
-
             // 일반 글 목록 조회
             articlePageResponseDTO = articleService.selectArticles(articlePageRequestDTO);
-            log.info("일반글");
-        } else {
+            log.info("일반글 조회 : " + articlePageResponseDTO);
 
+        } else {
             // 검색 글 목록 조회
             articlePageResponseDTO = articleService.searchArticles(articlePageRequestDTO);
-            log.info("검색글");
+            log.info("검색글 조회 : " + articlePageResponseDTO);
         }
-        //log.info("articlePageResponseDTO : " + articlePageResponseDTO);
         return ResponseEntity.status(HttpStatus.OK).body(articlePageResponseDTO);
     }
 
@@ -55,40 +55,44 @@ public class ArticleController {
     public ResponseEntity<?> articleCard(@RequestBody ArticlePageRequestDTO articlePageRequestDTO) {
 
         ArticlePageResponseDTO articlePageResponseDTO = new ArticlePageResponseDTO();
-        log.info("articlePageResponseDTO"+ articlePageRequestDTO.toString());
+        log.info("card 출력");
 
         if (articlePageRequestDTO.getType() == null) {
-
             // 일반 글 목록 조회
             articlePageResponseDTO = articleService.selectArticles(articlePageRequestDTO);
-            log.info("일반글");
-        } else {
+            log.info("일반글 조회 : " + articlePageResponseDTO);
 
+        } else {
             // 검색 글 목록 조회
             articlePageResponseDTO = articleService.searchArticles(articlePageRequestDTO);
-            log.info("검색글");
+            log.info("검색글 조회 : " + articlePageResponseDTO);
         }
-        //log.info("articlePageResponseDTO : " + articlePageResponseDTO);
         return ResponseEntity.status(HttpStatus.OK).body(articlePageResponseDTO);
     }
 
-    // 게시판 글쓰기(폼)
+    // 게시판 글쓰기 Form
     @GetMapping("/article/write")
     public ResponseEntity<?> articleWriteForm(@RequestParam("articleCateNo") String articleCateNo) {
-
+        log.info("글쓰기");
         return ResponseEntity.status(HttpStatus.OK).body("글쓰기 폼으로 이동");
     }
 
-    // 게시판 글쓰기(기능)
+    // 게시판 글쓰기 Function
     @PostMapping("/article/write")
-    public ResponseEntity<?> articleWrite(@RequestBody ArticleDTO articleDTO) {
-        log.info("글쓰기 확인용 로그(들어오나?) : " + articleDTO);      // 로그 들어옴
-        return articleService.articleWrite(articleDTO);
+    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+
+        log.info("articleDTO : " + articleDTO);
+
+
+        log.info("글쓰기 완료");
+        //return articleService.articleWrite(articleDTO);
+        return null;
     }
 
     // 게시판 글보기
     @GetMapping("/article/view")
     public ResponseEntity<?> articleView(@RequestParam("articleNo") int articleNo) {
+        log.info("글보기");
 
         // 조회수 증가 로직 추가
         articleService.updateHit(articleNo);
@@ -103,8 +107,7 @@ public class ArticleController {
     // 게시판 글수정(폼)
     @GetMapping("/article/modify")
     public ResponseEntity<?> articleModifyForm(@RequestParam("articleNo") int articleNo){
-        log.info("수정 로그");
-        log.info("수정할 게시글 번호는 : " + articleNo);
+        log.info("글수정");
 
         return articleService.articleView(articleNo);
     }
@@ -114,7 +117,7 @@ public class ArticleController {
     public ResponseEntity<?> articleModify(@RequestBody ArticleDTO articleDTO){
         log.info(String.valueOf(articleDTO.getArticleNo()));
 
-        log.info("수정기능 로그 들어옴? : " + articleDTO);
+        log.info("글수정 완료");
 
         return articleService.articleModify(articleDTO);
     }
@@ -122,10 +125,9 @@ public class ArticleController {
     // 게시판 글삭제
     @PostMapping("/article/delete")
     public ResponseEntity<?> articleDelete(@RequestBody Map<String, Integer> request) {
-        log.info("삭제 로그");
 
         int articleNo = request.get("articleNo");
-        log.info("삭제할 번호, 삭제할 곳의 카테고리 : " + request);
+        log.info("글 삭제 완료");
 
         return articleService.articleDelete(articleNo);
     }
