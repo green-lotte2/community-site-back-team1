@@ -187,6 +187,8 @@ public class StfService {
 
                 stf1.setPlanStatusNo(1);
 
+                stf1.setStfStatus("Active");
+
                 Stf savedUser = stfRepository.save(stf1);
 
                 log.info("save 이후 : " + savedUser);
@@ -353,6 +355,8 @@ public String findId(String email,String name){
 //비밀번호 변경
 public void updatePass(String id, String pass){
 
+    String encoded = passwordEncoder.encode(pass);
+
     log.info("비밀번호 변경 id가 들어와? : "+id);
     log.info("비밀번호 변경 pass가 들어와? : "+pass);
 
@@ -362,7 +366,7 @@ public void updatePass(String id, String pass){
 
     log.info("비밀번호 수정전에 한번 출력 : "+stf);
 
-    stf.setStfPass(pass);//비밀번호 변경
+    stf.setStfPass(encoded);//비밀번호 변경
 
     stfRepository.save(stf);
 
