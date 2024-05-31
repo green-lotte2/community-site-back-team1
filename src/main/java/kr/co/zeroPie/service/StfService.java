@@ -305,7 +305,7 @@ public class StfService {
 
         log.info("savedCode={}", savedCode);
 
-        String title = "lotteShop 인증코드 입니다.";
+        String title = "zeroPie 인증코드 입니다.";
         String content = "<h1>인증코드는 " + code + "입니다.<h1>";
 
         try {
