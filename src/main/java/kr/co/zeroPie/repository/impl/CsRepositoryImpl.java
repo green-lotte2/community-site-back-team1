@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
             log.info("여기는 시작일과 종료일이 있을 때 들어오는곳이야");
             LocalDate startDate = pageRequestDTO.getStartDate();
             LocalDate endDate = pageRequestDTO.getEndDate().plusDays(1); // 종료일은 포함되어야 하므로 하루를 더합니다.
-            builder.and(qcs.csRdate.between(startDate, endDate));
+            builder.and(qcs.csRdate.between(startDate, endDate));//DateTime은 between을 못 씀
         }
 
         // 카테고리 검색 조건 추가
@@ -111,6 +112,14 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
                     builder.and(qcs.csTitle.containsIgnoreCase(keyword));
                     break;
             }
+        }
+
+        if(pageRequestDTO.getLatest().isEmpty() && pageRequestDTO.getHit().isEmpty() ){
+
+            log.info("처음에는 여기에 들어와야해");
+
+            orderSpecifiers.add(qcs.csRdate.desc());
+
         }
 
         //최신순

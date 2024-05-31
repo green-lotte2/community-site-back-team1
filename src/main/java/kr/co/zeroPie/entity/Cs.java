@@ -30,7 +30,7 @@ public class Cs {
     private String csContent;//고객센터 게시글 내용
 
     @CreationTimestamp
-    private LocalDate csRdate;
+    private LocalDate csRdate;//DateTime으로 수정하기
 
     private int csHit;//조회수
 
