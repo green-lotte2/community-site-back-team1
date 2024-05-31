@@ -58,7 +58,6 @@ public class StfService {
 
         String encoded = passwordEncoder.encode(stfDTO.getStfPass());
         stfDTO.setStfPass(encoded);
-        stfDTO.setStfRole("USER");
 
         Stf stf = modelMapper.map(stfDTO, Stf.class);
 
