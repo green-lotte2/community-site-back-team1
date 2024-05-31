@@ -77,7 +77,7 @@ public class CsController {
 
         csService.csRegister(csDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(csDTO);//상태.데이터(왼쪽 순으로)
+        return ResponseEntity.status(HttpStatus.OK).body(1);//상태.데이터(왼쪽 순으로)
     }
 
     //보기
