@@ -45,9 +45,9 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
                 .orderBy(qArticle.articleNo.desc())
                 .fetchResults();
 
-        log.info("results : " + results.getResults());
+        //log.info("results : " + results.getResults());
         List<Article> content = results.getResults();
-        log.info("content : " + content);
+        //log.info("content : " + content);
         long total = results.getTotal();
 
         // 페이징 처리를 위해 page 객체 리턴

@@ -5,5 +5,5 @@ import kr.co.zeroPie.repository.custom.ArticleRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArticleRepository extends JpaRepository<Article, Integer>, ArticleRepositoryCustom {
-
+    int countByArticleCateNo(int articleCateNo);
 }

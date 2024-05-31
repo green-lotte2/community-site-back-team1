@@ -5,6 +5,7 @@ import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
 import kr.co.zeroPie.entity.Stf;
 import kr.co.zeroPie.repository.ArticleCateRepository;
+import kr.co.zeroPie.repository.ArticleRepository;
 import kr.co.zeroPie.repository.StfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class AdminArticleService {
 
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
+    private final ArticleRepository articleRepository;
 
     // 게시물 카테고리 추가
     public ResponseEntity<?> insertArticleCate(ArticleCateDTO articleCateDTO) {
@@ -46,8 +48,22 @@ public class AdminArticleService {
     // 게시물 카테고리 조회 
     public ResponseEntity<?> selectArticleCates() {
         List<ArticleCate> articleCates = (List<ArticleCate>) articleCateRepository.findAll();
-       log.info(articleCates.toString());
-       return new ResponseEntity<>(articleCates, HttpStatus.OK);
+        List<ArticleCateDTO> articleCateDTOList = new ArrayList<>();
+        for(ArticleCate articleCate : articleCates) {
+            int articleCount = articleRepository.countByArticleCateNo(articleCate.getArticleCateNo());
+            ArticleCateDTO articleCateDTO = ArticleCateDTO.builder()
+                    .articleCateNo(articleCate.getArticleCateNo())
+                    .articleCateName(articleCate.getArticleCateName())
+                    .articleCateStatus(articleCate.getArticleCateStatus())
+                    .articleCateVRole(articleCate.getArticleCateVRole())
+                    .articleCateWRole(articleCate.getArticleCateWRole())
+                    .articleCateCoRole(articleCate.getArticleCateCoRole())
+                    .articleCount(articleCount)
+                    .build();
+            articleCateDTOList.add(articleCateDTO);
+        }
+       log.info(articleCateDTOList.toString());
+       return new ResponseEntity<>(articleCateDTOList, HttpStatus.OK);
     }
 
     // 게시물 카테고리 삭제
