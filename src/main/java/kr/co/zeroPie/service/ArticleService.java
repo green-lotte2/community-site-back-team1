@@ -96,8 +96,10 @@ public class ArticleService {
         Article article = modelMapper.map(articleDTO, Article.class);
         log.info("서비스 들어오냐? : " + article); // 여기까진 로그 찍힘
 
+
         // articleCnt에서 이미지 추출하여 articleThumb에 저장
         extractAndSaveArticleThumb(article);
+
 
         Article savedArticle = articleRepository.save(article);
 
@@ -126,6 +128,8 @@ public class ArticleService {
     }
      */
 
+
+
     // articleCnt에서 이미지 추출하여 articleThumb에 저장하는 함수
     private void extractAndSaveArticleThumb(Article article) {
         String articleCnt = article.getArticleCnt();
@@ -143,6 +147,7 @@ public class ArticleService {
         }
         return imageUrl;
     }
+
 
     // 게시판 글보기(view)
     public ArticleDTO findById(int articleNo) {
