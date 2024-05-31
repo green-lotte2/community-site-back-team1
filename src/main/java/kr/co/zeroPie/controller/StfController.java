@@ -79,6 +79,7 @@ public class StfController {
             map.put("userId", user.getStfNo());
             map.put("username", user.getStfName());
             map.put("userImg", user.getStfImg());
+            map.put("userRole", user.getStfRole());
             map.put("accessToken", access);
             map.put("refreshToken", refresh);
 
