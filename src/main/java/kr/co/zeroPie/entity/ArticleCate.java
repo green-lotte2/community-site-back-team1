@@ -26,4 +26,6 @@ public class ArticleCate {
     private String articleCateWRole; // 카테고리 쓰기 권한
 
     private String articleCateCoRole; // 카테고리 댓글 권한
+
+
 }

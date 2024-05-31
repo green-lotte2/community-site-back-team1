@@ -20,4 +20,6 @@ public class ArticleCateDTO {
     private String articleCateWRole; // 카테고리 쓰기 권한
 
     private String articleCateCoRole; // 카테고리 댓글 권한
+
+    private int articleCount; // 카테고리 내 게시글 갯수
 }

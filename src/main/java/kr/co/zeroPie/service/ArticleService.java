@@ -56,7 +56,7 @@ public class ArticleService {
             articleDTOList.add(modelMapper.map(each, ArticleDTO.class));
         }
 
-        log.info("selectArticles...4 : " + articleDTOList);
+        //log.info("selectArticles...4 : " + articleDTOList);
 
         int total = (int) pageArticle.getTotalElements();
 
