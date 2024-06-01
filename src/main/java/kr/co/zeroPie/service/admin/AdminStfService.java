@@ -1,5 +1,6 @@
 package kr.co.zeroPie.service.admin;
 
+import com.querydsl.core.Tuple;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.dto.PageResponseDTO;
 import kr.co.zeroPie.dto.StfDTO;
@@ -19,9 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,7 +33,7 @@ public class AdminStfService {
     private final DptRepository dptRepository;
     private final RnkRepository rnkRepository;
 
-    // 전체 유저 조회
+    // 전체 유저 조회(검색기능)
     public ResponseEntity<?> selectUserAll(@RequestBody PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable("stfNo");
         /*
@@ -63,6 +62,42 @@ public class AdminStfService {
                 .total(total)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(pageResponseDTO);
+    }
+
+    public ResponseEntity<?> userList(){
+        List<Stf> stfList = stfRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(stfList);
+    }
+
+    // 부서 및 멤버 조회
+    public ResponseEntity<?> selectStfAndDptList(){
+        List<Dpt> dptList = dptRepository.findAll();
+        List<StfDTO> stfList = stfRepository.stfRank();
+        log.info(stfList.toString());
+/*
+        List<Map<String, Object>> formattedDptList = dptList.stream().map(dpt -> {
+            Map<String, Object> dptInfo = new HashMap<>();
+            dptInfo.put("dptNo", dpt.getDptNo());
+            dptInfo.put("dptName", dpt.getDptName());
+
+            List<Map<String, Object>> members = stfList.stream()
+                    .filter(stf -> stf.getDptNo()==(dpt.getDptNo()))
+                    .map(stf -> {
+                        Map<String, Object> memberInfo = new HashMap<>();
+                        memberInfo.put("stfName", stf.getStfName());
+                        memberInfo.put("rankNo", stf.getRnkNo());
+                        return memberInfo;
+                    }).collect(Collectors.toList());
+
+            dptInfo.put("member", members);
+            return dptInfo;
+        }).collect(Collectors.toList());
+
+        log.info("!!!!!!!!!!!!"+formattedDptList.toString());
+        return ResponseEntity.status(HttpStatus.OK).body(formattedDptList);
+
+ */
+        return ResponseEntity.status(HttpStatus.OK).body(0);
     }
 
     // 부서 조회

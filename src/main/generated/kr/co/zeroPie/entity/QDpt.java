@@ -19,7 +19,7 @@ public class QDpt extends EntityPathBase<Dpt> {
 
     public static final QDpt dpt = new QDpt("dpt");
 
-    public final StringPath dptCoda = createString("dptCoda");
+    public final StringPath dptCode = createString("dptCode");
 
     public final StringPath dptName = createString("dptName");
 

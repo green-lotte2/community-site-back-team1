@@ -5,6 +5,8 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.PageRequestDTO;
+import kr.co.zeroPie.dto.StfDTO;
+import kr.co.zeroPie.entity.QRnk;
 import kr.co.zeroPie.entity.QStf;
 import kr.co.zeroPie.entity.Stf;
 import kr.co.zeroPie.repository.custom.StfRepositoryCustom;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Repository
@@ -29,6 +32,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final QStf qStf = QStf.stf;
+    private final QRnk qRnk = QRnk.rnk;
 
     public Page<Stf> searchUserTypeAndKeyword(PageRequestDTO pageRequestDTO, Pageable pageable){
 
@@ -85,6 +89,23 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
             }
         }
         return null;
+    }
+
+    public List<StfDTO> stfRank() {
+        QueryResults<Tuple> results = jpaQueryFactory
+                .select(qStf, qRnk)
+                .from(qStf)
+                .join(qRnk).on(qStf.rnkNo.eq(qRnk.rnkNo))
+                .fetchResults();
+
+        List<Tuple> resultList = results.getResults();
+
+        return resultList.stream().map(tuple -> {
+            StfDTO stfDTO = new StfDTO();
+            stfDTO.setStfName(tuple.get(qStf.stfName));
+            stfDTO.setStrRnkNo(tuple.get(qRnk.rnkName));
+            return stfDTO;
+        }).collect(Collectors.toList());
     }
 
 }
