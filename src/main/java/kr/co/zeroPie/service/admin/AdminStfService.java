@@ -72,23 +72,44 @@ public class AdminStfService {
     // 부서 및 멤버 조회
     public ResponseEntity<?> selectStfAndDptList(){
         List<Dpt> dptList = dptRepository.findAll();
-        List<StfDTO> stfList = stfRepository.stfRank();
-        log.info(stfList.toString());
-/*
+        List<Tuple> stfTuple = stfRepository.stfRank();
+        log.info(stfTuple.toString());
+
+        List<StfDTO> stfDTOList = new ArrayList<>();
+        for (Tuple tuple : stfTuple) {
+            Stf stf = tuple.get(0, Stf.class);
+            Rnk rnk = tuple.get(1, Rnk.class);
+
+            StfDTO stfDTO = new StfDTO();
+            if (stf!=null){
+                stfDTO.setStfNo(stf.getStfNo());
+                stfDTO.setDptNo(stf.getDptNo());
+                stfDTO.setStfName(stf.getStfName());
+                stfDTO.setStfRole(stf.getStfRole());
+            }
+            if (rnk!=null){
+                stfDTO.setStrRnkNo(rnk.getRnkName());
+            }
+
+            stfDTOList.add(stfDTO);
+        }
+        log.info(stfDTOList.toString());
+
         List<Map<String, Object>> formattedDptList = dptList.stream().map(dpt -> {
             Map<String, Object> dptInfo = new HashMap<>();
             dptInfo.put("dptNo", dpt.getDptNo());
             dptInfo.put("dptName", dpt.getDptName());
 
-            List<Map<String, Object>> members = stfList.stream()
-                    .filter(stf -> stf.getDptNo()==(dpt.getDptNo()))
-                    .map(stf -> {
+            List<Map<String, Object>> members = stfDTOList.stream()
+                    .filter(stfDTO -> stfDTO.getDptNo()==(dpt.getDptNo()))
+                    .map(stfDTO -> {
                         Map<String, Object> memberInfo = new HashMap<>();
-                        memberInfo.put("stfName", stf.getStfName());
-                        memberInfo.put("rankNo", stf.getRnkNo());
+                        memberInfo.put("stfName", stfDTO.getStfName());
+                        memberInfo.put("rankNo", stfDTO.getStrRnkNo());
+                        memberInfo.put("stfNo", stfDTO.getStfNo());
                         return memberInfo;
                     }).collect(Collectors.toList());
-
+            log.info(members.toString());
             dptInfo.put("member", members);
             return dptInfo;
         }).collect(Collectors.toList());
@@ -96,8 +117,6 @@ public class AdminStfService {
         log.info("!!!!!!!!!!!!"+formattedDptList.toString());
         return ResponseEntity.status(HttpStatus.OK).body(formattedDptList);
 
- */
-        return ResponseEntity.status(HttpStatus.OK).body(0);
     }
 
     // 부서 조회
@@ -117,8 +136,28 @@ public class AdminStfService {
 
     // 유저 디테일 조회
     public ResponseEntity<?> selectUser(String stfNo) {
-      Optional<Stf> stf = stfRepository.findById(stfNo);
-      return ResponseEntity.ok().body(stf);
+      Tuple stfTuple = stfRepository.stfInfo(stfNo);
+        Stf stf = stfTuple.get(0, Stf.class);
+        Rnk rnk = stfTuple.get(1, Rnk.class);
+        Dpt dpt = stfTuple.get(2, Dpt.class);
+
+        StfDTO stfDTO = new StfDTO();
+        if (stf !=null){
+            stfDTO.setStfNo(stf.getStfNo());
+            stfDTO.setStfName(stf.getStfName());
+            stfDTO.setStfImg(stf.getStfImg());
+            stfDTO.setStfPh(stf.getStfPh());
+            stfDTO.setStfEmail(stf.getStfEmail());
+        }
+        if (rnk !=null){
+            stfDTO.setStrRnkNo(rnk.getRnkName());
+        }
+        if (dpt !=null){
+            stfDTO.setStrDptName(dpt.getDptName());
+        }
+
+      log.info(String.valueOf(stfDTO));
+      return ResponseEntity.ok().body(stfDTO);
     }
 
 

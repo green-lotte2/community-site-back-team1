@@ -57,7 +57,8 @@ public class AdminStfController {
 
     // 관리자 - 회원 관리 - 회원 자세히 조회
     @GetMapping("/admin/user/detail")
-    public ResponseEntity<?> userDatil(String stfNo){
+    public ResponseEntity<?> userDetail(@RequestParam("stfNo") String stfNo){
+        log.info("stfNo : "+ stfNo);
         return adminStfService.selectUser(stfNo);
     }
 
