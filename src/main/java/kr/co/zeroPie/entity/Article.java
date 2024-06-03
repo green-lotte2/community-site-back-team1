@@ -2,12 +2,16 @@ package kr.co.zeroPie.entity;
 
 import jakarta.persistence.*;
 import kr.co.zeroPie.dto.ArticleDTO;
+import kr.co.zeroPie.dto.FileDTO;
+import kr.co.zeroPie.dto.StfDTO;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,6 +38,7 @@ public class Article {
     @CreationTimestamp
     private LocalDate articleRdate;     //게시글 작성일
 
+    @ColumnDefault("0")
     private int articleHit;             //게시글 조회수
 
     private int articleCateNo;          //카테고리 번호(외래키)
@@ -41,6 +46,9 @@ public class Article {
     private String writer;              //게시글 작성자
 
     private String articleThumb;        //게시글 썸네일
+
+    @Builder.Default
+    private int file = 0;
 
     public ArticleDTO toDTO(){
         return ArticleDTO.builder()
@@ -53,6 +61,7 @@ public class Article {
                 .articleHit(articleHit)
                 .articleCateNo(articleCateNo)
                 .writer(writer)
+                //.file(file)
                 .articleThumb(articleThumb)
                 .build();
     }

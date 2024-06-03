@@ -1,8 +1,10 @@
 package kr.co.zeroPie.service;
 
+import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
+import kr.co.zeroPie.dto.FileDTO;
 import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
 import kr.co.zeroPie.repository.ArticleCateRepository;
@@ -10,12 +12,24 @@ import kr.co.zeroPie.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Slf4j
@@ -26,6 +40,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
+    private final FileService fileService;
 
     // 게시판 카테고리 표시
     public ResponseEntity<?> selectArticleCate(int articleCateNo){
@@ -53,8 +68,6 @@ public class ArticleService {
         for (Article each : articleList) {
             articleDTOList.add(modelMapper.map(each, ArticleDTO.class));
         }
-
-        //log.info("selectArticles...4 : " + articleDTOList);
 
         int total = (int) pageArticle.getTotalElements();
 
@@ -89,66 +102,24 @@ public class ArticleService {
     }
 
     // 게시글 작성(write)
+
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
         articleDTO.setArticleStatus("view");
+
         Article article = modelMapper.map(articleDTO, Article.class);
         log.info("서비스 들어오냐? : " + article); // 여기까진 로그 찍힘
-
-
-        /*
-        // articleCnt에서 이미지 추출하여 articleThumb에 저장
-        extractAndSaveArticleThumb(article);
-*/
 
         Article savedArticle = articleRepository.save(article);
 
         log.info("레파지토리 갔다왔냐? : " + savedArticle); // 로그 찍힘
+
         if (savedArticle.getArticleCnt() != null) {
             return ResponseEntity.status(HttpStatus.OK).body(1);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
+
     }
-
-    /* 기존
-    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
-        articleDTO.setArticleStatus("view");
-        Article article = modelMapper.map(articleDTO, Article.class);
-        log.info("서비스 들어오냐? : " + article);             // 여기까진 로그 찍힘
-
-        Article savedArticle = articleRepository.save(article);
-
-        log.info("레파지토리 갔다왔냐? : " + savedArticle);        // 로그인 찍힘
-        if (savedArticle.getArticleCnt() != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(1);
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
-        }
-    }
-     */
-
-
-/*
-    // articleCnt에서 이미지 추출하여 articleThumb에 저장하는 함수
-    private void extractAndSaveArticleThumb(Article article) {
-        String articleCnt = article.getArticleCnt();
-        String articleThumb = extractFirstImage(articleCnt);
-        article.setArticleThumb(articleThumb);
-    }
-
-    // articleCnt에서 첫 번째 이미지를 추출하는 함수
-    private String extractFirstImage(String articleCnt) {
-        String imageUrl = null;
-        Pattern pattern = Pattern.compile("<img\\s+[^>]*?src\\s*=\\s*(['\"])(.*?)\\1");
-        Matcher matcher = pattern.matcher(articleCnt);
-        if (matcher.find()) {
-            imageUrl = matcher.group(2);
-        }
-        return imageUrl;
-    }
-
- */
-
 
     // 게시판 글보기(view)
     public ArticleDTO findById(int articleNo) {
