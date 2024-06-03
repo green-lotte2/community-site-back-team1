@@ -40,4 +40,7 @@ public class Cs {
 
     private String stfName;
 
+    private String secret;//전체글인지, 비밀글인지
+
+
 }

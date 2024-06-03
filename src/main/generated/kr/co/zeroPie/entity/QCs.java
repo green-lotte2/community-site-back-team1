@@ -33,6 +33,8 @@ public class QCs extends EntityPathBase<Cs> {
 
     public final StringPath csTitle = createString("csTitle");
 
+    public final StringPath secret = createString("secret");
+
     public final StringPath stfName = createString("stfName");
 
     public final StringPath stfNo = createString("stfNo");

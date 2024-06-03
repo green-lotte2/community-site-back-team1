@@ -101,7 +101,7 @@ public class CsService {
         Optional<?> optionalCs = csRepository.findById(csNo);
 
         if (optionalCs.isPresent()) {
-            Cs cs = modelMapper.map(optionalCs,Cs.class);//게시글번호에 해당하는 게시글 데이터
+            CsDTO cs = modelMapper.map(optionalCs.get(),CsDTO.class);//게시글번호에 해당하는 게시글 데이터
 
             return ResponseEntity.status(HttpStatus.OK).body(cs);
         }else{
