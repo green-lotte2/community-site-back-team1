@@ -84,9 +84,13 @@ public class CsController {
     @GetMapping("/cs/view")
     public ResponseEntity<?> csView(@RequestParam("csNo") int csNo) {
 
-        log.info("csNo : " + csNo);
+        log.info("보기위해 값 들고오기 - csNo : " + csNo);
 
         return csService.csView(csNo);
+
+        //log.info("이거 왜 출력이 안되니? : "+csView.getBody().toString());
+
+        //return ResponseEntity.status(HttpStatus.OK).body(csView.getBody());
     }
 
 
