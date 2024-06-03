@@ -36,20 +36,9 @@ public class AdminStfService {
     // 전체 유저 조회(검색기능)
     public ResponseEntity<?> selectUserAll(@RequestBody PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable("stfNo");
-        /*
-        Page<Stf> stfs = stfRepository.findAll(pageable);
-        List<Stf> stfList = stfs.getContent();
-        int total = (int) stfs.getTotalElements();
 
+        Page<StfDTO> qslStfList = stfRepository.searchUserTypeAndKeyword(pageRequestDTO, pageable);
 
-        List<StfDTO> stfDTOList = new ArrayList<>();
-        for (Stf stf : stfList) {
-            stfDTOList.add(modelMapper.map(stf, StfDTO.class));
-        }
-        log.info(stfDTOList.toString());
-        */
-
-        Page<Stf> qslStfList = stfRepository.searchUserTypeAndKeyword(pageRequestDTO, pageable);
         List<StfDTO> stfDTOList = qslStfList.getContent().stream()
                 .map(stf -> modelMapper.map(stf, StfDTO.class))
                 .toList();
@@ -99,6 +88,7 @@ public class AdminStfService {
             Map<String, Object> dptInfo = new HashMap<>();
             dptInfo.put("dptNo", dpt.getDptNo());
             dptInfo.put("dptName", dpt.getDptName());
+            dptInfo.put("dptIcon", dpt.getIconName());
 
             List<Map<String, Object>> members = stfDTOList.stream()
                     .filter(stfDTO -> stfDTO.getDptNo()==(dpt.getDptNo()))

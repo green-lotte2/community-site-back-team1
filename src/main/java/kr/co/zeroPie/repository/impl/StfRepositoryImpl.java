@@ -5,10 +5,8 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.PageRequestDTO;
-import kr.co.zeroPie.entity.QDpt;
-import kr.co.zeroPie.entity.QRnk;
-import kr.co.zeroPie.entity.QStf;
-import kr.co.zeroPie.entity.Stf;
+import kr.co.zeroPie.dto.StfDTO;
+import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.custom.StfRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,10 +32,13 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
     private final QDpt qDpt = QDpt.dpt;
 
     // 사원 검색
-    public Page<Stf> searchUserTypeAndKeyword(PageRequestDTO pageRequestDTO, Pageable pageable){
+    public Page<StfDTO> searchUserTypeAndKeyword(PageRequestDTO pageRequestDTO, Pageable pageable){
 
-        QueryResults<Stf> results = jpaQueryFactory
-                .selectFrom(qStf)
+        QueryResults<Tuple> results = jpaQueryFactory
+                .select(qStf, qRnk,qDpt)
+                .from(qStf)
+                .join(qRnk).on(qStf.rnkNo.eq(qRnk.rnkNo))
+                .join(qDpt).on(qStf.dptNo.eq(qDpt.dptNo))
                 .where(
                     stfStatusEq(pageRequestDTO.getStfStatus()),
                         rnkNoEq(pageRequestDTO.getRnkNo()),
@@ -49,9 +51,34 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 .orderBy(qStf.stfEnt.desc())
                 .fetchResults();
 
-        List<Stf> content = results.getResults();
+        List<Tuple> content = results.getResults();
+        List<StfDTO> stfDTOList = new ArrayList<>();
+
+        for (Tuple tuple : content) {
+            Stf stf = tuple.get(qStf);
+            Rnk rnk = tuple.get(qRnk);
+            Dpt dpt = tuple.get(qDpt);
+
+            StfDTO stfDTO = new StfDTO();
+            if (stf!=null){
+                stfDTO.setStfName(stf.getStfName());
+                stfDTO.setStfNo(stf.getStfNo());
+                stfDTO.setStfPh(stf.getStfPh());
+                stfDTO.setStfStatus(stf.getStfStatus());
+                stfDTO.setStfEnt(stf.getStfEnt());
+                stfDTO.setStfEmail(stf.getStfEmail());
+            }
+            if (rnk!=null){
+                stfDTO.setStrRnkNo(rnk.getRnkName());
+            }
+            if (dpt!=null){
+                stfDTO.setStrDptName(dpt.getDptName());
+            }
+
+            stfDTOList.add(stfDTO);
+        }
         long total = results.getTotal();
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(stfDTOList, pageable, total);
     }
 
     // 사원 상태
@@ -96,6 +123,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 .select(qStf, qRnk)
                 .from(qStf)
                 .join(qRnk).on(qStf.rnkNo.eq(qRnk.rnkNo))
+                .orderBy(qStf.rnkNo.desc())
                 .fetchResults();
 
         return results.getResults();
@@ -108,6 +136,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 .join(qRnk).on(qStf.rnkNo.eq(qRnk.rnkNo))
                 .join(qDpt).on(qStf.dptNo.eq(qDpt.dptNo))
                 .where(qStf.stfNo.eq(stfNo))
+                .orderBy(qStf.rnkNo.desc())
                 .fetchResults();
 
 
