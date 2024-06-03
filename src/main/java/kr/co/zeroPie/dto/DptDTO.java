@@ -14,5 +14,8 @@ public class DptDTO {
 
     private String dptName;//부서 이름
 
-    private String dptCoda;//부서 코드
+    private String dptCode;//부서 코드
+
+    private String iconName; //부서 아이콘
+
 }

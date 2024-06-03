@@ -35,7 +35,7 @@ public class ArticleDTO {
     private int articleCateNo;//카테고리 번호(외래키)
 
     //
-    private List<MultipartFile> file;
+    //private int file;
 
     // 추가된것
     private String writer;             //게시글 작성자
@@ -52,6 +52,7 @@ public class ArticleDTO {
                 .articleHit(articleHit)
                 .articleCateNo(articleCateNo)
                 .writer(writer)
+                //.file(file)
                 .articleThumb(articleThumb)
                 .build();
     }

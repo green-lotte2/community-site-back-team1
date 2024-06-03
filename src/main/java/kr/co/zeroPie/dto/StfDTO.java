@@ -58,7 +58,8 @@ public class StfDTO {
 
     private String strDptNo;//부서번호
 
-    private String strRnkNo;//직급 번호
+    private String strRnkNo;//직급 이름
+    private String strDptName;//부서 이름
 
 
 }

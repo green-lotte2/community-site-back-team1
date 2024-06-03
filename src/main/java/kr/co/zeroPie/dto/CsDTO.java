@@ -3,9 +3,11 @@ package kr.co.zeroPie.dto;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,4 +34,7 @@ public class CsDTO {
     private String stfNo;//사원번호
 
     private String stfName;//사원이름
+
+    private String secret;//전체글인지, 비밀글인지
+
 }

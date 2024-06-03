@@ -85,8 +85,8 @@ public class ArticleController {
 
 
         log.info("글쓰기 완료");
-        //return articleService.articleWrite(articleDTO);
-        return null;
+        return articleService.articleWrite(articleDTO);
+        //return null;
     }
 
     // 게시판 글보기

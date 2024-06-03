@@ -1,5 +1,6 @@
 package kr.co.zeroPie.service.admin;
 
+import com.querydsl.core.Tuple;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.dto.PageResponseDTO;
 import kr.co.zeroPie.dto.StfDTO;
@@ -19,9 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,23 +33,12 @@ public class AdminStfService {
     private final DptRepository dptRepository;
     private final RnkRepository rnkRepository;
 
-    // 전체 유저 조회
+    // 전체 유저 조회(검색기능)
     public ResponseEntity<?> selectUserAll(@RequestBody PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable("stfNo");
-        /*
-        Page<Stf> stfs = stfRepository.findAll(pageable);
-        List<Stf> stfList = stfs.getContent();
-        int total = (int) stfs.getTotalElements();
 
+        Page<StfDTO> qslStfList = stfRepository.searchUserTypeAndKeyword(pageRequestDTO, pageable);
 
-        List<StfDTO> stfDTOList = new ArrayList<>();
-        for (Stf stf : stfList) {
-            stfDTOList.add(modelMapper.map(stf, StfDTO.class));
-        }
-        log.info(stfDTOList.toString());
-        */
-
-        Page<Stf> qslStfList = stfRepository.searchUserTypeAndKeyword(pageRequestDTO, pageable);
         List<StfDTO> stfDTOList = qslStfList.getContent().stream()
                 .map(stf -> modelMapper.map(stf, StfDTO.class))
                 .toList();
@@ -63,6 +51,62 @@ public class AdminStfService {
                 .total(total)
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(pageResponseDTO);
+    }
+
+    public ResponseEntity<?> userList(){
+        List<Stf> stfList = stfRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(stfList);
+    }
+
+    // 부서 및 멤버 조회
+    public ResponseEntity<?> selectStfAndDptList(){
+        List<Dpt> dptList = dptRepository.findAll();
+        List<Tuple> stfTuple = stfRepository.stfRank();
+        log.info(stfTuple.toString());
+
+        List<StfDTO> stfDTOList = new ArrayList<>();
+        for (Tuple tuple : stfTuple) {
+            Stf stf = tuple.get(0, Stf.class);
+            Rnk rnk = tuple.get(1, Rnk.class);
+
+            StfDTO stfDTO = new StfDTO();
+            if (stf!=null){
+                stfDTO.setStfNo(stf.getStfNo());
+                stfDTO.setDptNo(stf.getDptNo());
+                stfDTO.setStfName(stf.getStfName());
+                stfDTO.setStfRole(stf.getStfRole());
+            }
+            if (rnk!=null){
+                stfDTO.setStrRnkNo(rnk.getRnkName());
+            }
+
+            stfDTOList.add(stfDTO);
+        }
+        log.info(stfDTOList.toString());
+
+        List<Map<String, Object>> formattedDptList = dptList.stream().map(dpt -> {
+            Map<String, Object> dptInfo = new HashMap<>();
+            dptInfo.put("dptNo", dpt.getDptNo());
+            dptInfo.put("dptName", dpt.getDptName());
+            dptInfo.put("dptIcon", dpt.getIconName());
+
+            List<Map<String, Object>> members = stfDTOList.stream()
+                    .filter(stfDTO -> stfDTO.getDptNo()==(dpt.getDptNo()))
+                    .map(stfDTO -> {
+                        Map<String, Object> memberInfo = new HashMap<>();
+                        memberInfo.put("stfName", stfDTO.getStfName());
+                        memberInfo.put("rankNo", stfDTO.getStrRnkNo());
+                        memberInfo.put("stfNo", stfDTO.getStfNo());
+                        return memberInfo;
+                    }).collect(Collectors.toList());
+            log.info(members.toString());
+            dptInfo.put("member", members);
+            return dptInfo;
+        }).collect(Collectors.toList());
+
+        log.info("!!!!!!!!!!!!"+formattedDptList.toString());
+        return ResponseEntity.status(HttpStatus.OK).body(formattedDptList);
+
     }
 
     // 부서 조회
@@ -82,8 +126,28 @@ public class AdminStfService {
 
     // 유저 디테일 조회
     public ResponseEntity<?> selectUser(String stfNo) {
-      Optional<Stf> stf = stfRepository.findById(stfNo);
-      return ResponseEntity.ok().body(stf);
+      Tuple stfTuple = stfRepository.stfInfo(stfNo);
+        Stf stf = stfTuple.get(0, Stf.class);
+        Rnk rnk = stfTuple.get(1, Rnk.class);
+        Dpt dpt = stfTuple.get(2, Dpt.class);
+
+        StfDTO stfDTO = new StfDTO();
+        if (stf !=null){
+            stfDTO.setStfNo(stf.getStfNo());
+            stfDTO.setStfName(stf.getStfName());
+            stfDTO.setStfImg(stf.getStfImg());
+            stfDTO.setStfPh(stf.getStfPh());
+            stfDTO.setStfEmail(stf.getStfEmail());
+        }
+        if (rnk !=null){
+            stfDTO.setStrRnkNo(rnk.getRnkName());
+        }
+        if (dpt !=null){
+            stfDTO.setStrDptName(dpt.getDptName());
+        }
+
+      log.info(String.valueOf(stfDTO));
+      return ResponseEntity.ok().body(stfDTO);
     }
 
 

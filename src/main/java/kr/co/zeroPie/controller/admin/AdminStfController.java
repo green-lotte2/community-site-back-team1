@@ -30,6 +30,18 @@ public class AdminStfController {
         return adminStfService.selectUserAll(pageRequestDTO);
     }
 
+    @GetMapping("/admin/user/dptAndStfList")
+    public ResponseEntity<?> dptAndStfList(){
+
+        return adminStfService.selectStfAndDptList();
+    }
+
+    @GetMapping("/admin/user/list")
+    public ResponseEntity<?> sftList(){
+
+        return adminStfService.userList();
+    }
+
     // 관리자 - 회원 관리 - 전체 부서 조회
     @GetMapping("/admin/user/dptList")
     public ResponseEntity<?> dptList(){
@@ -45,7 +57,8 @@ public class AdminStfController {
 
     // 관리자 - 회원 관리 - 회원 자세히 조회
     @GetMapping("/admin/user/detail")
-    public ResponseEntity<?> userDatil(String stfNo){
+    public ResponseEntity<?> userDetail(@RequestParam("stfNo") String stfNo){
+        log.info("stfNo : "+ stfNo);
         return adminStfService.selectUser(stfNo);
     }
 
