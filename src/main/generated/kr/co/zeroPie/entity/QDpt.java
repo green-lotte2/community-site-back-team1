@@ -25,6 +25,8 @@ public class QDpt extends EntityPathBase<Dpt> {
 
     public final NumberPath<Integer> dptNo = createNumber("dptNo", Integer.class);
 
+    public final StringPath iconName = createString("iconName");
+
     public QDpt(String variable) {
         super(Dpt.class, forVariable(variable));
     }
