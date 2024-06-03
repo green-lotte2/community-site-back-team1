@@ -2,7 +2,9 @@ package kr.co.zeroPie.entity;
 
 
 import jakarta.persistence.*;
+import kr.co.zeroPie.dto.FileDTO;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -25,10 +27,26 @@ public class File {
 
     private String fileSname;//변경된 이름
 
+    @ColumnDefault("0")
     private int fileDownload;//파일 다운로드 횟수
 
     private int articleNo;//게시글 번호
 
     @CreationTimestamp
     private LocalDateTime fileRdate;
+
+    // 파일 경로 저장 필드 추가
+    private String filePath;
+
+    public FileDTO toDTO(){
+        return FileDTO.builder()
+                .fileNo(fileNo)
+                .articleNo(articleNo)
+                .fileOname(fileOname)
+                .fileSname(fileSname)
+                .fileDownload(fileDownload)
+                .fileRdate(fileRdate)
+                .filePath(filePath)
+                .build();
+    }
 }
