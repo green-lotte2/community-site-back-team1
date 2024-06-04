@@ -34,8 +34,8 @@ public class ArticleDTO {
 
     private int articleCateNo;//카테고리 번호(외래키)
 
-    //
-    //private int file;
+     //private int file;
+     //private List<MultipartFile> files;
 
     // 추가된것
     private String writer;             //게시글 작성자

@@ -16,6 +16,7 @@ public class FileController {
 
     private final FileService fileService;
 
+
     /*
     @GetMapping("/file/download/{fileNo}")
     public ResponseEntity<?> fileDownload(@PathVariable("fileNo") int fileNo) {
@@ -28,6 +29,8 @@ public class FileController {
         log.info("fileDownloadCount : " + fileNo);
         return fileService.fileDownloadCount(fileNo);
     }
+
      */
+
 
 }
