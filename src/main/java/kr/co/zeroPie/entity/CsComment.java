@@ -25,10 +25,17 @@ public class CsComment {
     private String csComContent;//답변 내용
 
     @CreationTimestamp
-    private LocalDate csComRdate;
+    private LocalDateTime csComRdate;
     
     private int csNo;//고객센터 번호
     
     private String stfNo;//사원번호
+
+    @Transient
+    private String stfName;//사원 이름
+
+    @Transient
+    private String stfImg;//같이 띄울 이미지
+
 
 }

@@ -9,6 +9,7 @@ import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
 import kr.co.zeroPie.repository.ArticleCateRepository;
 import kr.co.zeroPie.repository.ArticleRepository;
+import kr.co.zeroPie.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -41,6 +42,7 @@ public class ArticleService {
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
     private final FileService fileService;
+    private final FileRepository fileRepository;
 
     // 게시판 카테고리 표시
     public ResponseEntity<?> selectArticleCate(int articleCateNo){
@@ -106,13 +108,26 @@ public class ArticleService {
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
         articleDTO.setArticleStatus("view");
 
+        // 파일 첨부 처리
+        //List<FileDTO> files = fileService.fileUpload(articleDTO);
+
+        // 파일 첨부 갯수 초기화
+        //articleDTO.setFile(files.size());
+
         Article article = modelMapper.map(articleDTO, Article.class);
-        log.info("서비스 들어오냐? : " + article); // 여기까진 로그 찍힘
-
         Article savedArticle = articleRepository.save(article);
+/*
+        for(FileDTO fileDTO : files){
 
-        log.info("레파지토리 갔다왔냐? : " + savedArticle); // 로그 찍힘
+            fileDTO.setArticleNo(savedArticle.getArticleNo());
 
+            File file = modelMapper.map(fileDTO, File.class);
+
+            kr.co.zeroPie.entity.File myFile = new kr.co.zeroPie.entity.File();
+            // 필요한 필드 설정
+            fileRepository.save(myFile);
+        }
+*/
         if (savedArticle.getArticleCnt() != null) {
             return ResponseEntity.status(HttpStatus.OK).body(1);
         } else {

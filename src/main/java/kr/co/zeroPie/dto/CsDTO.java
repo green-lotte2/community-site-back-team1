@@ -37,4 +37,5 @@ public class CsDTO {
 
     private String secret;//전체글인지, 비밀글인지
 
+
 }

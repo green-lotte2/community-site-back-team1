@@ -23,7 +23,7 @@ public class QCsComment extends EntityPathBase<CsComment> {
 
     public final NumberPath<Integer> csComNo = createNumber("csComNo", Integer.class);
 
-    public final DatePath<java.time.LocalDate> csComRdate = createDate("csComRdate", java.time.LocalDate.class);
+    public final DateTimePath<java.time.LocalDateTime> csComRdate = createDateTime("csComRdate", java.time.LocalDateTime.class);
 
     public final NumberPath<Integer> csNo = createNumber("csNo", Integer.class);
 
