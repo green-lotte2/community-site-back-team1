@@ -7,6 +7,7 @@ import kr.co.zeroPie.entity.CsComment;
 import kr.co.zeroPie.service.CsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -37,30 +39,13 @@ public class CsController {
 
         ResponseEntity<?> csList = null;
 
-/*
-        //검색 조건이 없음
-        if (pageRequestDTO.getType()==null && pageRequestDTO.getCsCate() == null && pageRequestDTO.getCsReply() == null && pageRequestDTO.getKeyword() == null && pageRequestDTO.getStartDate() == null && pageRequestDTO.getEndDate() == null) {
+        log.info("자 검색을 시작하러 가볼까?");
 
-            log.info("여기는 검색 조건이 없을 때 오는 곳");
+        log.info("이제 search쪽으로 와야제 ? pageRequestDTO: {}", pageRequestDTO);
 
-            csList = csService.list(pageRequestDTO);
+        csList = csService.search(pageRequestDTO);
 
-            log.info("자 뭐가 나왔는지 볼까? : " + csList);//출력 확인 완료
-
-            log.info("자 여기는 거의 끝나는 지점 - search");
-
-        }else{*/
-
-            log.info("자 검색을 시작하러 가볼까?");
-
-            log.info("이제 search쪽으로 와야제 ? pageRequestDTO: {}", pageRequestDTO);
-
-            csList = csService.search(pageRequestDTO);
-
-            log.info("자 여기는 거의 끝나는 지점 - search");
-
-       // }
-
+        log.info("자 여기는 거의 끝나는 지점 - search");
 
         log.info("여기는 컨트롤러에 있는 csList: {}", csList.getBody());
 
@@ -88,9 +73,6 @@ public class CsController {
 
         return csService.csView(csNo);
 
-        //log.info("이거 왜 출력이 안되니? : "+csView.getBody().toString());
-
-        //return ResponseEntity.status(HttpStatus.OK).body(csView.getBody());
     }
 
 
@@ -130,5 +112,22 @@ public class CsController {
         return csService.csAnswer(csCommentDTO);
     }
 
+    //댓글 불러오기
+    @GetMapping("/cs/answerList")
+    public ResponseEntity<?> csAnswerList(@RequestParam("csNo") int csNo) {
+
+        log.info("댓글 목록을 불러옵니다 - csNo : " + csNo);
+
+        return csService.csAnswerList(csNo);
+    }
+
+    //댓글 삭제
+    @GetMapping("/cs/answerDelete")
+    public ResponseEntity<?> answerDelete(@RequestParam("csComNo") int csComNo) {
+
+        log.info("댓글 목록을 불러옵니다 - csComNo : " + csComNo);
+
+        return csService.answerDelete(csComNo);//잘 삭제가 되면 1을 출력
+    }
 
 }
