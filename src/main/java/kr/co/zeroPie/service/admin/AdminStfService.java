@@ -116,7 +116,7 @@ public class AdminStfService {
         return ResponseEntity.status(HttpStatus.OK).body(dptList);
     }
 
-    // 부서 조회
+    // 직책 조회
     public ResponseEntity<?> selectRnkList(){
 
         List<Rnk> rnkList = rnkRepository.findAll();
