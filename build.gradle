@@ -69,6 +69,10 @@ dependencies {
 
     //레디스
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //채팅
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {

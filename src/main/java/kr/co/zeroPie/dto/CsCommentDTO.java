@@ -18,9 +18,13 @@ public class CsCommentDTO {
 
     private String csComContent;//답변 내용
 
-    private LocalDate csComRdate;
+    private LocalDateTime csComRdate;
 
     private int csNo;//고객센터 번호
 
     private String stfNo;//사원번호
+
+    private String stfImg;//같이 띄울 이미지
+
+    private String stfName;
 }

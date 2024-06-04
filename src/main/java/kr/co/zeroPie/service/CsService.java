@@ -3,10 +3,7 @@ package kr.co.zeroPie.service;
 
 import com.querydsl.core.Tuple;
 import jakarta.transaction.Transactional;
-import kr.co.zeroPie.dto.CsCommentDTO;
-import kr.co.zeroPie.dto.CsDTO;
-import kr.co.zeroPie.dto.PageRequestDTO;
-import kr.co.zeroPie.dto.PageResponseDTO;
+import kr.co.zeroPie.dto.*;
 import kr.co.zeroPie.entity.Cs;
 import kr.co.zeroPie.entity.CsComment;
 import kr.co.zeroPie.entity.Stf;
@@ -101,9 +98,18 @@ public class CsService {
         Optional<?> optionalCs = csRepository.findById(csNo);
 
         if (optionalCs.isPresent()) {
-            CsDTO cs = modelMapper.map(optionalCs.get(),CsDTO.class);//게시글번호에 해당하는 게시글 데이터
+            Cs cs = modelMapper.map(optionalCs.get(),Cs.class);//게시글번호에 해당하는 게시글 데이터
 
-            return ResponseEntity.status(HttpStatus.OK).body(cs);
+            int changeHit = cs.getCsHit();
+
+            cs.setCsHit(changeHit+1);//히트 수 +1해주기
+
+            csRepository.save(cs);
+
+            CsDTO csDTO = modelMapper.map(cs,CsDTO.class);
+
+
+            return ResponseEntity.status(HttpStatus.OK).body(csDTO);
         }else{
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
@@ -141,7 +147,7 @@ public class CsService {
 
         log.info("게시글 삭제 한 후 ");
 
-        return ResponseEntity.status(HttpStatus.OK).body(csNo);
+        return ResponseEntity.status(HttpStatus.OK).body(1);
     }
 
     public ResponseEntity<?> csAnswer(CsCommentDTO csCommentDTO){
@@ -156,9 +162,11 @@ public class CsService {
         Optional<?> optionalCs = csRepository.findById(csCommentDTO.getCsNo());
 
         if (optionalCs.isPresent()) {
+
             Cs cs = modelMapper.map(optionalCs, Cs.class);
 
-            cs.setCsReply(1);
+            int aws = cs.getCsReply();
+            cs.setCsReply(aws+1);//답변을 달때마다 카운트 하나씩 늘림
 
             csRepository.save(cs);
 
@@ -206,5 +214,57 @@ public class CsService {
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
+    }
+    
+    
+    //댓글 가져오기
+    public ResponseEntity<List<CsCommentDTO>> csAnswerList(int csNo){
+
+        log.info("csService - csAnswerList - csNo : " + csNo);
+        List<Tuple> csCommentList = csCommentRepository.findByCsNo(csNo);
+
+        List<CsCommentDTO> dtoList = csCommentList.stream()
+                .map(entity -> {
+                    CsComment csComment = entity.get(0,CsComment.class);
+                    CsCommentDTO dto = modelMapper.map(csComment, CsCommentDTO.class);
+                    dto.setStfName(entity.get(1,String.class));//name 값 가져오기
+                    dto.setStfImg(entity.get(2,String.class));//img값 가져오기
+                    return dto;
+                })
+                .toList();
+
+        log.info("뭐 찍히는지 보자"+dtoList);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(dtoList);
+        
+    }
+
+    //댓글 삭제
+    public ResponseEntity<?> answerDelete(int csComNo){
+
+        //댓글 삭제전에 csReply -1해주기
+        Optional<?> optCsComment= csCommentRepository.findById(csComNo);
+
+        Cs csComment =  modelMapper.map(optCsComment,Cs.class);
+
+        int csNo = csComment.getCsNo();//이걸로 csReply 찾기
+
+        Optional<?> findCs = csRepository.findById(csNo);
+
+        Cs cs = modelMapper.map(findCs,Cs.class);
+
+        int changeReply = cs.getCsReply();
+
+        cs.setCsReply(changeReply-1);
+
+        csRepository.save(cs);//reply-1하고 저장
+        
+        
+        //댓글을 삭제
+        csCommentRepository.deleteById(csComNo);
+
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(1);
     }
 }
