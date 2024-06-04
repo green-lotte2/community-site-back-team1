@@ -6,6 +6,7 @@ import kr.co.zeroPie.dto.FileDTO;
 import kr.co.zeroPie.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -50,6 +51,7 @@ public class FileService {
             if(!mf.isEmpty()) {
 
                 String fileOname = mf.getOriginalFilename();
+
                 String ext = fileOname.substring(fileOname.lastIndexOf("."));
                 String fileSname = UUID.randomUUID().toString() + ext;
 
@@ -71,10 +73,10 @@ public class FileService {
                 }
             }
         }
+
         // 저장한 파일 정보 리스트 반환
         return files;
     }
-
 
     @Transactional
     public ResponseEntity<?> fileDownload(int fno)  {
@@ -82,8 +84,11 @@ public class FileService {
         // 파일 조회
         kr.co.zeroPie.entity.File file = fileRepository.findById(fno).get();
 
-
         try {
+            if (fileUploadPath.startsWith("file:")) {
+                fileUploadPath =  fileUploadPath.substring("file:".length());
+            };
+
             Path path = Paths.get(fileUploadPath + file.getFileSname());
             String contentType = Files.probeContentType(path);
 
@@ -118,5 +123,43 @@ public class FileService {
 
         return ResponseEntity.ok().body(resultMap);
     }
-*/
+
+    // 여러파일삭제(게시글 삭제)
+    public void deleteFiles(int bno){
+
+        if (fileUploadPath.startsWith("file:")) {
+            fileUploadPath =  fileUploadPath.substring("file:".length());
+        };
+
+        String path = new File(fileUploadPath).getAbsolutePath();
+        List<kr.co.zeroPie.entity.File> files = fileRepository.findFilesByBno(bno);
+        for(kr.co.zeroPie.entity.File file : files){
+            String sfile = file.getSfile();
+            int fno = file.getFileNo();
+            fileRepository.deleteById(fno);
+
+            File deleteFile = new File(fileUploadPath+File.separator+sfile);
+            if(deleteFile.exists()){
+                deleteFile.delete();
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteFileBysName(String sfile){
+
+        if (fileUploadPath.startsWith("file:")) {
+            fileUploadPath =  fileUploadPath.substring("file:".length());
+        };
+
+        // 해당 sFile의 파일이 있는지 확인
+        BoardFileEntity fileEntity = fileRepository.findBySfile(sfile);
+
+        // 있다면 삭제
+        if (fileEntity != null){
+            fileRepository.deleteBySfile(fileEntity.getSfile());
+        }
+    }
+
+ */
 }

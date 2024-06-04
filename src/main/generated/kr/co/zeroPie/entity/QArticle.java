@@ -35,8 +35,6 @@ public class QArticle extends EntityPathBase<Article> {
 
     public final StringPath articleTitle = createString("articleTitle");
 
-    public final NumberPath<Integer> file = createNumber("file", Integer.class);
-
     public final StringPath stfNo = createString("stfNo");
 
     public final StringPath writer = createString("writer");
