@@ -7,15 +7,12 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import kr.co.zeroPie.dto.CsDTO;
+import kr.co.zeroPie.dto.DptDTO;
+import kr.co.zeroPie.dto.PlanDTO;
 import kr.co.zeroPie.dto.StfDTO;
-import kr.co.zeroPie.entity.Dpt;
-import kr.co.zeroPie.entity.Rnk;
-import kr.co.zeroPie.entity.Stf;
-import kr.co.zeroPie.entity.Terms;
-import kr.co.zeroPie.repository.DptRepository;
-import kr.co.zeroPie.repository.RnkRepository;
-import kr.co.zeroPie.repository.StfRepository;
-import kr.co.zeroPie.repository.TermsRepository;
+import kr.co.zeroPie.entity.*;
+import kr.co.zeroPie.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
@@ -45,9 +42,10 @@ public class StfService {
     private final RnkRepository rnkRepository;
     private final TermsRepository termsRepository;
     private final ModelMapper modelMapper;
+    private final PlanRepository planRepository;
 
     private final JavaMailSender javaMailSender;
-    // private final RedisTemplate<String, String> redisTemplate;레디스의 흔적...또르륵...(배포해보기)
+
 
 
     @Value("${file.upload.path}")
@@ -79,104 +77,17 @@ public class StfService {
                     log.info("imageDTO의 sName : " + stfDTO.getSName());
                     log.info("imageDTO의 stfImg : " + stfDTO.getStfImg());
                 }
-                switch (stfDTO.getStrDptNo()) {
 
-                    case "인사지원부":
-                        stfDTO.setDptNo(1);
-                        break;
-                    case "영업부":
-                        stfDTO.setDptNo(2);
-                        break;
-                    case "전산부":
-                        stfDTO.setDptNo(3);
-                        break;
-                    case "네트워크 관리부":
-                        stfDTO.setDptNo(4);
-                        break;
-                    case "SW 개발 부서":
-                        stfDTO.setDptNo(5);
-                        break;
-                    case "고객 지원 부서":
-                        stfDTO.setDptNo(6);
-                        break;
-                    case "기술 지원부":
-                        stfDTO.setDptNo(7);
-                        break;
-                    default:
-                        stfDTO.setDptNo(0);
-                        break;
-                }
+                Dpt compleDtp = stfRepository.dptSelect(stfDTO);//선택한 부서에 맞는 db에 저장된 부서값
 
-                switch (stfDTO.getStrRnkNo()) {
+                String idCode = compleDtp.getDptCode();//아이디가 될 코드
 
-                    case "사원":
-                        stfDTO.setRnkNo(1);
-                        break;
-                    case "대리":
-                        stfDTO.setRnkNo(2);
-                        break;
-                    case "과장":
-                        stfDTO.setRnkNo(3);
-                        break;
-                    case "차장":
-                        stfDTO.setRnkNo(4);
-                        break;
-                    case "부장":
-                        stfDTO.setRnkNo(5);
-                        break;
-                    case "이사":
-                        stfDTO.setRnkNo(6);
-                        break;
-                    case "상무":
-                        stfDTO.setRnkNo(7);
-                        break;
-                    case "전무":
-                        stfDTO.setRnkNo(8);
-                        break;
-                    case "사장":
-                        stfDTO.setRnkNo(9);
-                        break;
-                    default:
-                        stfDTO.setRnkNo(0);
-                        break;
-                }
+                //Rnk compleRnk = stfRepository.rnkSelect(stfDTO);
 
-                String id = null;
+                String id = idCode+ randomNumber();
 
-                switch (stfDTO.getDptNo())//아이디를 여기서 만들어서 넣음
-                {
-                    case 1:
-                        id = "HR" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    case 2:
-                        id = "SD" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    case 3:
-                        id = "ITD" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    case 4:
-                        id = "NMD" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    case 5:
-                        id = "SDD" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    case 6:
-                        id = "CSD" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    case 7:
-                        id = "TSD" + randomNumber();
-                        stfDTO.setStfNo(id);
-                        break;
-                    default:
-                        stfDTO.setStfNo(null);
-                        break;
-                }
+                stfDTO.setStfNo(id);
+
 
                 log.info("stfDTO : " + stfDTO);
 
@@ -368,6 +279,24 @@ public void updatePass(String id, String pass){
     stf.setStfPass(encoded);//비밀번호 변경
 
     stfRepository.save(stf);
+
+    }
+
+    //플랜 들고오기
+    public List<PlanDTO> getPlan(){
+        
+        log.info("StfService - getPlan 들어옴");
+
+        List<Plan> plans = planRepository.findAll();
+
+        List<PlanDTO> dtoList = plans.stream()
+                .map(entity -> {
+                    PlanDTO dto = modelMapper.map(entity, PlanDTO.class);
+                    return dto;
+                })
+                .toList();
+
+        return dtoList;
 
     }
 }

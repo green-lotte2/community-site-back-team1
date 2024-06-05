@@ -1,31 +1,24 @@
 package kr.co.zeroPie.config;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@EnableWebSocket
+@RequiredArgsConstructor
+public class WebSocketConfig implements WebSocketConfigurer {
+
+    private final WebSocketHandler webSocketHandler;
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-
-        //stomp 접속 주소 url = ws://localhost:8080/ws,프로토콜이 http가 아니다!
-        registry.addEndpoint("/ws") // socket 연결 url
-                .setAllowedOrigins("*"); // CORS 허용 범위
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        // endpoint 설정 : /api/v1/chat/{postId}
+        // 이를 통해서 ws://localhost:9090/ws/chat 으로 요청이 들어오면 websocket 통신을 진행한다.
+        // setAllowedOrigins("*")는 모든 ip에서 접속 가능하도록 해줌
+        registry.addHandler(webSocketHandler, "/ws/chat").setAllowedOrigins("*");
     }
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-
-        //메시지를 구독(수신)하는 요청 엔드포인트
-        registry.enableSimpleBroker("/sub");
-
-        //메시지를 발행(송신)하는 엔드포인트
-        registry.setApplicationDestinationPrefixes("/pub");
-    }
 }
