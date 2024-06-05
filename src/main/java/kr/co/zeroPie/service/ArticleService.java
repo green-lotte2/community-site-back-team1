@@ -104,30 +104,25 @@ public class ArticleService {
     }
 
     // 게시글 작성(write)
-
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
         articleDTO.setArticleStatus("view");
 
-        // 파일 첨부 처리
-        //List<FileDTO> files = fileService.fileUpload(articleDTO);
+        //articleDTO.setFile(articleDTO.getFiles().size());
 
-        // 파일 첨부 갯수 초기화
-        //articleDTO.setFile(files.size());
+        for (MultipartFile mf : articleDTO.getFiles()) {
+            if (mf.getOriginalFilename() == null || mf.getOriginalFilename() == "") {
+                articleDTO.setFile(0);
+            }
+        }
 
         Article article = modelMapper.map(articleDTO, Article.class);
         Article savedArticle = articleRepository.save(article);
-/*
-        for(FileDTO fileDTO : files){
 
-            fileDTO.setArticleNo(savedArticle.getArticleNo());
+        int articleNo = savedArticle.getArticleNo();
+        articleDTO.setArticleNo(articleNo);
 
-            File file = modelMapper.map(fileDTO, File.class);
+        fileService.fileUpload(articleDTO);
 
-            kr.co.zeroPie.entity.File myFile = new kr.co.zeroPie.entity.File();
-            // 필요한 필드 설정
-            fileRepository.save(myFile);
-        }
-*/
         if (savedArticle.getArticleCnt() != null) {
             return ResponseEntity.status(HttpStatus.OK).body(1);
         } else {

@@ -32,10 +32,10 @@ public class FileDTO {
     public File toEntity(){
         return File.builder()
                 .fileNo(fileNo)
-                .articleNo(articleNo)
                 .fileOname(fileOname)
                 .fileSname(fileSname)
                 .fileDownload(fileDownload)
+                .articleNo(articleNo)
                 .fileRdate(fileRdate)
                 .filePath(filePath)
                 .build();
