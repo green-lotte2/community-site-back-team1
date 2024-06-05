@@ -47,6 +47,8 @@ public class Stf {
 
     private String stfStatus;//사원 상태
 
+    private LocalDate stfBirth;
+
     private int dptNo;//부서번호
 
     private int rnkNo;//직급번호
