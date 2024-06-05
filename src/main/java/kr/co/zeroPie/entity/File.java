@@ -41,10 +41,10 @@ public class File {
     public FileDTO toDTO(){
         return FileDTO.builder()
                 .fileNo(fileNo)
-                .articleNo(articleNo)
                 .fileOname(fileOname)
                 .fileSname(fileSname)
                 .fileDownload(fileDownload)
+                .articleNo(articleNo)
                 .fileRdate(fileRdate)
                 .filePath(filePath)
                 .build();

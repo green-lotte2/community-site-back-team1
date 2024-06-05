@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -34,8 +35,13 @@ public class ArticleDTO {
 
     private int articleCateNo;//카테고리 번호(외래키)
 
-     //private int file;
-     //private List<MultipartFile> files;
+    private int file;
+
+    //private List<MultipartFile> image = new ArrayList<>();
+    //private List<MultipartFile> files = new ArrayList<>();
+    private MultipartFile[] image;
+    private MultipartFile[] files;
+
 
     // 추가된것
     private String writer;             //게시글 작성자
@@ -52,7 +58,7 @@ public class ArticleDTO {
                 .articleHit(articleHit)
                 .articleCateNo(articleCateNo)
                 .writer(writer)
-                //.file(file)
+                .file(file)
                 .articleThumb(articleThumb)
                 .build();
     }
