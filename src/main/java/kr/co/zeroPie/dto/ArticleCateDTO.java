@@ -13,7 +13,7 @@ public class ArticleCateDTO {
     private int articleCateNo;//카테고리 번호
 
     private String articleCateName;//카테고리 이름
-
+    private String articleCateOutput; //카테고리 표시 형태(카드, 리스트)
     private int articleCateStatus; // 카테고리 상태
 
     private String articleCateVRole; // 카테고리 보기 권한

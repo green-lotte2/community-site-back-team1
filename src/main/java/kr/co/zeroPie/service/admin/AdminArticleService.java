@@ -10,6 +10,9 @@ import kr.co.zeroPie.repository.StfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,9 +31,11 @@ public class AdminArticleService {
     private final ArticleRepository articleRepository;
 
     // 게시물 카테고리 추가
+    @CacheEvict(value = "cateCache", allEntries = true)
     public ResponseEntity<?> insertArticleCate(ArticleCateDTO articleCateDTO) {
         ArticleCate articleCate = modelMapper.map(articleCateDTO, ArticleCate.class);
         articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
+        articleCate.setArticleCateOutput(articleCateDTO.getArticleCateOutput());
         articleCate.setArticleCateStatus(articleCateDTO.getArticleCateStatus());
         articleCate.setArticleCateVRole(articleCateDTO.getArticleCateVRole());
         articleCate.setArticleCateWRole(articleCateDTO.getArticleCateWRole());
@@ -45,7 +50,8 @@ public class AdminArticleService {
         }
     }
 
-    // 게시물 카테고리 조회 
+    // 게시물 카테고리 조회
+    @Cacheable("cateCache")
     public ResponseEntity<?> selectArticleCates() {
         List<ArticleCate> articleCates = (List<ArticleCate>) articleCateRepository.findAll();
         List<ArticleCateDTO> articleCateDTOList = new ArrayList<>();
@@ -67,6 +73,7 @@ public class AdminArticleService {
     }
 
     // 게시물 카테고리 삭제
+    @CacheEvict(value = "cateCache", allEntries = true)
     public ResponseEntity<?> deleteArticleCate(int articleCateNo) {
         try {
             articleCateRepository.deleteById(articleCateNo);
@@ -77,6 +84,7 @@ public class AdminArticleService {
     }
 
     // 게시물 카테고리 수정
+    @CacheEvict(value = "cateCache", allEntries = true)
     public ResponseEntity<?> modifyArticleCate(ArticleCateDTO articleCateDTO) {
         int articleCateNo = articleCateDTO.getArticleCateNo();
 
@@ -85,6 +93,7 @@ public class AdminArticleService {
                 .map(updatedArticleCate -> ResponseEntity.ok().body(updatedArticleCate))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
+
 
     private ArticleCate updateArticleCate(ArticleCate articleCate, ArticleCateDTO articleCateDTO) {
         articleCate.setArticleCateName(articleCateDTO.getArticleCateName());
