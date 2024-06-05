@@ -5,11 +5,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import kr.co.zeroPie.dto.PlanDTO;
 import kr.co.zeroPie.dto.StfDTO;
-import kr.co.zeroPie.entity.Dpt;
-import kr.co.zeroPie.entity.Rnk;
-import kr.co.zeroPie.entity.Stf;
-import kr.co.zeroPie.entity.Terms;
+import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.StfRepository;
 import kr.co.zeroPie.security.MyUserDetails;
 import kr.co.zeroPie.service.StfService;
@@ -291,6 +289,17 @@ public class StfController {
         lists.put("result", "되는가?");
         return ResponseEntity.ok().body(lists);
     }
+    
+    //플랜 리스트 들고오기
+    @GetMapping("/getPlan")
+    public ResponseEntity<?> getPlan(){
 
+        log.info("stfController.getPlan() 들어옴");
 
+        List<PlanDTO> plan = stfService.getPlan();
+
+        log.info(plan.toString());
+
+        return ResponseEntity.ok().body(plan);
+    }
 }

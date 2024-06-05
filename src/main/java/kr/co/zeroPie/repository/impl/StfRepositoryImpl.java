@@ -4,6 +4,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import kr.co.zeroPie.dto.DptDTO;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.*;
@@ -141,5 +142,20 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
 
 
         return results.getResults().get(0);
+    }
+
+    //부서 선택
+    @Override
+    public Dpt dptSelect(StfDTO stfDTO) {
+
+        log.info("stfRepository - dptSelect - stfDTO : "+stfDTO);
+
+        Dpt dtpSelect = jpaQueryFactory
+                .select(qDpt)
+                .from(qDpt)
+                .where(qDpt.dptNo.eq(stfDTO.getDptNo()))
+                .fetchOne();
+
+        return dtpSelect;
     }
 }

@@ -23,8 +23,8 @@ public class AdminArticleController {
 
     // 관리자 - 게시판 관리 - 게시판 생성
     @PostMapping("/admin/insertCate")
-    public ResponseEntity<?> insertArticleCate(ArticleCateDTO articleCateDTO) {
-
+    public ResponseEntity<?> insertArticleCate(@RequestBody ArticleCateDTO articleCateDTO) {
+        log.info(articleCateDTO);
         return adminArticleService.insertArticleCate(articleCateDTO);
     }
 

@@ -47,6 +47,8 @@ public class StfDTO {
 
     private int rnkNo;//직급 번호
 
+    private LocalDate stfBirth;//
+
     private int planStatusNo;//요금제 상태번호
 
     @JsonIgnore
@@ -60,6 +62,8 @@ public class StfDTO {
 
     private String strRnkNo;//직급 이름
     private String strDptName;//부서 이름
+
+
 
 
 }

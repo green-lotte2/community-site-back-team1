@@ -5,6 +5,7 @@ import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
 import kr.co.zeroPie.service.ArticleService;
+import kr.co.zeroPie.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final FileService fileService;
 
     // 게시판 카테고리 출력
     @GetMapping("/article")
@@ -79,14 +81,45 @@ public class ArticleController {
 
     // 게시판 글쓰기 Function
     @PostMapping("/article/write")
-    public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
-
+    public ResponseEntity<?> articleWrite(@RequestParam ArticleDTO articleDTO) {
         log.info("articleDTO : " + articleDTO);
-
-
+        for (MultipartFile each : articleDTO.getFiles()) {
+            log.info("files : " + each);
+        }
+        for (MultipartFile each : articleDTO.getImage()) {
+            log.info("image : " + each);
+        }
         log.info("글쓰기 완료");
-        return articleService.articleWrite(articleDTO);
-        //return null;
+
+        //지금 글쓰기 안됨(코드 새로 toast이미지 + 첨부파일에 맞게 새로 짜는중)
+        //return articleService.articleWrite(articleDTO);
+        return null;
+    }
+
+    @PostMapping("/article/uploadFiles")
+    public ResponseEntity<?> uploadFiles(@RequestBody MultipartFile[] files) {
+        for (MultipartFile each : files) {
+            log.info("files : " + each);
+
+
+        }
+
+        log.info("파일만 쓰기");
+        //return articleService.articleWrite(articleDTO);
+        return null;
+    }
+
+    @PostMapping("/article/uploadImages")
+    public ResponseEntity<?> uploadImages(@RequestBody MultipartFile[] image) {
+        for (MultipartFile each : image) {
+            log.info("files : " + each);
+
+
+        }
+
+        log.info("이미지만 쓰기");
+        //return articleService.articleWrite(articleDTO);
+        return null;
     }
 
     // 게시판 글보기
@@ -127,6 +160,8 @@ public class ArticleController {
     public ResponseEntity<?> articleDelete(@RequestBody Map<String, Integer> request) {
 
         int articleNo = request.get("articleNo");
+        //fileService.deleteFiles(articleNo);
+
         log.info("글 삭제 완료");
 
         return articleService.articleDelete(articleNo);

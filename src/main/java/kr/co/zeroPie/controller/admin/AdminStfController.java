@@ -1,9 +1,6 @@
 package kr.co.zeroPie.controller.admin;
 
-import kr.co.zeroPie.dto.ArticleCateDTO;
-import kr.co.zeroPie.dto.PageRequestDTO;
-import kr.co.zeroPie.dto.PageResponseDTO;
-import kr.co.zeroPie.dto.StfDTO;
+import kr.co.zeroPie.dto.*;
 import kr.co.zeroPie.service.admin.AdminArticleService;
 import kr.co.zeroPie.service.admin.AdminStfService;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +19,6 @@ public class AdminStfController {
     // 관리자 - 회원 관리 - 전체 회원 조회
     @PostMapping("/admin/user/list")
     public ResponseEntity<?> userList(@RequestBody PageRequestDTO pageRequestDTO){
-
-
 
         log.info(pageRequestDTO);
 
@@ -46,6 +41,12 @@ public class AdminStfController {
     @GetMapping("/admin/user/dptList")
     public ResponseEntity<?> dptList(){
         return adminStfService.selectDptList();
+    }
+
+    @PostMapping("/admin/dpt/insert")
+    public ResponseEntity<?> insertDpt(@RequestBody DptDTO dptDTO){
+        log.info(dptDTO);
+        return adminStfService.insertDpt(dptDTO);
     }
 
     // 관리자 - 회원 관리 - 전체 직급 조회

@@ -47,8 +47,8 @@ public class Article {
 
     private String articleThumb;        //게시글 썸네일
 
-    //@Builder.Default
-    //private Integer file = 0;
+    @Builder.Default
+    private int file = 0;
 
     public ArticleDTO toDTO(){
         return ArticleDTO.builder()
@@ -61,7 +61,7 @@ public class Article {
                 .articleHit(articleHit)
                 .articleCateNo(articleCateNo)
                 .writer(writer)
-                //.file(file)
+                .file(file)
                 .articleThumb(articleThumb)
                 .build();
     }

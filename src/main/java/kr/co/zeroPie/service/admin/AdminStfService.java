@@ -1,6 +1,7 @@
 package kr.co.zeroPie.service.admin;
 
 import com.querydsl.core.Tuple;
+import kr.co.zeroPie.dto.DptDTO;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.dto.PageResponseDTO;
 import kr.co.zeroPie.dto.StfDTO;
@@ -115,6 +116,14 @@ public class AdminStfService {
         log.info(dptList.toString());
         return ResponseEntity.status(HttpStatus.OK).body(dptList);
     }
+
+    // dpt 생성
+    public ResponseEntity<?> insertDpt(DptDTO dptDTO){
+        Dpt dpt = modelMapper.map(dptDTO, Dpt.class);
+        Dpt savedDpt = dptRepository.save(dpt);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDpt);
+    }
+
 
     // 직책 조회
     public ResponseEntity<?> selectRnkList(){
