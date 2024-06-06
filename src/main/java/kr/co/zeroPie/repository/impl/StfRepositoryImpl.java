@@ -44,7 +44,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                     stfStatusEq(pageRequestDTO.getStfStatus()),
                         rnkNoEq(pageRequestDTO.getRnkNo()),
                         dptNoEq(pageRequestDTO.getDptNo()),
-                        stfEntBetween(pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate()),
+                        //stfEntBetween(pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate()),
                         keywordContains(pageRequestDTO.getType(), pageRequestDTO.getKeyword())
                 )
                 .offset(pageable.getOffset())

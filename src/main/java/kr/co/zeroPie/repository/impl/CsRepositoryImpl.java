@@ -4,6 +4,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.entity.Cs;
@@ -16,8 +18,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -61,9 +67,23 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
         // 시작일과 종료일 범위 검색 조건 추가
         if (pageRequestDTO.getStartDate() != null && pageRequestDTO.getEndDate() != null) {
             log.info("여기는 시작일과 종료일이 있을 때 들어오는곳이야");
-            LocalDate startDate = pageRequestDTO.getStartDate();
-            LocalDate endDate = pageRequestDTO.getEndDate().plusDays(1); // 종료일은 포함되어야 하므로 하루를 더합니다.
-            builder.and(qcs.csRdate.between(startDate, endDate));//DateTime은 between을 못 씀
+
+
+           //LocalDateTime startDate = pageRequestDTO.getStartDate();
+           //LocalDateTime endDate = pageRequestDTO.getEndDate().plusDays(1);
+           //builder.and(qcs.csRdate.between(startDate, endDate));
+
+
+            // LocalDateTime 타입의 Expression을 생성합니다.
+            DateTimePath<LocalDateTime> csRdatePath = new PathBuilder<>(Cs.class, "cs").getDateTime("csRdate", LocalDateTime.class);
+
+// 시작일과 종료일을 LocalDateTime으로 변환합니다.
+            LocalDateTime startDate = pageRequestDTO.getStartDate();
+            LocalDateTime endDate = pageRequestDTO.getEndDate();
+
+// QueryDSL의 between 메서드를 사용하여 검색 조건을 추가합니다.
+            builder.and(csRdatePath.between(startDate, endDate));
+
         }
 
         // 카테고리 검색 조건 추가
