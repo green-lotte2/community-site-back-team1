@@ -1,6 +1,5 @@
 package kr.co.zeroPie.controller.article;
 
-import jakarta.servlet.http.HttpSession;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
@@ -10,12 +9,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -81,19 +88,37 @@ public class ArticleController {
 
     // 게시판 글쓰기 Function
     @PostMapping("/article/write")
-    public ResponseEntity<?> articleWrite(@RequestParam ArticleDTO articleDTO) {
-        log.info("articleDTO : " + articleDTO);
-        for (MultipartFile each : articleDTO.getFiles()) {
-            log.info("files : " + each);
-        }
-        for (MultipartFile each : articleDTO.getImage()) {
-            log.info("image : " + each);
-        }
-        log.info("글쓰기 완료");
+    public ResponseEntity<?> articleWrite(@ModelAttribute ArticleDTO articleDTO) {
+        log.info("Received article write request with data: {}", articleDTO);
+        return articleService.articleWrite(articleDTO);
+    }
 
-        //지금 글쓰기 안됨(코드 새로 toast이미지 + 첨부파일에 맞게 새로 짜는중)
-        //return articleService.articleWrite(articleDTO);
-        return null;
+    @PostMapping("/article/uploadImage")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            log.info("Uploading image: " + file.getOriginalFilename());
+            String originalFilename = file.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            String fileName = UUID.randomUUID().toString() + "." + extension;
+
+            Path uploadPath = Paths.get("uploads/orgArtImage");
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            log.info("Image uploaded successfully: " + fileName);
+            return ResponseEntity.ok(Collections.singletonMap("name", fileName));
+        } catch (IOException e) {
+            log.error("Image upload failed: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "Image upload failed"));
+        }
     }
 
     @PostMapping("/article/uploadFiles")

@@ -39,8 +39,8 @@ public class ArticleDTO {
 
     //private List<MultipartFile> image = new ArrayList<>();
     //private List<MultipartFile> files = new ArrayList<>();
-    private MultipartFile[] image;
-    private MultipartFile[] files;
+    //private MultipartFile[] image;
+    private List<MultipartFile> files;
 
 
     // 추가된것
