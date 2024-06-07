@@ -303,4 +303,13 @@ public void updatePass(String id, String pass){
 
         return stfDTO;
     }
+
+    //유저 수
+    public long getCountUser(){
+
+        long count = stfRepository.countByUser();
+
+        return count;
+
+    }
 }

@@ -100,64 +100,36 @@ public class ArticleService {
     }
 
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+        // 글 작성 시작을 로그에 기록
         log.info("Start writing article");
+
+        // 게시글 상태를 'view'로 설정
         articleDTO.setArticleStatus("view");
 
+        // DTO를 Entity로 변환
         Article article = modelMapper.map(articleDTO, Article.class);
         Article savedArticle;
         try {
+            // 게시글을 데이터베이스에 저장
             savedArticle = articleRepository.save(article);
         } catch (Exception e) {
+            // 저장 중 에러 발생 시 로그에 기록하고 HTTP 500 상태 코드 반환
             log.error("Error saving article: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving article");
         }
 
-        if (articleDTO.getFiles() != null && !articleDTO.getFiles().isEmpty()) {
-            try {
-                log.info("Uploading files for article ID: " + savedArticle.getArticleNo());
-                uploadFiles(articleDTO.getFiles(), savedArticle.getArticleNo());
-            } catch (IOException e) {
-                log.error("File upload failed: ", e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
-            }
-        }
-
+        // 게시글 내용이 있는지 확인
         if (savedArticle.getArticleCnt() != null) {
+            // 게시글 작성 성공을 로그에 기록하고 HTTP 200 상태 코드 반환
+            int articleNo = savedArticle.getArticleNo();
             log.info("Article written successfully with ID: " + savedArticle.getArticleNo());
-            return ResponseEntity.status(HttpStatus.OK).body(1);
+            return ResponseEntity.status(HttpStatus.OK).body(articleNo);
         } else {
+            // 게시글 내용이 없을 경우 로그에 경고를 기록하고 HTTP 404 상태 코드 반환
             log.warn("Article content is null");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
     }
-
-    private void uploadFiles(List<MultipartFile> files, int articleNo) throws IOException {
-        Path uploadPath = Paths.get("uploads/orgArtImage");
-
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        for (MultipartFile file : files) {
-            String originalFilename = file.getOriginalFilename();
-            String extension = getExtension(originalFilename);
-            String fileName = UUID.randomUUID().toString() + "." + extension;
-            log.info("Uploading file with encoded name: " + fileName);
-
-            try (InputStream inputStream = file.getInputStream()) {
-                Path filePath = uploadPath.resolve(fileName);
-                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-            }
-        }
-    }
-
-    private String getExtension(String originalFilename) {
-        return originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-    }
-
-
-
-
 
     // 게시판 글보기(view)
     public ArticleDTO findById(int articleNo) {

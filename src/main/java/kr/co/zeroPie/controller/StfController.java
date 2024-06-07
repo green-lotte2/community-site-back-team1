@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kr.co.zeroPie.dto.PlanDTO;
+import kr.co.zeroPie.dto.PlanOrderDTO;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.StfRepository;
@@ -313,6 +314,28 @@ public class StfController {
         StfDTO stfDTO = stfService.getUserInfo(stfNo);
 
         return  ResponseEntity.ok().body(stfDTO);
+
+    }
+
+
+    @GetMapping("/getCountUser")
+    public ResponseEntity<?> getCountUser(){
+
+        log.info("유저 구하기");
+
+        long count = stfService.getCountUser();
+
+        log.info("controller - getCountUser - count : "+count);
+
+        return ResponseEntity.ok().body(count);
+    }
+
+    @PostMapping("/postPay")
+    public ResponseEntity<?> postPay(@RequestBody PlanOrderDTO planOrderDTO){
+
+        log.info("controller - postPay - planOrderDTO : "+planOrderDTO);
+
+        return ResponseEntity.ok().body(1);
 
     }
 }

@@ -24,4 +24,6 @@ public interface StfRepositoryCustom {
 
     public Dpt dptSelect(StfDTO stfDTO);
 
+    public Long countByUser();
+
 }

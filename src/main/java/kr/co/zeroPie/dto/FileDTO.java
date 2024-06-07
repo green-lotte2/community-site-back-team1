@@ -1,10 +1,13 @@
 package kr.co.zeroPie.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.co.zeroPie.entity.File;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +20,8 @@ public class FileDTO {
     private int fileNo;
 
     private String fileOname;//파일 원래 이름
+    @JsonIgnore
+    private List<MultipartFile> multiFileNames; // 저장위해 가져옴
 
     private String fileSname;//변경된 이름
 
