@@ -116,6 +116,7 @@ public class CsService {
         }
     }
 
+    /*
     //고객센터 게시글 수정하기
     public ResponseEntity<?> csModify(CsDTO csDTO){
 
@@ -130,7 +131,9 @@ public class CsService {
         return ResponseEntity.status(HttpStatus.OK).body(csDTO);
 
     }
-    
+
+
+     */
     //고객센터 게시글 삭제하기
     @Transactional
     public ResponseEntity<?> csDelete(int csNo){
