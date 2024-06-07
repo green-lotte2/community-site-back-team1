@@ -65,6 +65,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 stfDTO.setStfName(stf.getStfName());
                 stfDTO.setStfNo(stf.getStfNo());
                 stfDTO.setStfPh(stf.getStfPh());
+                stfDTO.setStfImg(stf.getStfImg());
                 stfDTO.setStfStatus(stf.getStfStatus());
                 stfDTO.setStfEnt(stf.getStfEnt());
                 stfDTO.setStfEmail(stf.getStfEmail());
