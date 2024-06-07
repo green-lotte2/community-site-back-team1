@@ -4,11 +4,6 @@ package kr.co.zeroPie.service;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import kr.co.zeroPie.dto.CsDTO;
-import kr.co.zeroPie.dto.DptDTO;
 import kr.co.zeroPie.dto.PlanDTO;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.*;
@@ -18,9 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -298,5 +290,17 @@ public void updatePass(String id, String pass){
 
         return dtoList;
 
+    }
+    
+    //플랜에 필요한 유저 정보 가져오기
+    public StfDTO getUserInfo(String stfNo){
+
+        Optional<Stf> userInfo = stfRepository.findById(stfNo);
+
+        StfDTO stfDTO = modelMapper.map(userInfo,StfDTO.class);
+
+        log.info("stfService - getUserInfo - stfDTO "+stfDTO.toString());
+
+        return stfDTO;
     }
 }
