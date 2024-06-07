@@ -23,7 +23,7 @@ public class FileService {
 
     @Value("${file.upload.path}")
     private String fileUploadPath;
-
+/*
     public int fileUpload(ArticleDTO articleDTO){
         if (fileUploadPath.startsWith("file:")) {
             fileUploadPath =  fileUploadPath.substring("file:".length());

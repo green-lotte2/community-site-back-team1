@@ -89,7 +89,6 @@ public class ArticleController {
     // 게시판 글쓰기 Function
     @PostMapping("/article/write")
     public ResponseEntity<?> articleWrite(@ModelAttribute ArticleDTO articleDTO) {
-        log.info("Received article write request with data: {}", articleDTO);
         return articleService.articleWrite(articleDTO);
     }
 
@@ -121,6 +120,7 @@ public class ArticleController {
         }
     }
 
+    /*
     @PostMapping("/article/uploadFiles")
     public ResponseEntity<?> uploadFiles(@RequestBody MultipartFile[] files) {
         for (MultipartFile each : files) {
@@ -146,7 +146,7 @@ public class ArticleController {
         //return articleService.articleWrite(articleDTO);
         return null;
     }
-
+*/
     // 게시판 글보기
     @GetMapping("/article/view")
     public ResponseEntity<?> articleView(@RequestParam("articleNo") int articleNo) {
