@@ -121,8 +121,9 @@ public class ArticleService {
         // 게시글 내용이 있는지 확인
         if (savedArticle.getArticleCnt() != null) {
             // 게시글 작성 성공을 로그에 기록하고 HTTP 200 상태 코드 반환
+            int articleNo = savedArticle.getArticleNo();
             log.info("Article written successfully with ID: " + savedArticle.getArticleNo());
-            return ResponseEntity.status(HttpStatus.OK).body(1);
+            return ResponseEntity.status(HttpStatus.OK).body(articleNo);
         } else {
             // 게시글 내용이 없을 경우 로그에 경고를 기록하고 HTTP 404 상태 코드 반환
             log.warn("Article content is null");
