@@ -1,10 +1,9 @@
 package kr.co.zeroPie.service;
 
-import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
-import kr.co.zeroPie.dto.FileDTO;
+
 import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
 import kr.co.zeroPie.repository.ArticleCateRepository;
@@ -13,24 +12,21 @@ import kr.co.zeroPie.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Slf4j
@@ -103,33 +99,65 @@ public class ArticleService {
                 .build();
     }
 
-    // 게시글 작성(write)
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
+        log.info("Start writing article");
         articleDTO.setArticleStatus("view");
 
-        //articleDTO.setFile(articleDTO.getFiles().size());
+        Article article = modelMapper.map(articleDTO, Article.class);
+        Article savedArticle;
+        try {
+            savedArticle = articleRepository.save(article);
+        } catch (Exception e) {
+            log.error("Error saving article: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving article");
+        }
 
-        for (MultipartFile mf : articleDTO.getFiles()) {
-            if (mf.getOriginalFilename() == null || mf.getOriginalFilename() == "") {
-                articleDTO.setFile(0);
+        if (articleDTO.getFiles() != null && !articleDTO.getFiles().isEmpty()) {
+            try {
+                log.info("Uploading files for article ID: " + savedArticle.getArticleNo());
+                uploadFiles(articleDTO.getFiles(), savedArticle.getArticleNo());
+            } catch (IOException e) {
+                log.error("File upload failed: ", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
             }
         }
 
-        Article article = modelMapper.map(articleDTO, Article.class);
-        Article savedArticle = articleRepository.save(article);
-
-        int articleNo = savedArticle.getArticleNo();
-        articleDTO.setArticleNo(articleNo);
-
-        fileService.fileUpload(articleDTO);
-
         if (savedArticle.getArticleCnt() != null) {
+            log.info("Article written successfully with ID: " + savedArticle.getArticleNo());
             return ResponseEntity.status(HttpStatus.OK).body(1);
         } else {
+            log.warn("Article content is null");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
-
     }
+
+    private void uploadFiles(List<MultipartFile> files, int articleNo) throws IOException {
+        Path uploadPath = Paths.get("uploads/orgArtImage");
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        for (MultipartFile file : files) {
+            String originalFilename = file.getOriginalFilename();
+            String extension = getExtension(originalFilename);
+            String fileName = UUID.randomUUID().toString() + "." + extension;
+            log.info("Uploading file with encoded name: " + fileName);
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
+    private String getExtension(String originalFilename) {
+        return originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+    }
+
+
+
+
 
     // 게시판 글보기(view)
     public ArticleDTO findById(int articleNo) {
