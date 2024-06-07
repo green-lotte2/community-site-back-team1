@@ -302,4 +302,17 @@ public class StfController {
 
         return ResponseEntity.ok().body(plan);
     }
+
+
+    //사용자 정보 가져오기
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<?> getUserInfo(@RequestParam("stfNo")String stfNo){
+
+        log.info("아이디 출력 : "+stfNo);
+
+        StfDTO stfDTO = stfService.getUserInfo(stfNo);
+
+        return  ResponseEntity.ok().body(stfDTO);
+
+    }
 }

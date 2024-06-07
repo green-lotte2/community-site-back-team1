@@ -44,7 +44,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                     stfStatusEq(pageRequestDTO.getStfStatus()),
                         rnkNoEq(pageRequestDTO.getRnkNo()),
                         dptNoEq(pageRequestDTO.getDptNo()),
-                        stfEntBetween(pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate()),
+                        //stfEntBetween(pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate()),//localDtaeTime으로 변경되었습니다.
                         keywordContains(pageRequestDTO.getType(), pageRequestDTO.getKeyword())
                 )
                 .offset(pageable.getOffset())
@@ -65,6 +65,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 stfDTO.setStfName(stf.getStfName());
                 stfDTO.setStfNo(stf.getStfNo());
                 stfDTO.setStfPh(stf.getStfPh());
+                stfDTO.setStfImg(stf.getStfImg());
                 stfDTO.setStfStatus(stf.getStfStatus());
                 stfDTO.setStfEnt(stf.getStfEnt());
                 stfDTO.setStfEmail(stf.getStfEmail());

@@ -3,8 +3,10 @@ package kr.co.zeroPie.controller.admin;
 import kr.co.zeroPie.dto.*;
 import kr.co.zeroPie.service.admin.AdminArticleService;
 import kr.co.zeroPie.service.admin.AdminStfService;
+import kr.co.zeroPie.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminStfController {
 
     private final AdminStfService adminStfService;
+    private final CustomFileUtil fileUtil;
 
 
     // 관리자 - 회원 관리 - 전체 회원 조회
@@ -67,5 +70,10 @@ public class AdminStfController {
     public ResponseEntity<?> userModify(@RequestBody StfDTO stfDTO) {
         log.info("변경"+stfDTO);
         return adminStfService.updateStf(stfDTO);
+    }
+
+    @GetMapping("/user/thumb/{fileName}")
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
+        return fileUtil.getFile(fileName);
     }
 }

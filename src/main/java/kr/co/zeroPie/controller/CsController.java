@@ -84,7 +84,7 @@ public class CsController {
 
         return csService.csView(csNo);
     }
-
+/*
     //수정(데이터 수정하기)
     @PostMapping("/cs/modify")
     public ResponseEntity<?> csModify(@RequestBody CsDTO csDTO) {
@@ -93,6 +93,8 @@ public class CsController {
 
         return csService.csModify(csDTO);
     }
+
+ */
 
     //삭제(게시글+게시글 답변)
     @GetMapping("/cs/delete")

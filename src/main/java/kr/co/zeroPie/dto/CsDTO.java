@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +26,7 @@ public class CsDTO {
 
     private String csContent;//고객센터 게시글 내용
 
-    private LocalDate csRdate;//DateTime으로 수정하기
+    private LocalDateTime csRdate;//DateTime으로 수정하기
 
     private int csHit;//조회수
 
