@@ -88,6 +88,7 @@ public class AdminStfService {
         List<Map<String, Object>> formattedDptList = dptList.stream().map(dpt -> {
             Map<String, Object> dptInfo = new HashMap<>();
             dptInfo.put("dptNo", dpt.getDptNo());
+            dptInfo.put("dptCode", dpt.getDptCode());
             dptInfo.put("dptName", dpt.getDptName());
             dptInfo.put("dptIcon", dpt.getIconName());
 
