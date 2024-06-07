@@ -19,9 +19,13 @@ public class QPlanOrder extends EntityPathBase<PlanOrder> {
 
     public static final QPlanOrder planOrder = new QPlanOrder("planOrder");
 
+    public final StringPath cost = createString("cost");
+
     public final NumberPath<Integer> orderNo = createNumber("orderNo", Integer.class);
 
     public final StringPath paymentMethod = createString("paymentMethod");
+
+    public final NumberPath<Integer> planStatusNo = createNumber("planStatusNo", Integer.class);
 
     public final StringPath stfEmail = createString("stfEmail");
 

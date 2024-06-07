@@ -159,4 +159,19 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
 
         return dtpSelect;
     }
+
+    //유저 카운트(가용회원)
+    public Long countByUser(){
+
+        log.info("stfRepository - countByUser");
+
+        Long count = jpaQueryFactory
+                .select(qStf.count())
+                .from(qStf)
+                .where(qStf.stfStatus.eq("Active").or(qStf.stfStatus.eq("Break")))
+                .fetchOne();
+
+        return count;
+
+    }
 }

@@ -2,7 +2,10 @@ package kr.co.zeroPie.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 @Getter
@@ -22,7 +25,19 @@ public class PlanStatus {
 
     private int planNo;//요금제 번호
 
+    @CreationTimestamp
     private Date planSdate;//요금제 시작일
 
     private Date planEdate;//요금제 끝일
+
+
+    // planSdate에 30일을 더한 값을 planEdate에 설정하는 메서드
+    public void setPlanEdate() {
+        if (planSdate != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(planSdate);
+            calendar.add(Calendar.DAY_OF_MONTH, 30);
+            planEdate = calendar.getTime();
+        }
+    }
 }
