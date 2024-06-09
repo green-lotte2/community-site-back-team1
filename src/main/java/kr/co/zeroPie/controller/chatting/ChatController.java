@@ -1,28 +1,31 @@
 package kr.co.zeroPie.controller.chatting;
 
-import kr.co.zeroPie.dto.ChatRoom;
+import kr.co.zeroPie.dto.ChatRoomDTO;
 import kr.co.zeroPie.service.chatting.ChatService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/chat")
+@RestController
+@Log4j2
 public class ChatController {
 
-    private final ChatService service;
+    private final ChatService chatService;
 
-    @PostMapping
-    public ChatRoom createRoom(@RequestParam String name){
-        return service.createRoom(name);
+    @PostMapping("/chat")
+    public ChatRoomDTO createRoom(@RequestBody String name) {
+
+        log.info("name : " + name);
+
+        return chatService.createRoom(name);
     }
 
-    @GetMapping
-    public List<ChatRoom> findAllRooms(){
-        return service.findAll();
+    @GetMapping("/chat")
+    public List<ChatRoomDTO> findAllRoom() {
+        return chatService.findAllRoom();
     }
+
 }

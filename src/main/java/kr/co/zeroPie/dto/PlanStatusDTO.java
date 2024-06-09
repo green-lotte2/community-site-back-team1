@@ -2,6 +2,8 @@ package kr.co.zeroPie.dto;
 
 
 import lombok.*;
+
+import java.util.Calendar;
 import java.util.Date;
 
 @Getter
@@ -10,8 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
-
 public class PlanStatusDTO {
 
     private int planStatusNo;
@@ -21,4 +21,5 @@ public class PlanStatusDTO {
     private Date planSdate;//요금제 시작일
 
     private Date planEdate;//요금제 끝일
+
 }
