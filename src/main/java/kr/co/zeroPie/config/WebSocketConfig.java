@@ -1,9 +1,9 @@
 package kr.co.zeroPie.config;
 
 
+import kr.co.zeroPie.service.chatting.WebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 
 @Configuration

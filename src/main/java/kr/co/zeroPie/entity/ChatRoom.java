@@ -3,6 +3,10 @@ package kr.co.zeroPie.entity;
 import jakarta.persistence.*;
 import kr.co.zeroPie.dto.ChatRoomDTO;
 import lombok.*;
+import org.springframework.web.socket.WebSocketSession;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -16,18 +20,11 @@ import lombok.*;
 public class ChatRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
     private String roomId;
 
     private String name;
 
-    public ChatRoomDTO toDTO() {
-        return ChatRoomDTO.builder()
-                .roomId(this.roomId)
-                .name(this.name)
-                .build();
-    }
+    @Transient
+    private Set<WebSocketSession> sessions = new HashSet<>();
 
 }

@@ -19,8 +19,6 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
 
     public static final QChatRoom chatRoom = new QChatRoom("chatRoom");
 
-    public final NumberPath<Integer> id = createNumber("id", Integer.class);
-
     public final StringPath name = createString("name");
 
     public final StringPath roomId = createString("roomId");
