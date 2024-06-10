@@ -335,6 +335,8 @@ public class StfController {
 
         log.info("controller - postPay - planOrderDTO : "+planOrderDTO);
 
+        stfService.planOrder(planOrderDTO);
+
         return ResponseEntity.ok().body(1);
 
     }

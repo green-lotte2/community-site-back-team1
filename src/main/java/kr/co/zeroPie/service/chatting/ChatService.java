@@ -1,60 +1,72 @@
 package kr.co.zeroPie.service.chatting;
 
-import kr.co.zeroPie.config.Util;
-import kr.co.zeroPie.dto.ChatMessageDTO;
-import kr.co.zeroPie.dto.ChatRoom;
-import kr.co.zeroPie.repository.ChatRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+import kr.co.zeroPie.dto.ChatRoomDTO;
+import kr.co.zeroPie.entity.ChatRoom;
+import kr.co.zeroPie.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 @Service
+@Scope("singleton")
 public class ChatService {
 
-    private final ChatRepository chatRepository;
+    private final ObjectMapper objectMapper;
+    private final ChatRoomRepository chatRoomRepository;
+    private Map<String, ChatRoomDTO> chatRooms;
 
-    public List<ChatRoom> findAll() {
-        return chatRepository.findAll();
+    @PostConstruct
+    private void init() {
+        log.info("되라.. 제발...");
     }
 
-    public ChatRoom findRoomById(String roomId) {
-        return chatRepository.findById(roomId);
+    public List<ChatRoomDTO> findAllRoom() {
+
+        List<ChatRoom> BeforeList = chatRoomRepository.findAll();
+
+        List<ChatRoomDTO> dtoList = BeforeList.stream()
+                .map(ChatRoom::toDTO)
+                .collect(Collectors.toList());
+
+        return dtoList;
+
     }
 
-    public ChatRoom createRoom(String name) {
-        String roomId = UUID.randomUUID().toString();
-        ChatRoom chatRoom = ChatRoom.of(roomId, name);
-        chatRepository.save(roomId, chatRoom);
-        return chatRoom;
+    public ChatRoomDTO findRoomById(String roomId) {
+        return chatRooms.get(roomId);
     }
 
-    public void handleAction(
-            String roomId,
-            WebSocketSession session,
-            ChatMessageDTO chatMessage
-    ) {
-        ChatRoom room = findRoomById(roomId);
+    public ChatRoomDTO createRoom(String name) {
 
-        if (isEnterRoom(chatMessage)) {
-            room.join(session);
-            chatMessage.setMessage(chatMessage.getSender() + "님 환영합니다.");
+        String randomId = UUID.randomUUID().toString();
+
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setRoomId(randomId);
+        chatRoom.setName(name);
+        chatRoomRepository.save(chatRoom);
+
+        return chatRoom.toDTO();
+    }
+
+    public <T> void sendMessage(WebSocketSession session, T message) {
+        try {
+            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
         }
-
-        TextMessage textMessage = Util.Chat.resolveTextMessage(chatMessage);
-        room.sendMessage(textMessage);
     }
-
-    private boolean isEnterRoom(ChatMessageDTO chatMessage) {
-        return chatMessage.getMessageType().equals(ChatMessageDTO.MessageType.ENTER);
-    }
-
 }

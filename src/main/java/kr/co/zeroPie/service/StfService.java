@@ -4,7 +4,9 @@ package kr.co.zeroPie.service;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.PlanDTO;
+import kr.co.zeroPie.dto.PlanOrderDTO;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.*;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -35,6 +38,8 @@ public class StfService {
     private final TermsRepository termsRepository;
     private final ModelMapper modelMapper;
     private final PlanRepository planRepository;
+    private final PlanOrderRepository planOrderRepository;
+    private final PlanStatusRepository planStatusRepository;
 
     private final JavaMailSender javaMailSender;
 
@@ -312,4 +317,27 @@ public void updatePass(String id, String pass){
         return count;
 
     }
+
+    //플랜 결제
+    @Transactional
+    public void planOrder(PlanOrderDTO planOrderDTO){
+
+        log.info("stfService - PlanOrderDTO : "+planOrderDTO);
+
+        PlanStatus planStatus = new PlanStatus(planOrderDTO.getPlanNo());
+
+        planStatus.setPlanEdate();
+
+        planStatusRepository.save(planStatus);//먼저 PlanStatus테이블에 저장
+
+        log.info("저장한 planStatus 상태 보기: "+planStatus);
+
+        planOrderDTO.setPlanStatusNo(planStatus.getPlanStatusNo());
+
+        planOrderRepository.save(modelMapper.map(planOrderDTO,PlanOrder.class));//planOrder 테이블에 PlanStatusNo 넣어주고 저장
+
+        log.info("stfService -planOrder- planOrderDTO"+planOrderDTO);
+
+    }
+
 }

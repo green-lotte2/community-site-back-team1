@@ -23,7 +23,7 @@ public class PlanOrderDTO {
 
     private String paymentMethod;//결제정보
 
-    private String cost;//결제 금액
+    private int cost;//결제 금액
 
-    private String type;//타입
+    private int planNo;//타입
 }
