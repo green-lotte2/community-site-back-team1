@@ -1,8 +1,8 @@
 package kr.co.zeroPie.dto;
 
 import kr.co.zeroPie.service.chatting.ChatService;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -10,17 +10,25 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Getter
+@Setter
+@Builder
 public class ChatRoomDTO {
-    private final String roomId;
-    private final String name;
-    private final Set<WebSocketSession> sessions = new HashSet<>();
 
+    private String roomId;
+    private String name;
+    private Set<WebSocketSession> sessions;
 
-    @Builder
-    public ChatRoomDTO(String roomId, String name) {
+    public ChatRoomDTO() {
+        this.sessions = new HashSet<>();
+    }
+
+    // 인자가 있는 생성자
+    public ChatRoomDTO(String roomId, String name, Set<WebSocketSession> sessions) {
         this.roomId = roomId;
         this.name = name;
+        this.sessions = sessions;
     }
 
     public void handleActions(WebSocketSession session, ChatMessageDTO chatMessage, ChatService chatService) {
@@ -35,3 +43,5 @@ public class ChatRoomDTO {
         sessions.parallelStream().forEach(session -> chatService.sendMessage(session, message));
     }
 }
+
+

@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -16,7 +17,9 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/chat")
-    public ChatRoomDTO createRoom(@RequestBody String name) {
+    public ChatRoomDTO createRoom(@RequestBody Map<String, String> request) {
+
+        String name = request.get("name");
 
         log.info("name : " + name);
 
