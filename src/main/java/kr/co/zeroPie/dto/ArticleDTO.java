@@ -1,6 +1,7 @@
 package kr.co.zeroPie.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.co.zeroPie.entity.Article;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +41,10 @@ public class ArticleDTO {
     //private List<MultipartFile> image = new ArrayList<>();
     //private List<MultipartFile> files = new ArrayList<>();
     //private MultipartFile[] image;
+    @JsonIgnore
     private List<MultipartFile> files;
+
+    private List<FileDTO> fileList;
 
 
     // 추가된것
