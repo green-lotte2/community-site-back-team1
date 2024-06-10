@@ -5,11 +5,9 @@ import kr.co.zeroPie.service.FileService;
 import kr.co.zeroPie.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -28,19 +26,16 @@ public class FileController {
     public void uploadFile(FileDTO fileDTO) {
         log.info("Upload file : {}", fileDTO );
 
-        List<MultipartFile> multiFileNames = fileDTO.getMultiFileNames();
 
-        Map<String, String> savedFiles= customFileUtil.saveFiles(multiFileNames);
-        log.info("Saved files : {}", savedFiles);
+        fileService.saveFiles(fileDTO);
+
     }
-
-    /*
-    @GetMapping("/file/download/{fileNo}")
-    public ResponseEntity<?> fileDownload(@PathVariable("fileNo") int fileNo) {
+    @GetMapping("/article/file/download")
+    public ResponseEntity<?> fileDownload(@RequestParam("fileNo") int fileNo) {
         log.info("fileDownload : " + fileNo);
         return fileService.fileDownload(fileNo);
     }
-
+  /*
     @GetMapping("/file/downloadCount/{fileNo}")
     public ResponseEntity<?> fileDownloadCount(@PathVariable("fileNo") int fileNo) {
         log.info("fileDownloadCount : " + fileNo);

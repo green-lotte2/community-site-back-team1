@@ -1,5 +1,6 @@
 package kr.co.zeroPie.service;
 
+import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
@@ -135,6 +136,7 @@ public class ArticleService {
     public ArticleDTO findById(int articleNo) {
         log.info("게시판 글 ");
         Optional<Article> optArticle = articleRepository.findById(articleNo);
+        log.info(optArticle.toString());
 
         ArticleDTO articleDTO = null;
 
@@ -197,7 +199,9 @@ public class ArticleService {
     }
 
     // 게시글 삭제(delete)
+    @Transactional
     public ResponseEntity<?> articleDelete(int articleNo) {
+        fileService.fileDelete(articleNo);
         articleRepository.deleteById(articleNo);
         Optional<Article> optArticle = articleRepository.findById(articleNo);
 

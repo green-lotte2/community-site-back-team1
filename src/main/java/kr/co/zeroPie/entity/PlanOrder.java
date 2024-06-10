@@ -27,13 +27,9 @@ public class PlanOrder {
 
     private String paymentMethod;//결제정보
 
-    private String cost;//결제 금액
+    private int cost;//결제 금액
 
     @Transient
-    private String type;
-
-
-
-
+    private int planNo;//선택한 플랜 번호
 
 }

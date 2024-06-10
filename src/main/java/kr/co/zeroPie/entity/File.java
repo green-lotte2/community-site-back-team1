@@ -36,7 +36,7 @@ public class File {
     private LocalDateTime fileRdate;
 
     // 파일 경로 저장 필드 추가
-    private String filePath;
+    // private String filePath;
 
     public FileDTO toDTO(){
         return FileDTO.builder()
@@ -46,7 +46,6 @@ public class File {
                 .fileDownload(fileDownload)
                 .articleNo(articleNo)
                 .fileRdate(fileRdate)
-                .filePath(filePath)
                 .build();
     }
 }

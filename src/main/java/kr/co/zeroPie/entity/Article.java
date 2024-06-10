@@ -50,6 +50,9 @@ public class Article {
     @Builder.Default
     private int file = 0;
 
+    @OneToMany(mappedBy = "articleNo")
+    private List<File> fileList;
+
     public ArticleDTO toDTO(){
         return ArticleDTO.builder()
                 .articleNo(articleNo)

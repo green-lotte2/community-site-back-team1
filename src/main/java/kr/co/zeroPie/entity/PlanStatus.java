@@ -12,7 +12,6 @@ import java.util.Date;
 @Setter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "planstatus")
@@ -25,10 +24,21 @@ public class PlanStatus {
 
     private int planNo;//요금제 번호
 
-    @CreationTimestamp
     private Date planSdate;//요금제 시작일
 
     private Date planEdate;//요금제 끝일
+
+    // 기본 생성자
+    public PlanStatus() {
+
+    }
+
+    // 생성자
+    public PlanStatus(int planNo) {
+        this.planNo = planNo;
+        this.planSdate = new Date(); // 현재 날짜 설정
+        setPlanEdate(); // planEdate 설정
+    }
 
 
     // planSdate에 30일을 더한 값을 planEdate에 설정하는 메서드

@@ -27,8 +27,6 @@ public class QFile extends EntityPathBase<File> {
 
     public final StringPath fileOname = createString("fileOname");
 
-    public final StringPath filePath = createString("filePath");
-
     public final DateTimePath<java.time.LocalDateTime> fileRdate = createDateTime("fileRdate", java.time.LocalDateTime.class);
 
     public final StringPath fileSname = createString("fileSname");

@@ -64,7 +64,7 @@ public class CustomFileUtil {
 
             try {
                 Files.copy(multipartFile.getInputStream(), savePath);
-                uploadNames.put(fieldName, savedName);
+                uploadNames.put(originalFilename, savedName);
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }
