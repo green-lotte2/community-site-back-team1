@@ -3,16 +3,31 @@ package kr.co.zeroPie.service;
 import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.FileDTO;
+import kr.co.zeroPie.entity.File;
+import kr.co.zeroPie.repository.ArticleRepository;
 import kr.co.zeroPie.repository.FileRepository;
+import kr.co.zeroPie.util.CustomFileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,76 +35,55 @@ import java.util.*;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final ArticleRepository articleRepository;
+    private final CustomFileUtil customFileUtil;
 
     @Value("${file.upload.path}")
     private String fileUploadPath;
-/*
-    public int fileUpload(ArticleDTO articleDTO){
-        if (fileUploadPath.startsWith("file:")) {
-            fileUploadPath =  fileUploadPath.substring("file:".length());
-        };
 
-        String path = new File(fileUploadPath).getAbsolutePath();  //실제 업로드 할 시스템상의 경로 구하기
-        int articleNo = articleDTO.getArticleNo();
-        int count = 0;
+    public void saveFiles(FileDTO fileDTO) {
+        List<MultipartFile> multiFileNames = fileDTO.getMultiFileNames();
+        Map<String, String> savedFiles= customFileUtil.saveFiles(multiFileNames);
 
-        // 원본 파일 폴더 자동 생성
-        String orgPath = path + "/orgArtImage";
-        File orgFile = new File(orgPath);
-        if (!orgFile.exists()) {
-            orgFile.mkdir();
+        int articleNo = fileDTO.getArticleNo();
+        int fileCount = fileRepository.countByArticleNo(articleNo);
+
+        for (Map.Entry<String, String> entry : savedFiles.entrySet()) {
+            File file = File.builder()
+                    .fileOname(entry.getKey())
+                    .fileSname(entry.getValue())
+                    .articleNo(articleNo)
+                    .build();
+            log.info("save file: {}", file);
+            fileRepository.save(file);
         }
 
-        for(MultipartFile mf : articleDTO.getFiles()){
-            if(mf.getOriginalFilename() !=null && mf.getOriginalFilename() != ""){
-                // oName, sName 구하기
-                String fileOname = mf.getOriginalFilename();
-                String ext = fileOname.substring(fileOname.lastIndexOf(".")); //확장자
-                String fileSname = UUID.randomUUID().toString()+ ext;
-
-                log.info("fileOname : "+fileOname);
-
-                // 파일 업로드
-                try{
-                    //upload directory에 upload가 됨 - 원본파일 저장
-                    mf.transferTo(new File(orgPath, fileSname));
-
-                    FileDTO fileDTO = FileDTO.builder()
-                            .articleNo(articleNo)
-                            .fileOname(fileOname)
-                            .fileSname(fileSname)
-                            .build();
-                    fileRepository.save(fileDTO.toEntity());
-                    count++;
-                }catch (IOException e){
-                    log.error("fileUpload : "+e.getMessage());
-                }
-            }
-        }
-        return count;
+        int updatedRows  = articleRepository.updateFileCount(fileCount+ savedFiles.size(), articleNo);
+        log.info("fileCount! : {}", updatedRows );
     }
 
-/*
+
+
     @Transactional
     public ResponseEntity<?> fileDownload(int fno)  {
 
         // 파일 조회
-        kr.co.sboard.entity.File file = fileRepository.findById(fno).get();
+        File file = fileRepository.findById(fno).get();
 
         try {
-            Path path = Paths.get(fileUploadPath + file.getSName());
+            Path path = Paths.get(fileUploadPath + file.getFileSname());
             String contentType = Files.probeContentType(path);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(
                     ContentDisposition.builder("attachment")
-                            .filename(file.getOName(), StandardCharsets.UTF_8).build());
+                            .filename(file.getFileOname(), StandardCharsets.UTF_8).build());
 
             headers.add(HttpHeaders.CONTENT_TYPE, contentType);
             Resource resource = new InputStreamResource(Files.newInputStream(path));
 
             // 파일 다운로드 카운트 업데이트
-            file.setDownload(file.getDownload() + 1);
+            file.setFileDownload(file.getFileDownload() + 1);
             fileRepository.save(file);
 
             return new ResponseEntity<>(resource, headers, HttpStatus.OK);
@@ -100,6 +94,13 @@ public class FileService {
         }
     }
 
+    public void fileDelete(int articleNo) {
+        List<File> files = fileRepository.findByArticleNo(articleNo);
+        List<String> fileNames = files.stream().map(File::getFileSname).collect(Collectors.toList());
+        fileRepository.deleteByArticleNo(articleNo);
+        customFileUtil.deleteFiles(fileNames);
+    }
+/*
     public ResponseEntity<?> fileDownloadCount(int fno)  {
 
         // 파일 조회
