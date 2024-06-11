@@ -29,7 +29,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         ChatMessageDTO chatMessage = objectMapper.readValue(payload, ChatMessageDTO.class);
         log.info("chatMessage {}", chatMessage.toString());
         ChatRoomDTO room = chatService.findRoomById(chatMessage.getRoomId());
-        log.info("여기로 들어옴? ....5 room {}", room.toString());
+        log.info("여기로 들어옴? ....3 room {}", room.toString());
         room.handleActions(session, chatMessage, chatService);
         log.info("여기로 들어옴?....6(끝!)");
     }

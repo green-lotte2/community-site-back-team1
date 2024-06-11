@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -34,6 +35,7 @@ public class ChatService {
 
     public List<ChatRoomDTO> findAllRoom() {
         List<ChatRoom> chatRoomList = chatRoomRepository.findAll();
+
         return chatRoomList.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -47,13 +49,27 @@ public class ChatService {
     }
 
     public ChatRoomDTO findRoomById(String roomId) {
+        log.info("여기로 들어옴?...1 - roomId"+roomId);
+
+        if (chatRooms.containsKey(roomId)) {
+            return chatRooms.get(roomId);
+        }
+
         Optional<ChatRoom> optRoom = chatRoomRepository.findById(roomId);
+
         if (optRoom.isPresent()) {
             ChatRoom chatRoom = optRoom.get();
-            return ChatRoomDTO.builder()
+
+            log.info("여기로 들어옴?...2  - chatRoom "+chatRoom);
+
+            ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
                     .roomId(chatRoom.getRoomId())
                     .name(chatRoom.getName())
                     .build();
+
+            chatRooms.put(roomId, chatRoomDTO);  // 캐시에 저장
+
+            return chatRoomDTO;
         } else {
             return null;
         }
@@ -74,27 +90,21 @@ public class ChatService {
         return chatRoomDTO;
     }
 
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-        String payload = message.getPayload();
-        ChatMessageDTO chatMessage = objectMapper.readValue(payload, ChatMessageDTO.class);
-        ChatRoomDTO room = chatRooms.get(chatMessage.getRoomId());
-        if (room != null) {
-            room.handleActions(session, chatMessage, this);
-        }
-    }
-
-    public <T> void sendMessage(String roomId, T message) {
-        ChatRoomDTO room = chatRooms.get(roomId);
-        if (room != null) {
-            room.sendMessage(message, this);
-        }
-    }
-
     public <T> void sendMessage(WebSocketSession session, T message) {
-        try {
+
+        log.info("여기 들어옴?.....7"+session+"/"+message);
+
+        try {//소켓이 끊기더라도 session이 닫히지 않아서
+            log.info("try안쪽....");
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
+            log.info("try안쪽 - session.sendMessage()이후....");
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            log.error("Error sending message", e);
+            try {
+                session.close(CloseStatus.SERVER_ERROR);
+            } catch (IOException ex) {
+                log.error("Error closing session", ex);
+            }
         }
     }
 }
