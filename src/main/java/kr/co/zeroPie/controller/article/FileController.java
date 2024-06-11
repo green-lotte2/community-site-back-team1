@@ -26,7 +26,6 @@ public class FileController {
     public void uploadFile(FileDTO fileDTO) {
         log.info("Upload file : {}", fileDTO );
 
-
         fileService.saveFiles(fileDTO);
 
     }
@@ -35,14 +34,12 @@ public class FileController {
         log.info("fileDownload : " + fileNo);
         return fileService.fileDownload(fileNo);
     }
-  /*
-    @GetMapping("/file/downloadCount/{fileNo}")
-    public ResponseEntity<?> fileDownloadCount(@PathVariable("fileNo") int fileNo) {
-        log.info("fileDownloadCount : " + fileNo);
-        return fileService.fileDownloadCount(fileNo);
-    }
 
-     */
+    @DeleteMapping("/article/file/delete")
+    public void deleteFile(@RequestParam("fileNo") List<Integer>fileNos) {
+        log.info("deleteFile : " + fileNos);
+        fileService.fileDelete(fileNos);
+    }
 
 
 }

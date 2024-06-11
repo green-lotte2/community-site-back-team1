@@ -21,4 +21,8 @@ public class CommentDTO {
     private String commentCnt;//댓글 내용
 
     private LocalDateTime commentRdate;//작성일자(오늘을 기준)
+
+    private String stfImg;//같이 띄울 이미지
+
+    private String stfName;
 }

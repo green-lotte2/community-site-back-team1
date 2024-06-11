@@ -1,9 +1,8 @@
 package kr.co.zeroPie.dto;
 
 import kr.co.zeroPie.entity.Calendar;
+import kr.co.zeroPie.entity.Stf;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -12,35 +11,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class CalendarDTO {
-    private int calNo;
-    private String stfNo;
-    private String calendarId;
-    private String id;
+    private Long calendarId;
     private String title;
-    private LocalDateTime start;
-    private LocalDateTime end;
-    private String location;
-    private String state;
-    private String backgroundColor;
-    private String color;
-    private String isAllDay;
-    private String isReadOnly;
+    private String ownerStfNo;
 
-    public Calendar toEntity(){
+    public Calendar toEntity() {
+        Stf owner = new Stf();
+        owner.setStfNo(ownerStfNo);
         return Calendar.builder()
-                .calNo(calNo)
-                .stfNo(stfNo)
                 .calendarId(calendarId)
-                .id(id)
                 .title(title)
-                .start(start)
-                .end(end)
-                .location(location)
-                .state(state)
-                .backgroundColor(backgroundColor)
-                .color(color)
-                .isAllDay(isAllDay)
-                .isReadOnly(isReadOnly)
+                .owner(owner)
                 .build();
     }
 }
