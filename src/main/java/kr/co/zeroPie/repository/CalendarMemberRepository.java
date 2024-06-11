@@ -1,9 +1,9 @@
 package kr.co.zeroPie.repository;
 
-import kr.co.zeroPie.entity.Calendar;
+import kr.co.zeroPie.entity.CalendarMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CalendarRepository extends JpaRepository<Calendar, Long> {
+public interface CalendarMemberRepository extends JpaRepository<CalendarMember, Long> {
 }

@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,44 +18,35 @@ public class QCalendar extends EntityPathBase<Calendar> {
 
     private static final long serialVersionUID = 541249092L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QCalendar calendar = new QCalendar("calendar");
 
-    public final StringPath backgroundColor = createString("backgroundColor");
+    public final NumberPath<Long> calendarId = createNumber("calendarId", Long.class);
 
-    public final StringPath calendarId = createString("calendarId");
-
-    public final NumberPath<Integer> calNo = createNumber("calNo", Integer.class);
-
-    public final StringPath color = createString("color");
-
-    public final DateTimePath<java.time.LocalDateTime> end = createDateTime("end", java.time.LocalDateTime.class);
-
-    public final StringPath id = createString("id");
-
-    public final StringPath isAllDay = createString("isAllDay");
-
-    public final StringPath isReadOnly = createString("isReadOnly");
-
-    public final StringPath location = createString("location");
-
-    public final DateTimePath<java.time.LocalDateTime> start = createDateTime("start", java.time.LocalDateTime.class);
-
-    public final StringPath state = createString("state");
-
-    public final StringPath stfNo = createString("stfNo");
+    public final QStf owner;
 
     public final StringPath title = createString("title");
 
     public QCalendar(String variable) {
-        super(Calendar.class, forVariable(variable));
+        this(Calendar.class, forVariable(variable), INITS);
     }
 
     public QCalendar(Path<? extends Calendar> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QCalendar(PathMetadata metadata) {
-        super(Calendar.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QCalendar(PathMetadata metadata, PathInits inits) {
+        this(Calendar.class, metadata, inits);
+    }
+
+    public QCalendar(Class<? extends Calendar> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.owner = inits.isInitialized("owner") ? new QStf(forProperty("owner")) : null;
     }
 
 }
