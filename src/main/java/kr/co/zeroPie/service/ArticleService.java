@@ -9,6 +9,7 @@ import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
 import kr.co.zeroPie.repository.ArticleCateRepository;
 import kr.co.zeroPie.repository.ArticleRepository;
+import kr.co.zeroPie.repository.CommentRepository;
 import kr.co.zeroPie.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class ArticleService {
     private final ModelMapper modelMapper;
     private final ArticleCateRepository articleCateRepository;
     private final FileService fileService;
-    private final FileRepository fileRepository;
+    private final CommentRepository commentRepository;
 
     // 게시판 카테고리 표시
     public ResponseEntity<?> selectArticleCate(int articleCateNo){
@@ -201,7 +202,8 @@ public class ArticleService {
     // 게시글 삭제(delete)
     @Transactional
     public ResponseEntity<?> articleDelete(int articleNo) {
-        fileService.fileDelete(articleNo);
+        fileService.fileDeleteWithArticle(articleNo);
+        commentRepository.deleteByArticleNo(articleNo);
         articleRepository.deleteById(articleNo);
         Optional<Article> optArticle = articleRepository.findById(articleNo);
 

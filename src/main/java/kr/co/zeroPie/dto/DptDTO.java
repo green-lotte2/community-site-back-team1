@@ -2,6 +2,8 @@ package kr.co.zeroPie.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -18,4 +20,8 @@ public class DptDTO {
 
     private String iconName; //부서 아이콘
 
+    private List<StfDTO> member ; //부서 유저
+
+    public DptDTO(int dptNo, String dptName, String dptCode, String iconName) {
+    }
 }

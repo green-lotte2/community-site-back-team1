@@ -120,33 +120,6 @@ public class ArticleController {
         }
     }
 
-    /*
-    @PostMapping("/article/uploadFiles")
-    public ResponseEntity<?> uploadFiles(@RequestBody MultipartFile[] files) {
-        for (MultipartFile each : files) {
-            log.info("files : " + each);
-
-
-        }
-
-        log.info("파일만 쓰기");
-        //return articleService.articleWrite(articleDTO);
-        return null;
-    }
-
-    @PostMapping("/article/uploadImages")
-    public ResponseEntity<?> uploadImages(@RequestBody MultipartFile[] image) {
-        for (MultipartFile each : image) {
-            log.info("files : " + each);
-
-
-        }
-
-        log.info("이미지만 쓰기");
-        //return articleService.articleWrite(articleDTO);
-        return null;
-    }
-*/
     // 게시판 글보기
     @GetMapping("/article/view")
     public ResponseEntity<?> articleView(@RequestParam("articleNo") int articleNo) {

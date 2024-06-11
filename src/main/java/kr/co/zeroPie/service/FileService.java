@@ -94,62 +94,39 @@ public class FileService {
         }
     }
 
-    public void fileDelete(int articleNo) {
+    public void fileDeleteWithArticle(int articleNo) {
         List<File> files = fileRepository.findByArticleNo(articleNo);
         List<String> fileNames = files.stream().map(File::getFileSname).collect(Collectors.toList());
         fileRepository.deleteByArticleNo(articleNo);
         customFileUtil.deleteFiles(fileNames);
     }
-/*
-    public ResponseEntity<?> fileDownloadCount(int fno)  {
 
-        // 파일 조회
-        kr.co.sboard.entity.File file = fileRepository.findById(fno).get();
-
-        // 다운로드 카운트 Json 생성
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("count", file.getDownload());
-
-        return ResponseEntity.ok().body(resultMap);
-    }
-}
-
-    // 여러파일삭제(게시글 삭제)
-    public void deleteFiles(int bno){
-
-        if (fileUploadPath.startsWith("file:")) {
-            fileUploadPath =  fileUploadPath.substring("file:".length());
-        };
-
-        String path = new File(fileUploadPath).getAbsolutePath();
-        List<kr.co.zeroPie.entity.File> files = fileRepository.findFilesByBno(bno);
-        for(kr.co.zeroPie.entity.File file : files){
-            String sfile = file.getSfile();
-            int fno = file.getFileNo();
-            fileRepository.deleteById(fno);
-
-            File deleteFile = new File(fileUploadPath+File.separator+sfile);
-            if(deleteFile.exists()){
-                deleteFile.delete();
+    public void fileDelete(List<Integer> fileNos) {
+        List<String> fileNames = new ArrayList<>();
+        Integer articleNo = null;
+        for (Integer fileNo : fileNos) {
+            File file = fileRepository.findById(fileNo).orElse(null);
+            if (file != null) {
+                articleNo = file.getArticleNo();
+                fileNames.add(file.getFileSname());
+                fileRepository.deleteById(fileNo);
+            }else {
+                log.error("file not found : " + fileNo);
             }
         }
-    }
-
-    @Transactional
-    public void deleteFileBysName(String sfile){
-
-        if (fileUploadPath.startsWith("file:")) {
-            fileUploadPath =  fileUploadPath.substring("file:".length());
-        };
-
-        // 해당 sFile의 파일이 있는지 확인
-        BoardFileEntity fileEntity = fileRepository.findBySfile(sfile);
-
-        // 있다면 삭제
-        if (fileEntity != null){
-            fileRepository.deleteBySfile(fileEntity.getSfile());
+        if (!fileNames.isEmpty()) {
+            customFileUtil.deleteFiles(fileNames);
         }
+
+        if (articleNo != null) {
+            // 이거말고 아티클에서 파일 갯수 찾는걸로 바꿔야함!!!!!!!!!!!!!!!!!!!!!!!!!!
+            int fileCount = articleRepository.selectFileByArticleNo(articleNo);
+            log.info("fileCount-article : "+ fileCount);
+            int updatedRows  = articleRepository.updateFileCount(fileCount- fileNos.size(), articleNo);
+            log.info("deleteFileCount : " + updatedRows);
+        }
+
+        log.info("Files deleted successfully for fileNos: " + fileNos);
     }
 
- */
 }
