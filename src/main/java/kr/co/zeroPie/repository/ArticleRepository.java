@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ArticleRepository extends JpaRepository<Article, Integer>, ArticleRepositoryCustom {
     int countByArticleCateNo(int articleCateNo);
 
+    @Query("SELECT article.file FROM Article article WHERE article.articleNo = :articleNo")
+    int selectFileByArticleNo(int articleNo);
+
     @Modifying
     @Transactional
     @Query("UPDATE Article a SET a.file = :fileCount where a.articleNo = :articleNo")

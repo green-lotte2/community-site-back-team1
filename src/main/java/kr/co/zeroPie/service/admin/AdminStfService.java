@@ -76,6 +76,7 @@ public class AdminStfService {
                 stfDTO.setDptNo(stf.getDptNo());
                 stfDTO.setStfName(stf.getStfName());
                 stfDTO.setStfRole(stf.getStfRole());
+                stfDTO.setStfImg(stf.getStfImg());
             }
             if (rnk!=null){
                 stfDTO.setStrRnkNo(rnk.getRnkName());
@@ -99,6 +100,7 @@ public class AdminStfService {
                         memberInfo.put("stfName", stfDTO.getStfName());
                         memberInfo.put("rankNo", stfDTO.getStrRnkNo());
                         memberInfo.put("stfNo", stfDTO.getStfNo());
+                        memberInfo.put("stfImg", stfDTO.getStfImg());
                         return memberInfo;
                     }).collect(Collectors.toList());
             log.info(members.toString());
