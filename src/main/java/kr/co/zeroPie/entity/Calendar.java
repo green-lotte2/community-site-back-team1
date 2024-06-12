@@ -17,16 +17,13 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarId;
     private String title;
-
-    @ManyToOne
-    @JoinColumn(name = "ownerStfNo")
-    private Stf owner;
+    private String ownerStfNo;
 
     public CalendarDTO toDTO() {
         return CalendarDTO.builder()
                 .calendarId(calendarId)
                 .title(title)
-                .ownerStfNo(owner.getStfNo())
+                .ownerStfNo(ownerStfNo)
                 .build();
     }
 }

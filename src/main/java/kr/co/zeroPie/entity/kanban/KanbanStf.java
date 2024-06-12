@@ -1,4 +1,4 @@
-package kr.co.zeroPie.entity;
+package kr.co.zeroPie.entity.kanban;
 
 
 import jakarta.persistence.*;
@@ -11,13 +11,13 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "kanban")
-public class Kanban {
+@Table(name = "kanbanStf")
+public class KanbanStf {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int kanbanStfNo;//칸반 번호
     private int kanbanId;//칸반 번호
-
-    private String kanbanName;//칸반 이름
+    private String stfNo;//유저 번호
 
 }

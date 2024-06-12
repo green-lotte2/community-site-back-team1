@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import kr.co.zeroPie.dto.ChatMessageDTO;
 import kr.co.zeroPie.dto.ChatRoomDTO;
+import kr.co.zeroPie.dto.ChatUserDTO;
 import kr.co.zeroPie.entity.ChatRoom;
+import kr.co.zeroPie.entity.ChatUser;
 import kr.co.zeroPie.repository.ChatRoomRepository;
+import kr.co.zeroPie.repository.ChatUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -26,6 +31,7 @@ public class ChatService {
     private final ObjectMapper objectMapper;
     private final ModelMapper modelMapper;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatUserRepository chatUserRepository;
     private final Map<String, ChatRoomDTO> chatRooms = new LinkedHashMap<>();
 
     @PostConstruct
@@ -106,6 +112,30 @@ public class ChatService {
                 log.error("Error closing session", ex);
             }
         }
+    }
+
+    //room에 유저가 들어가 있는지 체크
+    public ResponseEntity<?> findUser(ChatUserDTO chatUserDTO){
+
+        log.info("chatService - findUser : "+chatUserDTO.toString());
+
+        int count = chatUserRepository.countByRoomIdAndStfNo(chatUserDTO.getRoomId(),chatUserDTO.getStfNo());
+
+        log.info("chatService - findUser - count : "+count);
+
+        return ResponseEntity.status(HttpStatus.OK).body(count);
+    }
+
+    //룸에 지금 어떤 아이디들이 들어가 있는지 저장
+    public ResponseEntity<?> saveUser(String id, String roomId){
+
+        ChatUser chatUser = new ChatUser();
+
+        chatUser.setRoomId(roomId);
+        chatUser.setStfNo(id);
+
+        //chatUserRepository.save(chatUser);
+        return ResponseEntity.status(HttpStatus.OK).body("하이");
     }
 }
 
