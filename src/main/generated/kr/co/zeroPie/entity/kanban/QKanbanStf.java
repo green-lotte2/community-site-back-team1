@@ -1,4 +1,4 @@
-package kr.co.zeroPie.entity;
+package kr.co.zeroPie.entity.kanban;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QKanbanStf extends EntityPathBase<KanbanStf> {
 
-    private static final long serialVersionUID = -298482392L;
+    private static final long serialVersionUID = 1486826045L;
 
     public static final QKanbanStf kanbanStf = new QKanbanStf("kanbanStf");
 

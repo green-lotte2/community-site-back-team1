@@ -101,6 +101,7 @@ public class AdminStfService {
                         memberInfo.put("rankNo", stfDTO.getStrRnkNo());
                         memberInfo.put("stfNo", stfDTO.getStfNo());
                         memberInfo.put("stfImg", stfDTO.getStfImg());
+                        memberInfo.put("dptName", dpt.getDptName());
                         return memberInfo;
                     }).collect(Collectors.toList());
             log.info(members.toString());

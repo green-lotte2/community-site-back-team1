@@ -1,8 +1,6 @@
-package kr.co.zeroPie.dto;
+package kr.co.zeroPie.dto.kanban;
 
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -15,4 +13,6 @@ public class KanbanDTO {
     private int kanbanId;//칸반 번호
 
     private String kanbanName;//칸반 이름
+    private String kanbanInfo;
+    private String kanbanStf;
 }

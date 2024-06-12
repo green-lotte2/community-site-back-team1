@@ -1,7 +1,5 @@
-package kr.co.zeroPie.entity;
+package kr.co.zeroPie.dto.kanban;
 
-
-import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -10,12 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-@Table(name = "kanbanStf")
-public class KanbanStf {
+public class KanbanStfDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int kanbanStfNo;//칸반 번호
     private int kanbanId;//칸반 번호
     private String stfNo;//유저 번호
