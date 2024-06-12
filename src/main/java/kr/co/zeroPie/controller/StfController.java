@@ -77,6 +77,7 @@ public class StfController {
             map.put("grantType", "Bearer");
             map.put("userId", user.getStfNo());
             map.put("username", user.getStfName());
+            map.put("userEmail", user.getStfEmail());
             map.put("userImg", user.getStfImg());
             map.put("userRole", user.getStfRole());
             map.put("accessToken", access);
