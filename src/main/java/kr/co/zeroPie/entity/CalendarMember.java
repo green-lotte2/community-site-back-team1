@@ -17,19 +17,14 @@ public class CalendarMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calMemId;
 
-    @ManyToOne
-    @JoinColumn(name = "calendarId")
-    private Calendar calendar;
-
-    @ManyToOne
-    @JoinColumn(name = "stfNo")
-    private Stf stf;
+    private Long calendarId;
+    private String stfNo;
 
     public CalendarMemberDTO toDTO() {
         return CalendarMemberDTO.builder()
                 .calMemId(calMemId)
-                .calendarId(calendar.getCalendarId())
-                .stfNo(stf.getStfNo())
+                .calendarId(calendarId)
+                .stfNo(stfNo)
                 .build();
     }
 }
