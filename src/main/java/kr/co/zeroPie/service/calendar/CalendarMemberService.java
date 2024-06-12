@@ -5,7 +5,6 @@ import kr.co.zeroPie.entity.CalendarMember;
 import kr.co.zeroPie.repository.CalendarMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,17 +17,23 @@ public class CalendarMemberService {
 
     private final CalendarMemberRepository calendarMemberRepository;
 
-    public List<CalendarMemberDTO> getMembersByCalendarId(Long calendarId) {
-        return calendarMemberRepository.findAll().stream()
-                .filter(member -> member.getCalendar().getCalendarId().equals(calendarId))
+    // 특정 사용자가 속한 모든 캘린더 멤버십 정보 가져옴
+    public List<CalendarMemberDTO> getMembersByStfNo(String stfNo) {  // stfNo를 String으로 변경
+        return calendarMemberRepository.findByStfNo(stfNo).stream()
                 .map(CalendarMember::toDTO)
                 .collect(Collectors.toList());
     }
 
+    // 특정 캘린더에 속한 모든 멤버 정보를 가져옵니다.
+    public List<CalendarMemberDTO> getMembersByCalendarId(Long calendarId) {
+        return calendarMemberRepository.findByCalendarId(calendarId).stream()
+                .map(CalendarMember::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 새로운 멤버를 캘린더에 추가합니다.
     public CalendarMemberDTO addMember(CalendarMemberDTO calendarMemberDTO) {
         CalendarMember calendarMember = calendarMemberRepository.save(calendarMemberDTO.toEntity());
         return calendarMember.toDTO();
     }
-
-    // 기타 캘린더 멤버 관련 비즈니스 로직
 }
