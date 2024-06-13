@@ -15,5 +15,5 @@ public class BoardDTO {
     private String boardName;
     private int kanbanId;
 
-    private List<String> card;
+    private List<CardDTO> card;
 }

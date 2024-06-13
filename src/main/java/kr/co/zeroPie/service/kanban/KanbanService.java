@@ -1,13 +1,17 @@
 package kr.co.zeroPie.service.kanban;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.zeroPie.dto.kanban.BoardDTO;
+import kr.co.zeroPie.dto.kanban.CardDTO;
 import kr.co.zeroPie.dto.kanban.KanbanDTO;
 import kr.co.zeroPie.dto.kanban.KanbanStfDTO;
 import kr.co.zeroPie.entity.kanban.Board;
+import kr.co.zeroPie.entity.kanban.BoardOverview;
 import kr.co.zeroPie.entity.kanban.Kanban;
 import kr.co.zeroPie.entity.kanban.KanbanStf;
+import kr.co.zeroPie.repository.BoardOverViewRepository;
 import kr.co.zeroPie.repository.BoardRepository;
 import kr.co.zeroPie.repository.KanbanRepository;
 import kr.co.zeroPie.repository.KanbanStfRepository;
@@ -27,6 +31,7 @@ public class KanbanService {
     private final KanbanRepository kanbanRepository;
     private final KanbanStfRepository kanbanStfRepository;
     private final BoardRepository boardRepository;
+    private final BoardOverViewRepository boardOverViewRepository;
 
     public List<KanbanDTO> getKanbanList (String kanbanStf){
 
@@ -70,6 +75,40 @@ public class KanbanService {
 
         kanbanStfRepository.save(kanbanStf);
     }
+
+    public List<BoardDTO> getAllBoards(int kanbanId) {
+        List<BoardDTO> boardDTOs = null;
+        List<BoardOverview> boardOverviews = boardOverViewRepository.findByKanbanId(kanbanId);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            boardDTOs = new ArrayList<>();
+            for (BoardOverview entity : boardOverviews) {
+                String boardName = entity.getBoardName();
+                String id = entity.getId();
+                String cardJson = entity.getCard();
+
+                if (cardJson == null || cardJson.isEmpty()) {
+                    cardJson = "[]";  // Empty JSON array
+                }
+
+                BoardDTO boardDTO = new BoardDTO();
+                boardDTO.setId(id);
+                boardDTO.setBoardName(boardName);
+
+                List<CardDTO> cardDTOList = objectMapper.readValue(cardJson, new TypeReference<List<CardDTO>>() {});
+                boardDTO.setCard(cardDTOList);
+
+                boardDTOs.add(boardDTO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info(boardDTOs.toString());
+        return boardDTOs;
+    }
+
+
 
     public void createBoard(String boardJson){
         ObjectMapper objectMapper = new ObjectMapper();
