@@ -3,7 +3,7 @@ package kr.co.zeroPie.service.calendar;
 import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.EventsDTO;
 import kr.co.zeroPie.entity.Events;
-import kr.co.zeroPie.mapper.EventsMapper;
+import kr.co.zeroPie.repository.CalendarMemberRepository;
 import kr.co.zeroPie.repository.EventsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,19 +13,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class EventsService {
     private final EventsRepository eventsRepository;
+    private final CalendarMemberRepository calendarMemberRepository;
     private final ModelMapper modelMapper;
-    private final EventsMapper eventsMapper;
 
     // 스케쥴 보기
-    public ResponseEntity<?> selectsSchedules(String stfNo, Long calendarId) {
+    public ResponseEntity<?> selectsSchedules(Long calendarId) {
         log.info("스케쥴 보기");
-        List<Events> events = eventsRepository.findByStfNoAndCalendarId(stfNo, calendarId);
+        List<Events> events = eventsRepository.findByCalendarId(calendarId);
 
         if (events.isEmpty()) {
             log.info("캘린더 비어있음 = 고로 아무것도 못찾음");
@@ -40,6 +41,10 @@ public class EventsService {
     public EventsDTO insertEvents(EventsDTO eventsDTO) {
         log.info("캘린더 서비스 추가, eventsDTO : " + eventsDTO);
 
+        if (eventsDTO.getEventId() == null || eventsDTO.getEventId().isEmpty()) {
+            eventsDTO.setEventId(UUID.randomUUID().toString());  // 고유 ID 생성
+        }
+
         Events events = modelMapper.map(eventsDTO, Events.class);
         Events savedEvent = eventsRepository.save(events);
 
@@ -47,25 +52,27 @@ public class EventsService {
     }
 
     // 이벤트 수정
-    public ResponseEntity<?> modifyEvent(String eventId, EventsDTO eventsDTO) {
-        List<Events> events = eventsRepository.findByEventId(eventId);
-        if (events.isEmpty()) {
+    public ResponseEntity<?> modifyEvent(int eventNo, EventsDTO eventsDTO) {
+        Events event = eventsRepository.findById(eventNo).orElse(null);
+        if (event == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND");
         } else {
-            eventsMapper.updateEvent(eventId, eventsDTO);
-            return ResponseEntity.ok().build();
+            modelMapper.map(eventsDTO, event);
+            event.setStfNo(eventsDTO.getStfNo()); // 수정한 사람의 stfNo로 업데이트
+            eventsRepository.save(event);
+            return ResponseEntity.ok(event.toDTO());
         }
     }
 
     // 이벤트 삭제
     @Transactional
-    public ResponseEntity<?> deleteEvent(String eventId) {
-        List<Events> events = eventsRepository.findByEventId(eventId);
-        if (events.isEmpty()) {
+    public ResponseEntity<?> deleteEvent(int eventNo) {
+        Events event = eventsRepository.findById(eventNo).orElse(null);
+        if (event == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND");
         } else {
-            eventsRepository.deleteByEventId(eventId);
-            return ResponseEntity.ok().body(events);
+            eventsRepository.delete(event);
+            return ResponseEntity.ok().build();
         }
     }
 }

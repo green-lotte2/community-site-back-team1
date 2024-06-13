@@ -26,27 +26,25 @@ public class EventsController {
 
     // 캘린더 모든일정 불러오기
     @PostMapping("/events/selects")
-    public ResponseEntity<?> selectsSchedules(@RequestBody Map<String, String> requestData) {
-        String stfNo = requestData.get("stfNo");
-        Long calendarId = Long.parseLong(requestData.get("calendarId")); // 추가된 부분
-        log.info("캘린더 가져오기 컨트롤러 : " + stfNo + ", calendarId : " + calendarId);
+    public ResponseEntity<?> selectsSchedules(@RequestBody Map<String, Long> requestData) {
+        Long calendarId = requestData.get("calendarId");
+        log.info("캘린더 가져오기 컨트롤러, calendarId : " + calendarId);
 
-        return eventsService.selectsSchedules(stfNo, calendarId);
+        return eventsService.selectsSchedules(calendarId);
     }
 
     // 캘린더 일정수정
-    @PostMapping("/events/modify/{eventId}")
-    public ResponseEntity<?> modifyEvent(@PathVariable("eventId") String eventId, @RequestBody EventsDTO eventsDTO) {
-        log.info("수정 컨트롤러..1" + eventId);
+    @PostMapping("/events/modify/{eventNo}")
+    public ResponseEntity<?> modifyEvent(@PathVariable("eventNo") int eventNo, @RequestBody EventsDTO eventsDTO) {
+        log.info("수정 컨트롤러..1" + eventNo);
         log.info("수정 컨트롤러..2" + eventsDTO);
-        return eventsService.modifyEvent(eventId, eventsDTO);
+        return eventsService.modifyEvent(eventNo, eventsDTO);
     }
 
     // 특정 일정을 삭제
     @GetMapping("/events/delete")
-    public ResponseEntity<?> deleteEvent(String eventId) {
-        log.info("삭제 컨트롤러" + eventId);
-        return eventsService.deleteEvent(eventId);
+    public ResponseEntity<?> deleteEvent(@RequestParam("eventNo") int eventNo) {
+        log.info("삭제 컨트롤러" + eventNo);
+        return eventsService.deleteEvent(eventNo);
     }
-
 }
