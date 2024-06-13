@@ -1,7 +1,9 @@
 package kr.co.zeroPie.controller.chatting;
 
+import kr.co.zeroPie.dto.ChatRecordsDTO;
 import kr.co.zeroPie.dto.ChatRoomDTO;
 import kr.co.zeroPie.dto.ChatUserDTO;
+import kr.co.zeroPie.entity.ChatRecords;
 import kr.co.zeroPie.service.chatting.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,5 +50,22 @@ public class ChatController {
 
         chatService.saveUser(id,roomId);
 
+    }
+
+    @PostMapping("/chatSave")
+    public void chatSave(@RequestBody ChatRecordsDTO chatRecordsDTO){
+
+        log.info("chatSave - chatRecordsDTO : "+chatRecordsDTO);
+
+        chatService.saveMessage(chatRecordsDTO);
+
+    }
+
+    @GetMapping("/getMessage")
+    public List<ChatRecordsDTO> getMessage(@RequestParam("roomId")String roomId){
+
+        log.info("ChatController - getMessage - roomId : "+roomId);
+
+        return chatService.findRoom(roomId);
     }
 }

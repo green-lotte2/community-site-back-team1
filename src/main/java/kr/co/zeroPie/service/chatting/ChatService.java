@@ -2,11 +2,11 @@ package kr.co.zeroPie.service.chatting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import kr.co.zeroPie.dto.ChatMessageDTO;
-import kr.co.zeroPie.dto.ChatRoomDTO;
-import kr.co.zeroPie.dto.ChatUserDTO;
+import kr.co.zeroPie.dto.*;
+import kr.co.zeroPie.entity.ChatRecords;
 import kr.co.zeroPie.entity.ChatRoom;
 import kr.co.zeroPie.entity.ChatUser;
+import kr.co.zeroPie.repository.ChatRecordsRepository;
 import kr.co.zeroPie.repository.ChatRoomRepository;
 import kr.co.zeroPie.repository.ChatUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,11 +33,17 @@ public class ChatService {
     private final ModelMapper modelMapper;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatUserRepository chatUserRepository;
+    private final ChatRecordsRepository chatRecordsRepository;
     private final Map<String, ChatRoomDTO> chatRooms = new LinkedHashMap<>();
+    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() {
         // 초기화 코드
+    }
+
+    public void removeSession(String userId) {
+        sessions.remove(userId);
     }
 
     public List<ChatRoomDTO> findAllRoom() {
@@ -127,15 +134,56 @@ public class ChatService {
     }
 
     //룸에 지금 어떤 아이디들이 들어가 있는지 저장
-    public ResponseEntity<?> saveUser(String id, String roomId){
+    public void saveUser(String id, String roomId){
 
         ChatUser chatUser = new ChatUser();
 
         chatUser.setRoomId(roomId);
         chatUser.setStfNo(id);
 
-        //chatUserRepository.save(chatUser);
-        return ResponseEntity.status(HttpStatus.OK).body("하이");
+        chatUserRepository.save(chatUser);
+
+    }
+
+    //채팅 내용 저장
+    public void saveMessage(ChatRecordsDTO chatRecordsDTO){
+
+        log.info("chatService - saveMessage : "+chatRecordsDTO.toString());
+
+        ChatRecords chatRecords = modelMapper.map(chatRecordsDTO, ChatRecords.class);
+
+        chatRecordsRepository.save(chatRecords);
+
+    }
+
+
+
+    public void addSession(String sessionId, WebSocketSession session) {
+        sessions.put(sessionId, session);
+    }
+
+    //세션 아이디 찾기
+    public WebSocketSession getSessionById(String sessionId){
+        return sessions.get(sessionId);
+    }
+
+    //클릭한 룸에서 채팅 내용들고오기
+    public List<ChatRecordsDTO> findRoom(String roomId){
+
+        log.info("서비스에서 roomId 확인 여기는 채팅 내용 들고오기 : "+roomId);
+
+        List<ChatRecords> Records= chatRecordsRepository.findByRoomId(roomId);
+
+        log.info("Records : "+Records);
+
+        List<ChatRecordsDTO> chatList = Records.stream()
+                .map(entity -> {
+                    ChatRecordsDTO dto = modelMapper.map(entity, ChatRecordsDTO.class);
+                    return dto;
+                })
+                .toList();
+
+        return chatList;
     }
 }
 
