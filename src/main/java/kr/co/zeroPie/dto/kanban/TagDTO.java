@@ -12,5 +12,5 @@ public class TagDTO {
     private String id;
     private String tagName;
     private String color;
-    private String card_id;
+    //private String card_id;
 }

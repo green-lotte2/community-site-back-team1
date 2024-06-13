@@ -12,5 +12,5 @@ public class TaskDTO {
     private String id;
     private String task;
     private String complete;
-    private String card_id;
+    //private String card_id;
 }

@@ -2,6 +2,8 @@ package kr.co.zeroPie.dto.kanban;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -11,5 +13,8 @@ import lombok.*;
 public class CardDTO {
     private String id;
     private String title;
-    private String board_id;
+    //private String board_id;
+
+    private List<TagDTO> tags;
+    private List<TaskDTO> task;
 }

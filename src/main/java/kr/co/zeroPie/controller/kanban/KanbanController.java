@@ -40,6 +40,12 @@ public class KanbanController {
         kanbanService.createMember(kanbanStfDTO);
     }
 
+    @GetMapping("/kanban/{kanbanId}")
+    public List<BoardDTO> getAllBoards(@PathVariable int kanbanId) {
+        log.info("보드 겟");
+        return kanbanService.getAllBoards(kanbanId);
+    }
+
     // 보드
     @PostMapping("/kanban/addBoard")
     public void addBoard(@RequestBody String boardJson) {
