@@ -20,6 +20,15 @@ public class PageController {
 
     private final PageService pageService;
 
+    // 내 문서 목록 불러오기
+    @PostMapping("/doc/list")
+    public ResponseEntity<?> docList(@RequestBody String userId) {
+
+        log.info("userId : " + userId);
+
+        return pageService.selectPageList(userId);
+    }
+
     // 페이지 데이터 저장
     @PostMapping("/doc/save")
     public ResponseEntity<?> docSave(@RequestBody PageDTO pageDTO) {
@@ -32,10 +41,10 @@ public class PageController {
 
     // 페이지 데이터 불러오기
     @PostMapping("/doc/view")
-    public ResponseEntity<?> docView(PageDTO pageDTO) {
+    public ResponseEntity<?> docView(@RequestBody int pno) {
 
-        log.info("pno : " + pageDTO);
+        log.info("pno : " + pno);
 
-        return pageService.selectPageContent(pageDTO.getPno());
+        return pageService.selectPageContent(pno);
     }
 }
