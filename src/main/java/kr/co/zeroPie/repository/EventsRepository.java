@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface EventsRepository extends JpaRepository<Events, Integer>, EventsRepositoryCustom {
-    List<Events> findByStfNoAndCalendarId(String stfNo, Long calendarId);
-    List<Events> findByEventId(String eventId);
-    void deleteByEventId(String eventId);
+    List<Events> findByCalendarId(Long calendarId);
+    List<Events> findByEventNo(int eventNo);
 }

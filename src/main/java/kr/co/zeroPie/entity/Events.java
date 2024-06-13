@@ -49,4 +49,13 @@ public class Events {
                 .isReadOnly(isReadOnly)
                 .build();
     }
+
+    // 수동으로 setter 메서드 추가
+    public void setAllDay(boolean isAllDay) {
+        this.isAllDay = isAllDay;
+    }
+
+    public void setReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
 }
