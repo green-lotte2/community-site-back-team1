@@ -22,25 +22,22 @@ public class CalendarService {
     private final CalendarMemberRepository calendarMemberRepository;
     private final CalendarRepository calendarRepository;
 
-    // 공유된 캘린더를 가져옴
-    public List<CalendarDTO> getSharedCalendars(String stfNo) {
-        return calendarRepository.findAllSharedCalendars(stfNo).stream()
-                .map(Calendar::toDTO)
-                .collect(Collectors.toList());
-    }
-
     // 사용자 개인의 캘린더를 가져오거나 생성함
     public CalendarDTO getOrCreateUserCalendar(String userId, String username) {
-        Optional<Calendar> existingCalendar = calendarRepository.findByOwnerStfNo(userId);
-        if (existingCalendar.isPresent()) {
-            return existingCalendar.get().toDTO();
+        List<Calendar> existingCalendars = calendarRepository.findByOwnerStfNo(userId);
+        if (!existingCalendars.isEmpty()) {
+            CalendarDTO calendarDTO = existingCalendars.get(0).toDTO();
+            calendarDTO.setMembers(getMembersByCalendarId(calendarDTO.getCalendarId()));
+            return calendarDTO;
         } else {
             Calendar newCalendar = Calendar.builder()
                     .title("나의 캘린더(" + username + ")")
                     .ownerStfNo(userId)
                     .build();
             Calendar savedCalendar = calendarRepository.save(newCalendar);
-            return savedCalendar.toDTO();
+            CalendarDTO calendarDTO = savedCalendar.toDTO();
+            calendarDTO.setMembers(getMembersByCalendarId(savedCalendar.getCalendarId()));
+            return calendarDTO;
         }
     }
 
@@ -52,15 +49,8 @@ public class CalendarService {
         return sharedCalendars;
     }
 
-    // 모든 캘린더를 가져옴
-    public List<CalendarDTO> getAllCalendars() {
-        return calendarRepository.findAll().stream()
-                .map(Calendar::toDTO)
-                .collect(Collectors.toList());
-    }
-
     // 새로운 캘린더를 생성함
-    public CalendarDTO createCalendar(CalendarDTO calendarDTO) {
+    public CalendarDTO createNewCalendar(CalendarDTO calendarDTO) {
         Calendar calendar = calendarRepository.save(calendarDTO.toEntity());
 
         // 캘린더 멤버 추가 로직
@@ -89,6 +79,27 @@ public class CalendarService {
             calendarMemberRepository.save(ownerMember);
         }
 
-        return calendar.toDTO();
+        CalendarDTO createdCalendarDTO = calendar.toDTO();
+        createdCalendarDTO.setMembers(getMembersByCalendarId(calendar.getCalendarId()));
+
+        return createdCalendarDTO;
+    }
+
+    // 특정 캘린더의 멤버를 가져오는 메소드
+    private List<CalendarMemberDTO> getMembersByCalendarId(Long calendarId) {
+        return calendarMemberRepository.findByCalendarId(calendarId).stream()
+                .map(CalendarMember::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 공유된 캘린더를 가져옴
+    private List<CalendarDTO> getSharedCalendars(String stfNo) {
+        return calendarRepository.findAllSharedCalendars(stfNo).stream()
+                .map(calendar -> {
+                    CalendarDTO calendarDTO = calendar.toDTO();
+                    calendarDTO.setMembers(getMembersByCalendarId(calendar.getCalendarId()));
+                    return calendarDTO;
+                })
+                .collect(Collectors.toList());
     }
 }
