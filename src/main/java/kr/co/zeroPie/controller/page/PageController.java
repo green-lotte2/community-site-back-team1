@@ -47,4 +47,13 @@ public class PageController {
 
         return pageService.selectPageContent(pno);
     }
+
+    // 새 페이지 만들기
+    @PostMapping("/doc/create")
+    public ResponseEntity<?> docCreate(@RequestBody String userId) {
+
+        log.info("userId : " + userId);
+
+        return pageService.createNewDoc(userId);
+    }
 }
