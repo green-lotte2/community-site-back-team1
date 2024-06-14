@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import kr.co.zeroPie.dto.PageDTO;
 import kr.co.zeroPie.entity.MyDoc;
 import kr.co.zeroPie.entity.Page;
+import kr.co.zeroPie.repository.MyDocRepository;
 import kr.co.zeroPie.repository.PageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import java.util.*;
 public class PageService {
 
     private final PageRepository pageRepository;
+    private final MyDocRepository myDocRepository;
     private final ModelMapper modelMapper;
 
     // 문서 목록 불러오기
@@ -70,5 +72,22 @@ public class PageService {
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(1);
         }
+    }
+
+    // 새 문서 만들기
+    public ResponseEntity<?> createNewDoc (String userId) {
+        String modiUserId = userId.substring(1, userId.length() - 1);
+
+        Page newPage = new Page();
+        newPage.setOwner(modiUserId);
+        newPage.setTitle("제목 없음");
+        newPage.setRDate(LocalDateTime.now());
+        Page savePage = pageRepository.save(newPage);
+
+        MyDoc newMyDoc = new MyDoc();
+        newMyDoc.setStfNo(modiUserId);
+        newMyDoc.setPno(savePage.getPno());
+        MyDoc saveMyDoc = myDocRepository.save(newMyDoc);
+        return ResponseEntity.status(HttpStatus.OK).body(saveMyDoc);
     }
 }
