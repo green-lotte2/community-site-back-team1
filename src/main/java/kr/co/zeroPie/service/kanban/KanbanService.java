@@ -15,6 +15,7 @@ import kr.co.zeroPie.repository.KanbanRepository;
 import kr.co.zeroPie.repository.KanbanStfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -95,6 +96,20 @@ public class KanbanService {
             savedBoards.add(boardRepository.save(board));
         }
         return savedBoards;
+    }
+
+    public ResponseEntity<String> removeBoard(String boardId){
+        try{
+            if (boardRepository.existsById(boardId)) {
+                boardRepository.deleteById(boardId);
+                return ResponseEntity.ok("removed Board");
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     public List<BoardDTO> getBoardById(int kanbanId) throws JsonProcessingException {
