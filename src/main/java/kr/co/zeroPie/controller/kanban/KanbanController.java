@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.zeroPie.dto.kanban.BoardDTO;
 import kr.co.zeroPie.dto.kanban.KanbanDTO;
 import kr.co.zeroPie.dto.kanban.KanbanStfDTO;
+import kr.co.zeroPie.entity.kanban.Board;
 import kr.co.zeroPie.service.kanban.KanbanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,15 +44,17 @@ public class KanbanController {
     }
 
     @GetMapping("/kanban/{kanbanId}")
-    public List<BoardDTO> getAllBoards(@PathVariable int kanbanId) {
+    public List<BoardDTO> getAllBoards(@PathVariable int kanbanId) throws JsonProcessingException {
         log.info("보드 겟");
-        return kanbanService.getAllBoards(kanbanId);
+        return kanbanService.getBoardById(kanbanId);
     }
 
     // 보드
     @PostMapping("/kanban/addBoard")
-    public void addBoard(@RequestBody String boardJson) {
-        kanbanService.createBoard(boardJson);
+    public void addBoard(@RequestBody List<BoardDTO> boardDTOList) throws JsonProcessingException {
+            log.info("인서트!!!!");
+        kanbanService.saveBoard(boardDTOList);
+
 
     }
 }
