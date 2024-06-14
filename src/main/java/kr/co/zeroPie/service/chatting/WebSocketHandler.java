@@ -27,8 +27,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String userId = (String) session.getAttributes().get("userId");
+
+        log.info("userId = " + userId);
+
         if (userId != null) {
             // userId를 이용한 로직 수행
+            log.info("1번으로 들어와야해");
             chatService.addSession(userId, session);
         } else {
             log.warn("User ID is missing in the session attributes.");
