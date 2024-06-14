@@ -3,6 +3,7 @@ package kr.co.zeroPie.dto.kanban;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -11,9 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class BoardDTO {
+
     private String id;
     private String boardName;
     private int kanbanId;
+    private int boardIndex;
 
-    private List<CardDTO> card;
+    private List<Map<String, Object>> card;
 }
