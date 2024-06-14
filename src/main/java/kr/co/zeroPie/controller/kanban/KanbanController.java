@@ -54,7 +54,10 @@ public class KanbanController {
     public void addBoard(@RequestBody List<BoardDTO> boardDTOList) throws JsonProcessingException {
             log.info("인서트!!!!");
         kanbanService.saveBoard(boardDTOList);
+    }
 
-
+    @DeleteMapping("/kanban/{id}")
+    public void deleteBoard(@PathVariable String id) {
+        kanbanService.removeBoard(id);
     }
 }
