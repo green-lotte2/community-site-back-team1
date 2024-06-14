@@ -141,7 +141,7 @@ public class ChatService {
         chatUser.setRoomId(roomId);
         chatUser.setStfNo(id);
 
-        chatUserRepository.save(chatUser);
+        //chatUserRepository.save(chatUser);
 
     }
 

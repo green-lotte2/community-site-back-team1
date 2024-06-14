@@ -33,11 +33,11 @@ public class EventsController {
         return eventsService.selectsSchedules(calendarId);
     }
 
-    // 캘린더 일정수정
     @PostMapping("/events/modify/{eventNo}")
     public ResponseEntity<?> modifyEvent(@PathVariable("eventNo") int eventNo, @RequestBody EventsDTO eventsDTO) {
         log.info("수정 컨트롤러..1" + eventNo);
         log.info("수정 컨트롤러..2" + eventsDTO);
+        log.info("수정할 이벤트의 eventId: " + eventsDTO.getEventId()); // 수정 이벤트 ID 로그 추가
         return eventsService.modifyEvent(eventNo, eventsDTO);
     }
 

@@ -19,7 +19,11 @@ public class QBoard extends EntityPathBase<Board> {
 
     public static final QBoard board = new QBoard("board");
 
+    public final NumberPath<Integer> boardIndex = createNumber("boardIndex", Integer.class);
+
     public final StringPath boardName = createString("boardName");
+
+    public final StringPath card = createString("card");
 
     public final StringPath id = createString("id");
 

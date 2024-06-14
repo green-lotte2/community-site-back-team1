@@ -1,10 +1,9 @@
 package kr.co.zeroPie.entity.kanban;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
-
-import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -13,17 +12,15 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "board")
-public class Board {
-
+@Table(name = "board_overview")
+public class BoardOverview {
     @Id
     private String id;
-
     private String boardName;
     private int kanbanId;
-
+    private String kanbanName;
+    private String kanbanInfo;
+    private String kanbanStf;
     private String card;
-
-    private int boardIndex;//칸반 번호
 
 }

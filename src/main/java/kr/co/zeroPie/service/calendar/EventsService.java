@@ -2,8 +2,10 @@ package kr.co.zeroPie.service.calendar;
 
 import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.EventsDTO;
+import kr.co.zeroPie.entity.Calendar;
 import kr.co.zeroPie.entity.Events;
 import kr.co.zeroPie.repository.CalendarMemberRepository;
+import kr.co.zeroPie.repository.CalendarRepository;
 import kr.co.zeroPie.repository.EventsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,6 +25,7 @@ public class EventsService {
     private final EventsRepository eventsRepository;
     private final CalendarMemberRepository calendarMemberRepository;
     private final ModelMapper modelMapper;
+    private final CalendarRepository calendarRepository;
 
     // 스케쥴 보기
     public ResponseEntity<?> selectsSchedules(Long calendarId) {
@@ -56,13 +60,25 @@ public class EventsService {
         Events event = eventsRepository.findById(eventNo).orElse(null);
         if (event == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND");
-        } else {
-            modelMapper.map(eventsDTO, event);
-            event.setStfNo(eventsDTO.getStfNo()); // 수정한 사람의 stfNo로 업데이트
-            eventsRepository.save(event);
-            return ResponseEntity.ok(event.toDTO());
         }
+
+        // 캘린더 ID 유효성 검사
+        Optional<Calendar> calendar = calendarRepository.findById(eventsDTO.getCalendarId());
+        if (!calendar.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid calendarId");
+        }
+
+        // eventId 유지 또는 설정
+        if(eventsDTO.getEventId() == null) {
+            eventsDTO.setEventId(event.getEventId());
+        }
+
+        modelMapper.map(eventsDTO, event);
+        event.setStfNo(eventsDTO.getStfNo()); // 수정한 사람의 stfNo로 업데이트
+        eventsRepository.save(event);
+        return ResponseEntity.ok(event.toDTO());
     }
+
 
     // 이벤트 삭제
     @Transactional
