@@ -80,7 +80,7 @@ public class PageService {
 
         Page newPage = new Page();
         newPage.setOwner(modiUserId);
-        newPage.setTitle("제목 없음");
+        newPage.setTitle("이름 없는 새 문서");
         newPage.setRDate(LocalDateTime.now());
         Page savePage = pageRepository.save(newPage);
 
