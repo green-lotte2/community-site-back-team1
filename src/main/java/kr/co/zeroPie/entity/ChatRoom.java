@@ -24,6 +24,8 @@ public class ChatRoom {
 
     private String name;
 
+    private String stfNo;
+
     @Transient
     private Set<WebSocketSession> sessions = new HashSet<>();
 

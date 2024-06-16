@@ -3,7 +3,9 @@ package kr.co.zeroPie.service.chatting;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.zeroPie.dto.ChatMessageDTO;
 import kr.co.zeroPie.dto.ChatRoomDTO;
+import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.entity.ChatRoom;
+import kr.co.zeroPie.service.StfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
     private final ChatService chatService;
+    private final StfService stfService;
 
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String userId = (String) session.getAttributes().get("userId");
@@ -58,6 +61,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("Parsed chat message: {}", chatMessage);
 
         String userId = getUserIdFromSession(session);
+
+        StfDTO stfDTO = stfService.getUserInfo(userId);
+
+        String img = stfDTO.getStfImg();
+
+        chatMessage.setImg(img);//유저 이미지 저장
 
         ChatRoomDTO room = chatService.findRoomById(chatMessage.getRoomId());
         if (room != null) {

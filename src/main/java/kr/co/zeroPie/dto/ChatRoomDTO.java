@@ -1,5 +1,7 @@
 package kr.co.zeroPie.dto;
 
+import kr.co.zeroPie.entity.ChatRecords;
+import kr.co.zeroPie.repository.ChatRecordsRepository;
 import kr.co.zeroPie.service.chatting.ChatService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,21 +18,30 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Getter
 @Setter
+@ToString
 public class ChatRoomDTO {
 
     private String roomId;
     private String name;
+    private String stfNo;//방을 생성한 사용자 저장
     private Set<String> userIds = new HashSet<>(); // 사용자 ID를 저장
     private Set<WebSocketSession> sessions = new HashSet<>(); // 세션 ID와 WebSocketSession을 매핑
 
 
     @Builder
-    public ChatRoomDTO(String roomId, String name) {
+    public ChatRoomDTO(String roomId, String name,String stfNo) {
         this.roomId = roomId;
         this.name = name;
+        this.stfNo = stfNo;
+    }
+
+    public ChatRoomDTO() {
+
     }
 
     public void handleActions(String userId, WebSocketSession session, ChatMessageDTO chatMessage, ChatService chatService) {
+
+
 
         log.info("여기 들어옴?......4 - session, chatMessage, chatService" + userId + "/" + "/" + chatMessage + "/" + chatService);
 
@@ -38,9 +49,10 @@ public class ChatRoomDTO {
             if (!sessions.contains(session)) {
                 sessions.add(session);
                 chatService.addSession(userId, session);  // Ensure the session is added with the correct userId
-                chatMessage.setMessage(chatMessage.getSender() + "님이 입장했습니다.");
+                log.info("입장할때 무슨무슨 데이터가 들어오는지 보자 : "+chatMessage);
+
             }
-        }else if (chatMessage.getType().equals(ChatMessageDTO.MessageType.TALK)) {//TALK 상태일때 sessions에서 제거가 될 수 있음(새로고침 시)
+        } else if (chatMessage.getType().equals(ChatMessageDTO.MessageType.NOMAL)) {//TALK 상태일때 sessions에서 제거가 될 수 있음(새로고침 시)
             WebSocketSession beforeSession = chatService.getSessionById(userId);
             log.info("Before session: {}", beforeSession);
 
@@ -50,7 +62,6 @@ public class ChatRoomDTO {
                 chatService.addSession(userId, session);
             } else {
                 log.info("Updating session for userId={}", userId);
-
                 //이전 세션은 삭제
                 Iterator<WebSocketSession> iterator = sessions.iterator();
                 while (iterator.hasNext()) {
@@ -67,33 +78,31 @@ public class ChatRoomDTO {
                 // Update the session in ChatService
                 chatService.addSession(userId, session);
             }
+        } else if (chatMessage.getType().equals(ChatMessageDTO.MessageType.QUIT)) {
+
+            //본인세션 없애기
+
+            WebSocketSession beforeSession = chatService.getSessionById(userId);
+            log.info("Removing session for userId={}", userId);
+
+            if (beforeSession != null) {
+                Iterator<WebSocketSession> iterator = sessions.iterator();
+                while (iterator.hasNext()) {
+                    WebSocketSession existingSession = iterator.next();
+                    if (existingSession.equals(beforeSession)) {
+                        iterator.remove();
+                        chatService.removeSession(userId);
+                        break;
+                    }
+                }
+            }
+        }else{
+            log.info("여기는 토크상태임");
         }
 
         log.info("여기 들어옴?.......5");
         sendMessage(chatMessage, chatService);
     }
-
-    /*
-    구독자를 관리해야함 -> 채팅방에서 구독자들이 나가고(QUIT) 들어올때(ENTER)
-
-    private List<WebSocketSession> subscribers = new ArrayList<>();
-
-    public ChatRoom(String roomId) {
-        this.roomId = roomId;
-    }
-
-    public void subscribe(WebSocketSession session) {
-        subscribers.add(session);
-    }
-
-    public void unsubscribe(WebSocketSession session) {
-        subscribers.remove(session);
-    }
-
-    public void sendMessageToSubscribers(Object message, ChatService chatService) {
-
-
-     */
 
     public <T> void sendMessage(T message, ChatService chatService) {
 
