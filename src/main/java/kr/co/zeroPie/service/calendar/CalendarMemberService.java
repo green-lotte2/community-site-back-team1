@@ -32,8 +32,22 @@ public class CalendarMemberService {
     }
 
     // 새로운 멤버를 캘린더에 추가합니다.
-    public CalendarMemberDTO addMember(CalendarMemberDTO calendarMemberDTO) {
-        CalendarMember calendarMember = calendarMemberRepository.save(calendarMemberDTO.toEntity());
-        return calendarMember.toDTO();
+    public List<CalendarMemberDTO> addMembers(List<CalendarMemberDTO> calendarMemberDTOs) {
+        List<CalendarMember> calendarMembers = calendarMemberDTOs.stream()
+                .map(CalendarMemberDTO::toEntity)
+                .collect(Collectors.toList());
+
+        List<CalendarMember> savedMembers = calendarMemberRepository.saveAll(calendarMembers);
+        return savedMembers.stream()
+                .map(CalendarMember::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // 특정 멤버를 캘린더에서 제거합니다.
+    public void leaveCalendar(CalendarMemberDTO calendarMemberDTO) {
+        CalendarMember calendarMember = calendarMemberRepository.findByCalendarIdAndStfNo(
+                calendarMemberDTO.getCalendarId(), calendarMemberDTO.getStfNo()
+        ).orElseThrow(() -> new IllegalArgumentException("해당 멤버를 찾을 수 없습니다."));
+        calendarMemberRepository.delete(calendarMember);
     }
 }
