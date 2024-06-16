@@ -49,6 +49,11 @@ public class KanbanController {
         return kanbanService.getBoardById(kanbanId);
     }
 
+    @GetMapping("/kanban/stfList/{kanbanId}")
+    public List<KanbanStfDTO> getKanbanStfList(@PathVariable int kanbanId){
+        return kanbanService.getKanbanStfList(kanbanId);
+    }
+
     // 보드
     @PostMapping("/kanban/addBoard")
     public void addBoard(@RequestBody List<BoardDTO> boardDTOList) throws JsonProcessingException {
