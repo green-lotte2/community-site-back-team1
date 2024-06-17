@@ -14,4 +14,6 @@ public class RnkDTO {
     private int rnkNo;
 
     private String rnkName;//직급이름
+
+    private int rnkIndex;
 }

@@ -132,7 +132,7 @@ public class AdminStfService {
     // 직책 조회
     public ResponseEntity<?> selectRnkList(){
 
-        List<Rnk> rnkList = rnkRepository.findAll();
+        List<Rnk> rnkList = rnkRepository.findAllByOrderByRnkIndexAsc();
         log.info(rnkList.toString());
         return ResponseEntity.status(HttpStatus.OK).body(rnkList);
     }
