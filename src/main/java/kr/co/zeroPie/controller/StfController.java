@@ -319,7 +319,6 @@ public class StfController {
         StfDTO stfDTO = stfService.getUserInfo(stfNo);
 
         return  ResponseEntity.ok().body(stfDTO);
-
     }
 
 
