@@ -11,4 +11,6 @@ public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryC
     public int countByStfEmail(String stfEmail);
 
     public Stf findIdByStfEmailAndStfName(String stfEmail,String stfName);
+
+    public Stf findStfNameByStfNo(String stfNo);
 }

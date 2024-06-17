@@ -324,7 +324,7 @@ public void updatePass(String id, String pass){
 
     //플랜 결제
     @Transactional
-    public void planOrder(PlanOrderDTO planOrderDTO){
+    public int planOrder(PlanOrderDTO planOrderDTO){
 
         log.info("stfService - PlanOrderDTO : "+planOrderDTO);
 
@@ -341,6 +341,8 @@ public void updatePass(String id, String pass){
         planOrderRepository.save(modelMapper.map(planOrderDTO,PlanOrder.class));//planOrder 테이블에 PlanStatusNo 넣어주고 저장
 
         log.info("stfService -planOrder- planOrderDTO"+planOrderDTO);
+
+        return planStatus.getPlanStatusNo();
 
     }
 
@@ -368,5 +370,38 @@ public void updatePass(String id, String pass){
         }else {
             return 0;
         }
+    }
+
+    public void savePlan(String user,int planNo){
+
+        log.info("내가 가입한 플랜 번호 : "+planNo);
+
+        Optional<Stf> optUser = stfRepository.findById(user);
+
+        Stf stf = modelMapper.map(optUser,Stf.class);//아이디에 해당하는 유저를 찾아서 플랜을 심어줌.
+
+        stf.setPlanStatusNo(planNo);
+
+        stfRepository.save(stf);
+    }
+
+
+    public void freePlan(String stfNo){
+        PlanStatus planStatus = new PlanStatus();
+
+        planStatus.setPlanEdate();
+        planStatus.setPlanNo(1);
+
+        planStatusRepository.save(planStatus);
+
+        int planNo = planStatus.getPlanStatusNo();//플랜
+
+        Optional<Stf> optStf = stfRepository.findById(stfNo);
+
+        Stf stf = modelMapper.map(optStf,Stf.class);
+
+        stf.setPlanStatusNo(planNo);
+
+        stfRepository.save(stf);
     }
 }

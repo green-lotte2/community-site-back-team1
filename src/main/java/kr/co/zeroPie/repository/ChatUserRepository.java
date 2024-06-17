@@ -14,4 +14,8 @@ public interface ChatUserRepository extends JpaRepository<ChatUser,Integer>, Cha
     public List<ChatUser> findByRoomIdAndStfNo(String roomId, String stfNo);
     public void deleteByRoomId(String roomId);
 
+    public List<ChatUser> findByRoomId(String roomId);
+
+    public int countStfNoByRoomId(String roomId);
+
 }

@@ -340,9 +340,29 @@ public class StfController {
 
         log.info("controller - postPay - planOrderDTO : "+planOrderDTO);
 
-        stfService.planOrder(planOrderDTO);
+        int planNo = stfService.planOrder(planOrderDTO);
+
+        return ResponseEntity.ok().body(planNo);
+
+    }
+
+    @GetMapping("/savePlan")
+    public ResponseEntity<?> savePlan(@RequestParam("user")String user, @RequestParam("planNo")int planNo){
+
+        log.info("controller - savePlan - user : "+user);
+        log.info("controller - planType : "+planNo);
+
+        stfService.savePlan(user,planNo);
 
         return ResponseEntity.ok().body(1);
+
+    }
+
+    //무료플랜
+    @GetMapping("/freePlan")
+    public void freePlan(@RequestParam("stfNo")String stfNo){
+
+        stfService.freePlan(stfNo);
 
     }
 }
