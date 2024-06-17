@@ -125,7 +125,31 @@ public class KanbanService {
         }catch (Exception e){
             return ResponseEntity.notFound().build();
         }
+    }
 
+    public ResponseEntity<String> removeKanban(int kanbanId){
+        try{
+            if (kanbanRepository.existsById(kanbanId)) {
+                kanbanRepository.deleteById(kanbanId);
+                return ResponseEntity.ok("removed Kanban");
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ResponseEntity<String> removeStf(int kanbanId, String stfNo){
+        KanbanStf kanbanStf = kanbanStfRepository.findByKanbanIdAndStfNo(kanbanId, stfNo);
+        log.info(kanbanStf.toString());
+        if (kanbanStf != null) {
+            int kanbanStfNo = kanbanStf.getKanbanStfNo();
+            kanbanStfRepository.deleteById(kanbanStfNo);
+            return ResponseEntity.ok("removed stf");
+        }else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     public List<BoardDTO> getBoardById(int kanbanId) throws JsonProcessingException {

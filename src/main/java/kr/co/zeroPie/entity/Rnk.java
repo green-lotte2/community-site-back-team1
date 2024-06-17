@@ -26,4 +26,6 @@ public class Rnk {
 
     private String rnkName;//직급이름
 
+    private int rnkIndex;
+
 }
