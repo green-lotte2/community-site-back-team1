@@ -58,7 +58,7 @@ public class ArticleService {
     // 게시판 글목록 출력(일반)
     public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO articlePageRequestDTO) {
 
-        Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
+        Pageable pageable =  articlePageRequestDTO.getPageable("articleNo");
 
         Page<Article> pageArticle = articleRepository.selectArticles(articlePageRequestDTO, pageable);
 
