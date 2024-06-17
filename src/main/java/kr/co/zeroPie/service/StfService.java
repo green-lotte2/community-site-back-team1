@@ -20,6 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -340,4 +344,29 @@ public void updatePass(String id, String pass){
 
     }
 
+    // 로그인 토큰 발급시 사용자 플랜 정보 조회하기
+    public int selectStfPlan(int planStatusNo) {
+        Optional<PlanStatus> optPlanStatus = planStatusRepository.findById(planStatusNo);
+        if (optPlanStatus.isPresent()) {
+            Date planEndDate = optPlanStatus.get().getPlanEdate();
+            Date currentDate = new Date();
+
+            LocalDateTime planEndLocalDateTime = planEndDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+            LocalDateTime currentLocalDateTime = currentDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+
+            log.info("플랜 : " + planEndLocalDateTime);
+            log.info("지금 : " + currentLocalDateTime);
+            if (planEndLocalDateTime.isAfter(currentLocalDateTime)) {
+                return optPlanStatus.get().getPlanNo();
+            }else {
+                return 0;
+            }
+        }else {
+            return 0;
+        }
+    }
 }
