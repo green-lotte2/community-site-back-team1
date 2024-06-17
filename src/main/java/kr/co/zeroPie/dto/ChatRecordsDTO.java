@@ -20,7 +20,11 @@ public class ChatRecordsDTO {
 
     private String stfNo;
 
+    private String stfName;
+
     private String message;
 
     private LocalDateTime dateTime;
+
+    private String Img;
 }

@@ -23,9 +23,13 @@ public class QChatRecords extends EntityPathBase<ChatRecords> {
 
     public final NumberPath<Integer> id = createNumber("id", Integer.class);
 
+    public final StringPath img = createString("img");
+
     public final StringPath message = createString("message");
 
     public final StringPath roomId = createString("roomId");
+
+    public final StringPath stfName = createString("stfName");
 
     public final StringPath stfNo = createString("stfNo");
 
