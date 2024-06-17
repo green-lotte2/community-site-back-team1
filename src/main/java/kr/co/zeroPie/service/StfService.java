@@ -15,11 +15,17 @@ import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -320,7 +326,7 @@ public void updatePass(String id, String pass){
 
     //플랜 결제
     @Transactional
-    public void planOrder(PlanOrderDTO planOrderDTO){
+    public int planOrder(PlanOrderDTO planOrderDTO){
 
         log.info("stfService - PlanOrderDTO : "+planOrderDTO);
 
@@ -338,6 +344,100 @@ public void updatePass(String id, String pass){
 
         log.info("stfService -planOrder- planOrderDTO"+planOrderDTO);
 
+        return planStatus.getPlanStatusNo();
+
     }
 
+    // 로그인 토큰 발급시 사용자 플랜 정보 조회하기
+    public int selectStfPlan(int planStatusNo) {
+        Optional<PlanStatus> optPlanStatus = planStatusRepository.findById(planStatusNo);
+        if (optPlanStatus.isPresent()) {
+            Date planEndDate = optPlanStatus.get().getPlanEdate();
+            Date currentDate = new Date();
+
+            LocalDateTime planEndLocalDateTime = planEndDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+            LocalDateTime currentLocalDateTime = currentDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+
+            log.info("플랜 : " + planEndLocalDateTime);
+            log.info("지금 : " + currentLocalDateTime);
+            if (planEndLocalDateTime.isAfter(currentLocalDateTime)) {
+                return optPlanStatus.get().getPlanNo();
+            }else {
+                return 0;
+            }
+        }else {
+            return 0;
+        }
+    }
+
+
+    public void savePlan(String user,int planNo){
+
+        log.info("내가 가입한 플랜 번호 : "+planNo);
+
+        Optional<Stf> optUser = stfRepository.findById(user);
+
+        Stf stf = modelMapper.map(optUser,Stf.class);//아이디에 해당하는 유저를 찾아서 플랜을 심어줌.
+
+        stf.setPlanStatusNo(planNo);
+
+        stfRepository.save(stf);
+    }
+
+
+    public void freePlan(String stfNo){
+        PlanStatus planStatus = new PlanStatus();
+
+        planStatus.setPlanEdate();
+        planStatus.setPlanNo(1);
+
+        planStatusRepository.save(planStatus);
+
+        int planNo = planStatus.getPlanStatusNo();//플랜
+
+        Optional<Stf> optStf = stfRepository.findById(stfNo);
+
+        Stf stf = modelMapper.map(optStf,Stf.class);
+
+        stf.setPlanStatusNo(planNo);
+
+        stfRepository.save(stf);
+
+    
+    // 메인페이지 출력용 회원 정보 조회
+    public List<StfDTO> selectStfInfo(String stfNo) {
+
+        Optional<Stf> optStf = stfRepository.findById(stfNo);
+
+        List<StfDTO> stfDTOList = new ArrayList<>();
+        if(optStf.isPresent()) {
+            StfDTO stfDTO = modelMapper.map(optStf, StfDTO.class);
+            Optional<Dpt> optDpt = dptRepository.findById(optStf.get().getDptNo());
+            Optional<Rnk> optRnk = rnkRepository.findById(optStf.get().getRnkNo());
+            stfDTO.setStrDptName(optDpt.get().getDptName());
+            stfDTO.setStrRnkNo(optRnk.get().getRnkName());
+            stfDTOList.add(stfDTO);
+            return stfDTOList;
+        }
+        return null;
+    }
+
+    // 메인페이지 출력용 생일자 조회
+    public List<StfDTO> selectStfForBrith() {
+        List<Stf> stfList = stfRepository.findByStfBirth(LocalDate.now());
+        return stfList.stream()
+                .map(stf -> {
+                    StfDTO each = modelMapper.map(stf, StfDTO.class);
+                    Optional<Dpt> optDpt = dptRepository.findById(each.getDptNo());
+                    Optional<Rnk> optRnk = rnkRepository.findById(each.getRnkNo());
+                    each.setStrDptName(optDpt.get().getDptName());
+                    each.setStrRnkNo(optRnk.get().getRnkName());
+                    return each;
+                }).toList();
+
+    }
 }

@@ -25,9 +25,13 @@ public class ChatRecords {
 
     private String stfNo;
 
+    private String stfName;
+
     private String message;
 
     @CreationTimestamp
     private LocalDateTime dateTime;
+
+    private String img;
 
 }

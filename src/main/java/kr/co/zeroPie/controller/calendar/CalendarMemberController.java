@@ -27,8 +27,14 @@ public class CalendarMemberController {
     }
 
     // 새로운 멤버를 캘린더에 추가
-    @PostMapping
-    public CalendarMemberDTO addMember(@RequestBody CalendarMemberDTO calendarMemberDTO) {
-        return calendarMemberService.addMember(calendarMemberDTO);
+    @PostMapping("/add")
+    public List<CalendarMemberDTO> addMembers(@RequestBody List<CalendarMemberDTO> calendarMemberDTOs) {
+        return calendarMemberService.addMembers(calendarMemberDTOs);
+    }
+
+    // 캘린더에서 멤버를 제거
+    @DeleteMapping("/leave")
+    public void leaveCalendar(@RequestBody CalendarMemberDTO calendarMemberDTO) {
+        calendarMemberService.leaveCalendar(calendarMemberDTO);
     }
 }

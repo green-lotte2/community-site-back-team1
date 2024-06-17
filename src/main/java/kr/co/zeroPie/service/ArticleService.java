@@ -58,7 +58,7 @@ public class ArticleService {
     // 게시판 글목록 출력(일반)
     public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO articlePageRequestDTO) {
 
-        Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
+        Pageable pageable =  articlePageRequestDTO.getPageable("articleNo");
 
         Page<Article> pageArticle = articleRepository.selectArticles(articlePageRequestDTO, pageable);
 
@@ -188,6 +188,11 @@ public class ArticleService {
 
             oArticleDTO.setArticleTitle(articleDTO.getArticleTitle());
             oArticleDTO.setArticleCnt(articleDTO.getArticleCnt());
+
+            // articleThumb이 null이면 기존 썸네일 유지
+            if (articleDTO.getArticleThumb() != null) {
+                oArticleDTO.setArticleThumb(articleDTO.getArticleThumb());
+            }
 
             Article article = modelMapper.map(oArticleDTO, Article.class);
             articleRepository.save(article);

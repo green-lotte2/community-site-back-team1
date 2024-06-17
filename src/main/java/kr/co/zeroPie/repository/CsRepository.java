@@ -7,10 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
+import java.util.List;
 
 
 @Repository
 public interface CsRepository extends JpaRepository<Cs,Integer>, CsRepositoryCustom {
-
+    // 최신순 5개만 조회
+    public List<Cs> findTop5ByOrderByCsRdateDesc();
 }

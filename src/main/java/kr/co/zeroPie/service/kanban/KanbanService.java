@@ -15,9 +15,11 @@ import kr.co.zeroPie.repository.KanbanRepository;
 import kr.co.zeroPie.repository.KanbanStfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -74,6 +76,21 @@ public class KanbanService {
         kanbanStfRepository.save(kanbanStf);
     }
 
+    public List<KanbanStfDTO> getKanbanStfList(int kanbanId){
+        List<KanbanStf> stfList= kanbanStfRepository.findByKanbanId(kanbanId);
+        log.info("스태프찾기 : "+stfList.toString());
+
+        return stfList.stream()
+                .map(stf -> {
+                    KanbanStfDTO dto = new KanbanStfDTO();
+                    dto.setKanbanStfNo(stf.getKanbanStfNo());
+                    dto.setKanbanId(stf.getKanbanId());
+                    dto.setStfNo(stf.getStfNo());
+                    return dto;
+                })
+                .toList();
+    }
+
     public List<Board> saveBoard(List<BoardDTO> boardDTOList) throws JsonProcessingException {
         List<Board> savedBoards = new ArrayList<>();
 
@@ -95,6 +112,44 @@ public class KanbanService {
             savedBoards.add(boardRepository.save(board));
         }
         return savedBoards;
+    }
+
+    public ResponseEntity<String> removeBoard(String boardId){
+        try{
+            if (boardRepository.existsById(boardId)) {
+                boardRepository.deleteById(boardId);
+                return ResponseEntity.ok("removed Board");
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ResponseEntity<String> removeKanban(int kanbanId){
+        try{
+            if (kanbanRepository.existsById(kanbanId)) {
+                kanbanRepository.deleteById(kanbanId);
+                return ResponseEntity.ok("removed Kanban");
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ResponseEntity<String> removeStf(int kanbanId, String stfNo){
+        KanbanStf kanbanStf = kanbanStfRepository.findByKanbanIdAndStfNo(kanbanId, stfNo);
+        log.info(kanbanStf.toString());
+        if (kanbanStf != null) {
+            int kanbanStfNo = kanbanStf.getKanbanStfNo();
+            kanbanStfRepository.deleteById(kanbanStfNo);
+            return ResponseEntity.ok("removed stf");
+        }else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     public List<BoardDTO> getBoardById(int kanbanId) throws JsonProcessingException {
@@ -129,59 +184,5 @@ public class KanbanService {
         return boardDTOs != null ? boardDTOs : Collections.emptyList();
     }
 
-    /*
-    public List<BoardDTO> getAllBoards(int kanbanId) {
-        List<BoardDTO> boardDTOs = null;
-        List<BoardOverview> boardOverviews = boardOverViewRepository.findByKanbanId(kanbanId);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            boardDTOs = new ArrayList<>();
-            for (BoardOverview entity : boardOverviews) {
-                String boardName = entity.getBoardName();
-                String id = entity.getId();
-                String cardJson = entity.getCard();
-
-                if (cardJson == null || cardJson.isEmpty()) {
-                    cardJson = "[]";  // Empty JSON array
-                }
-
-                BoardDTO boardDTO = new BoardDTO();
-                boardDTO.setId(id);
-                boardDTO.setBoardName(boardName);
-
-                List<CardDTO> cardDTOList = objectMapper.readValue(cardJson, new TypeReference<List<CardDTO>>() {});
-                boardDTO.setCard(cardDTOList);
-
-                boardDTOs.add(boardDTO);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        log.info(boardDTOs.toString());
-        return boardDTOs;
-    }
-
-
-
-    public void createBoard(String boardJson){
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            BoardDTO boardDTO = objectMapper.readValue(boardJson, BoardDTO.class);
-            log.info("Add Board : " + boardDTO.toString());
-            // 여기서 boardDTO를 처리
-
-            Board board = new Board();
-            board.setId(boardDTO.getId());
-            board.setBoardName(boardDTO.getBoardName());
-            board.setKanbanId(boardDTO.getKanbanId());
-
-            boardRepository.save(board);
-
-        } catch (JsonProcessingException e) {
-            log.error("Error parsing board JSON:", e);
-        }
-    }
-
-     */
 }

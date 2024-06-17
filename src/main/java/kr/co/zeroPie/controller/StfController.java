@@ -65,6 +65,9 @@ public class StfController {
 
             log.info("login...3 : " + user);
 
+            // 회원 플랜 정보 조회
+            int planState = stfService.selectStfPlan(user.getPlanStatusNo());
+            
 
             // 토큰 발급(액세스, 리프레쉬)
             String access = jwtProvider.createToken(user, 1); // 1일
@@ -80,6 +83,7 @@ public class StfController {
             map.put("userEmail", user.getStfEmail());
             map.put("userImg", user.getStfImg());
             map.put("userRole", user.getStfRole());
+            map.put("planState", planState);
             map.put("accessToken", access);
             map.put("refreshToken", refresh);
 
@@ -315,7 +319,6 @@ public class StfController {
         StfDTO stfDTO = stfService.getUserInfo(stfNo);
 
         return  ResponseEntity.ok().body(stfDTO);
-
     }
 
 
@@ -336,9 +339,29 @@ public class StfController {
 
         log.info("controller - postPay - planOrderDTO : "+planOrderDTO);
 
-        stfService.planOrder(planOrderDTO);
+        int planNo = stfService.planOrder(planOrderDTO);
+
+        return ResponseEntity.ok().body(planNo);
+
+    }
+
+    @GetMapping("/savePlan")
+    public ResponseEntity<?> savePlan(@RequestParam("user")String user, @RequestParam("planNo")int planNo){
+
+        log.info("controller - savePlan - user : "+user);
+        log.info("controller - planType : "+planNo);
+
+        stfService.savePlan(user,planNo);
 
         return ResponseEntity.ok().body(1);
+
+    }
+
+    //무료플랜
+    @GetMapping("/freePlan")
+    public void freePlan(@RequestParam("stfNo")String stfNo){
+
+        stfService.freePlan(stfNo);
 
     }
 }
