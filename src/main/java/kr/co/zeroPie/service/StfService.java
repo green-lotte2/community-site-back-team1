@@ -15,6 +15,8 @@ import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -372,6 +374,7 @@ public void updatePass(String id, String pass){
         }
     }
 
+
     public void savePlan(String user,int planNo){
 
         log.info("내가 가입한 플랜 번호 : "+planNo);
@@ -403,5 +406,38 @@ public void updatePass(String id, String pass){
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+
+    
+    // 메인페이지 출력용 회원 정보 조회
+    public List<StfDTO> selectStfInfo(String stfNo) {
+
+        Optional<Stf> optStf = stfRepository.findById(stfNo);
+
+        List<StfDTO> stfDTOList = new ArrayList<>();
+        if(optStf.isPresent()) {
+            StfDTO stfDTO = modelMapper.map(optStf, StfDTO.class);
+            Optional<Dpt> optDpt = dptRepository.findById(optStf.get().getDptNo());
+            Optional<Rnk> optRnk = rnkRepository.findById(optStf.get().getRnkNo());
+            stfDTO.setStrDptName(optDpt.get().getDptName());
+            stfDTO.setStrRnkNo(optRnk.get().getRnkName());
+            stfDTOList.add(stfDTO);
+            return stfDTOList;
+        }
+        return null;
+    }
+
+    // 메인페이지 출력용 생일자 조회
+    public List<StfDTO> selectStfForBrith() {
+        List<Stf> stfList = stfRepository.findByStfBirth(LocalDate.now());
+        return stfList.stream()
+                .map(stf -> {
+                    StfDTO each = modelMapper.map(stf, StfDTO.class);
+                    Optional<Dpt> optDpt = dptRepository.findById(each.getDptNo());
+                    Optional<Rnk> optRnk = rnkRepository.findById(each.getRnkNo());
+                    each.setStrDptName(optDpt.get().getDptName());
+                    each.setStrRnkNo(optRnk.get().getRnkName());
+                    return each;
+                }).toList();
+
     }
 }

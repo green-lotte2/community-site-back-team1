@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -128,12 +130,24 @@ public class PageService {
 
         List<MyDoc> myDocList = myDocRepository.findByPno(pno);
         log.info("myDocList : " + myDocList);
-        List<String> docMember = new ArrayList<>();
+        List<Map<String, String>> docMember = new ArrayList<>();
         for (MyDoc each : myDocList) {
-            docMember.add(each.getStfNo());
+            Map<String, String> result = new HashMap<>();
+            result.put("stfNo", each.getStfNo());
+            docMember.add(result);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(docMember);
+    }
+
+    // 현재 문서의 공동 작업자 초대
+    public void insertDocMember(Map<String, Object> requestData) {
+        log.info("requestData : " + requestData);
+
+        MyDoc myDoc = new MyDoc();
+        myDoc.setPno((int) requestData.get("pno"));
+        myDoc.setStfNo((String) requestData.get("stfNo"));
+        myDocRepository.save(myDoc);
     }
 
     // 현재 문서 삭제

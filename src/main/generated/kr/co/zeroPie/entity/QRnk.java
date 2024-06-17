@@ -19,6 +19,8 @@ public class QRnk extends EntityPathBase<Rnk> {
 
     public static final QRnk rnk = new QRnk("rnk");
 
+    public final NumberPath<Integer> rnkIndex = createNumber("rnkIndex", Integer.class);
+
     public final StringPath rnkName = createString("rnkName");
 
     public final NumberPath<Integer> rnkNo = createNumber("rnkNo", Integer.class);

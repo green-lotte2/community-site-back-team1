@@ -9,6 +9,7 @@ import kr.co.zeroPie.entity.kanban.Board;
 import kr.co.zeroPie.service.kanban.KanbanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,5 +65,17 @@ public class KanbanController {
     @DeleteMapping("/kanban/{id}")
     public void deleteBoard(@PathVariable String id) {
         kanbanService.removeBoard(id);
+    }
+
+    @DeleteMapping("/kanban/del/{kanbanId}")
+    public void delKanban(@PathVariable int kanbanId) {
+        kanbanService.removeKanban(kanbanId);
+    }
+
+    @DeleteMapping("/kanban/stf")
+    public ResponseEntity<String> deleteStf(@RequestParam("kanbanNo") int kanbanNo, @RequestParam("stfNo") String stfNo) {
+        log.info("deleteStf"+stfNo);
+        log.info("deleteStf"+kanbanNo);
+        return kanbanService.removeStf(kanbanNo, stfNo);
     }
 }

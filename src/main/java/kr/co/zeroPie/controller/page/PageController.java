@@ -2,6 +2,7 @@ package kr.co.zeroPie.controller.page;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.zeroPie.dto.PageDTO;
+import kr.co.zeroPie.dto.kanban.KanbanStfDTO;
 import kr.co.zeroPie.service.page.PageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -71,6 +74,14 @@ public class PageController {
 
         log.info("pno : " + pno);
         return pageService.selectDocMember(pno);
+    }
+
+    // 현재 문서의 공동 작업자 초대
+    @PostMapping("/doc/addMember")
+    public ResponseEntity<?> addDocMember(@RequestBody Map<String, Object> requestData) {
+        log.info("requestData : " + requestData);
+        pageService.insertDocMember(requestData);
+        return ResponseEntity.status(HttpStatus.OK).body(1);
     }
 
     // 현재 문서 삭제
