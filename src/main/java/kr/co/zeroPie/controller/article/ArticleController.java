@@ -59,26 +59,6 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(articlePageResponseDTO);
     }
 
-    // 게시판 글목록(card)
-    @PostMapping("/article/card")
-    public ResponseEntity<?> articleCard(@RequestBody ArticlePageRequestDTO articlePageRequestDTO) {
-
-        ArticlePageResponseDTO articlePageResponseDTO = new ArticlePageResponseDTO();
-        log.info("card 출력");
-
-        if (articlePageRequestDTO.getType() == null) {
-            // 일반 글 목록 조회
-            articlePageResponseDTO = articleService.selectArticles(articlePageRequestDTO);
-            log.info("일반글 조회 : " + articlePageResponseDTO);
-
-        } else {
-            // 검색 글 목록 조회
-            articlePageResponseDTO = articleService.searchArticles(articlePageRequestDTO);
-            log.info("검색글 조회 : " + articlePageResponseDTO);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(articlePageResponseDTO);
-    }
-
     // 게시판 글쓰기 Form
     @GetMapping("/article/write")
     public ResponseEntity<?> articleWriteForm(@RequestParam("articleCateNo") String articleCateNo) {
