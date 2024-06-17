@@ -10,5 +10,6 @@ import java.util.List;
 public interface KanbanStfRepository extends JpaRepository<KanbanStf, Integer> {
 
     List<KanbanStf> findByStfNo(String stfNo);
+    List<KanbanStf> findByKanbanId(int kanbanId);
 
 }
