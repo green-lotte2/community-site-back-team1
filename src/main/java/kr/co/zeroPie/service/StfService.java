@@ -389,7 +389,7 @@ public void updatePass(String id, String pass){
     }
 
 
-    public void freePlan(String stfNo){
+    public void freePlan(String stfNo) {
         PlanStatus planStatus = new PlanStatus();
 
         planStatus.setPlanEdate();
@@ -401,11 +401,12 @@ public void updatePass(String id, String pass){
 
         Optional<Stf> optStf = stfRepository.findById(stfNo);
 
-        Stf stf = modelMapper.map(optStf,Stf.class);
+        Stf stf = modelMapper.map(optStf, Stf.class);
 
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+    }
 
     
     // 메인페이지 출력용 회원 정보 조회
@@ -438,6 +439,7 @@ public void updatePass(String id, String pass){
                     each.setStrRnkNo(optRnk.get().getRnkName());
                     return each;
                 }).toList();
+
 
     }
 }
