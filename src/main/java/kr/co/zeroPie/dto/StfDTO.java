@@ -62,6 +62,7 @@ public class StfDTO {
 
     private String strRnkNo;//직급 이름
     private String strDptName;//부서 이름
+    private int planNo;//부서 이름
 
 
 

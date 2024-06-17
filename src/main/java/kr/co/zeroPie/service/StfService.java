@@ -419,8 +419,10 @@ public void updatePass(String id, String pass){
             StfDTO stfDTO = modelMapper.map(optStf, StfDTO.class);
             Optional<Dpt> optDpt = dptRepository.findById(optStf.get().getDptNo());
             Optional<Rnk> optRnk = rnkRepository.findById(optStf.get().getRnkNo());
+            Optional<PlanStatus> optPlan = planStatusRepository.findById(optStf.get().getPlanStatusNo());
             stfDTO.setStrDptName(optDpt.get().getDptName());
             stfDTO.setStrRnkNo(optRnk.get().getRnkName());
+            stfDTO.setPlanNo(optPlan.get().getPlanNo());
             stfDTOList.add(stfDTO);
             return stfDTOList;
         }
@@ -439,7 +441,17 @@ public void updatePass(String id, String pass){
                     each.setStrRnkNo(optRnk.get().getRnkName());
                     return each;
                 }).toList();
+    }
 
+    // 전화 번호 중복 검사
+    public ResponseEntity<?> checkStfPh(String stfPh) {
 
+        Optional<Stf> stf = stfRepository.findByStfPh(stfPh);
+
+        if (stf.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
+            return ResponseEntity.status(HttpStatus.OK).body(0);
+        }
     }
 }
