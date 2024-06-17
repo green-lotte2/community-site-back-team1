@@ -189,6 +189,11 @@ public class ArticleService {
             oArticleDTO.setArticleTitle(articleDTO.getArticleTitle());
             oArticleDTO.setArticleCnt(articleDTO.getArticleCnt());
 
+            // articleThumb이 null이면 기존 썸네일 유지
+            if (articleDTO.getArticleThumb() != null) {
+                oArticleDTO.setArticleThumb(articleDTO.getArticleThumb());
+            }
+
             Article article = modelMapper.map(oArticleDTO, Article.class);
             articleRepository.save(article);
 
