@@ -5,13 +5,11 @@ import com.querydsl.core.Tuple;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Transient;
 import kr.co.zeroPie.dto.*;
-import kr.co.zeroPie.entity.ChatRecords;
-import kr.co.zeroPie.entity.ChatRoom;
-import kr.co.zeroPie.entity.ChatUser;
-import kr.co.zeroPie.entity.Comment;
+import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.ChatRecordsRepository;
 import kr.co.zeroPie.repository.ChatRoomRepository;
 import kr.co.zeroPie.repository.ChatUserRepository;
+import kr.co.zeroPie.repository.StfRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -38,6 +36,7 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatUserRepository chatUserRepository;
     private final ChatRecordsRepository chatRecordsRepository;
+    private final StfRepository stfRepository;
     private final Map<String, ChatRoomDTO> chatRooms = new LinkedHashMap<>();
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -153,6 +152,38 @@ public class ChatService {
 
     }
 
+    //멤버 추가
+    public List<Stf> addUser(List<ChatUserDTO> chatUserDTOList){
+
+        List<Stf> nameList = new ArrayList<>();
+
+        //멤버 추가 후, 추가된 아이디의 이름들을 리스트에 저장해서 반환
+
+        for (ChatUserDTO dto : chatUserDTOList) {
+
+            ChatUser chatUser = new ChatUser();
+
+            chatUser.setRoomId(dto.getRoomId());
+            chatUser.setStfNo(dto.getStfNo());
+
+            chatUserRepository.save(chatUser);
+        }
+
+        for(ChatUserDTO dto : chatUserDTOList){
+
+            Stf name = stfRepository.findStfNameByStfNo(dto.getStfNo());
+
+            log.info("name : "+name);
+
+            nameList.add(name);//유저 정보 다 저장
+        }
+
+        log.info("nameList 출력해보기 : " + nameList);
+
+        return nameList;
+        
+    }
+
     //채팅 내용 저장
     public void saveMessage(ChatRecordsDTO chatRecordsDTO) {
 
@@ -250,6 +281,19 @@ public class ChatService {
            return -1;
 
        }
+    }
+
+
+    public List<ChatUser> findUserList(String roomId){
+
+        return chatUserRepository.findByRoomId(roomId);
+
+    }
+
+
+    public int countStfNo(String roomId){
+
+        return chatUserRepository.countStfNoByRoomId(roomId);
     }
 }
 

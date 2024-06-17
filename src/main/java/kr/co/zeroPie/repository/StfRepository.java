@@ -14,6 +14,8 @@ public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryC
 
     public Stf findIdByStfEmailAndStfName(String stfEmail,String stfName);
 
+    public Stf findStfNameByStfNo(String stfNo);
+
     // 생일자 조회
     public List<Stf> findByStfBirth(LocalDate today);
 }

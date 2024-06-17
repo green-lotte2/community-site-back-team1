@@ -62,11 +62,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         String userId = getUserIdFromSession(session);
 
-        StfDTO stfDTO = stfService.getUserInfo(userId);
+        if(chatMessage.getImg()==null || chatMessage.getImg().equals("")) {//보낸 메시지에 이미지가 없으면 아래와 같이 저장
 
-        String img = stfDTO.getStfImg();
+            StfDTO stfDTO = stfService.getUserInfo(userId);
 
-        chatMessage.setImg(img);//유저 이미지 저장
+            String img = stfDTO.getStfImg();
+
+            chatMessage.setImg(img);//유저 이미지 저장
+        }
 
         ChatRoomDTO room = chatService.findRoomById(chatMessage.getRoomId());
         if (room != null) {
