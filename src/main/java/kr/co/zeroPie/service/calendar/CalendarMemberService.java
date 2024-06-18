@@ -31,13 +31,14 @@ public class CalendarMemberService {
                 .collect(Collectors.toList());
     }
 
-    // 새로운 멤버를 캘린더에 추가합니다.
+    // 새로운 멤버를 캘린더에 추가
     public List<CalendarMemberDTO> addMembers(List<CalendarMemberDTO> calendarMemberDTOs) {
         List<CalendarMember> calendarMembers = calendarMemberDTOs.stream()
                 .map(CalendarMemberDTO::toEntity)
                 .collect(Collectors.toList());
 
         List<CalendarMember> savedMembers = calendarMemberRepository.saveAll(calendarMembers);
+
         return savedMembers.stream()
                 .map(CalendarMember::toDTO)
                 .collect(Collectors.toList());

@@ -27,6 +27,7 @@ public class MainController {
     private final StfService stfService;
     private final CsService csService;
 
+    // 메인 페이지 정보 조회
     @PostMapping("/main")
     public ResponseEntity<?> mainInfo(@RequestBody Map<String, String> request) {
         String userId = request.get("userId");
@@ -45,4 +46,13 @@ public class MainController {
         return ResponseEntity.status(HttpStatus.OK).body(resultMap);
     }
 
+    // 마이페이지 회원 정보 조회
+    @PostMapping("/myPage")
+    public ResponseEntity<?> myPageInfo(@RequestBody Map<String, String> request) {
+        String userId = request.get("userId");
+
+        List<StfDTO> stfDTOList = stfService.selectStfInfo(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(stfDTOList.get(0));
+    }
+    
 }

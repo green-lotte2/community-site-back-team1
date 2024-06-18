@@ -1,11 +1,13 @@
 package kr.co.zeroPie.service.calendar;
 
+import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.CalendarDTO;
 import kr.co.zeroPie.dto.CalendarMemberDTO;
 import kr.co.zeroPie.entity.Calendar;
 import kr.co.zeroPie.entity.CalendarMember;
 import kr.co.zeroPie.repository.CalendarMemberRepository;
 import kr.co.zeroPie.repository.CalendarRepository;
+import kr.co.zeroPie.repository.EventsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class CalendarService {
 
     private final CalendarMemberRepository calendarMemberRepository;
     private final CalendarRepository calendarRepository;
+    private final EventsRepository eventsRepository;
 
     // 사용자 개인의 캘린더를 가져오거나 생성함
     public CalendarDTO getOrCreateUserCalendar(String userId, String username) {
@@ -101,5 +104,23 @@ public class CalendarService {
                     return calendarDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    // 캘린더 삭제
+    @Transactional
+    public void deleteCalendar(Long calendarId) {
+        try {
+            log.info("Deleting events for calendar ID: {}", calendarId);
+            eventsRepository.deleteByCalendarId(calendarId); // 이벤트 삭제
+
+            log.info("Deleting calendar members for calendar ID: {}", calendarId);
+            calendarMemberRepository.deleteByCalendarId(calendarId); // 멤버 삭제
+
+            log.info("Deleting calendar with ID: {}", calendarId);
+            calendarRepository.deleteById(calendarId); // 캘린더 삭제
+        } catch (Exception e) {
+            log.error("Error deleting calendar with ID: {}", calendarId, e);
+            throw e;
+        }
     }
 }

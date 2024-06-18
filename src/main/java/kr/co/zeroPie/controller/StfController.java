@@ -379,4 +379,11 @@ public class StfController {
        return stfService.findAdminPlan();
 
     }
+
+    // 전화번호 중복 검사
+    @PostMapping("/checkPh")
+    public ResponseEntity<?> checkPh(@RequestBody Map<String, String> request) {
+        String stfPh = request.get("stfPh");
+        return stfService.checkStfPh(stfPh);
+    }
 }
