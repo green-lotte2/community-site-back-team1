@@ -174,4 +174,15 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
         return count;
 
     }
+
+    public List<Stf> findStfRole(){
+        List<Stf> AdminRole = jpaQueryFactory
+                .select(qStf)
+                .from(qStf)
+                .where(qStf.stfRole.eq("MANAGER"))
+                .fetch();
+
+        return AdminRole;
+
+    }
 }
