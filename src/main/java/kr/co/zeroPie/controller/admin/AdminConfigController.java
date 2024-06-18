@@ -3,9 +3,11 @@ package kr.co.zeroPie.controller.admin;
 import kr.co.zeroPie.dto.DptDTO;
 import kr.co.zeroPie.dto.RnkDTO;
 import kr.co.zeroPie.entity.Dpt;
+import kr.co.zeroPie.entity.Rnk;
 import kr.co.zeroPie.service.admin.AdminConfigService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,5 +35,17 @@ public class AdminConfigController {
     public List<RnkDTO> updateRank(@RequestBody List<RnkDTO> RnkDTOList){
         log.info("updateRank"+RnkDTOList);
         return adminConfigService.updateRank(RnkDTOList);
+    }
+
+    @PostMapping("/admin/insertRank")
+    public ResponseEntity<?> insertRnk(@RequestBody RnkDTO rnkDTO){
+        log.info("insertRnk"+rnkDTO);
+        return adminConfigService.insertRnk(rnkDTO);
+    }
+
+    @DeleteMapping("/admin/deleteRank")
+    public ResponseEntity<?> deleteRank (@RequestParam("rnkNo") int rnkNo){
+        log.info("rnkNo"+rnkNo);
+        return adminConfigService.deleteRnk(rnkNo);
     }
 }
