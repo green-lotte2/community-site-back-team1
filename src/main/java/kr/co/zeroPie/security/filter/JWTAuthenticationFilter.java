@@ -32,11 +32,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         int i = uri.lastIndexOf("/");
         String path = uri.substring(i);
 
-        //log.info("doFilterInternal...1 : " + path);
+        log.info("doFilterInternal...1 : " + path);
 
         // 토큰 추출
         String header = request.getHeader(AUTH_HEADER);
-        //log.info("doFilterInternal...2 : " + header);
+        log.info("doFilterInternal...2 : " + header);
 
         String token = null;
 
@@ -44,7 +44,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             token = header.substring(TOKEN_PREFIX.length());
         }
 
-        //log.info("doFilterInternal...3 : " + token);
+        log.info("doFilterInternal...3 : " + token);
 
         // 토큰 검사
         if(token != null){
@@ -58,7 +58,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }catch (Exception e) {
-                //log.info("doFilterInternal...9");
+                log.info("doFilterInternal...9");
 
                 // 토큰 유효성 검사 실패 응답
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -66,7 +66,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        //log.info("doFilterInternal...11");
+        log.info("doFilterInternal...11");
         // 다음 필터 이동
         filterChain.doFilter(request, response);
     }

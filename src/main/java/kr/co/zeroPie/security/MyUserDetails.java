@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 
 import java.util.ArrayList;
@@ -21,17 +22,28 @@ import java.util.Map;
 @Setter
 @ToString
 @Builder
-public class MyUserDetails implements UserDetails {
+public class MyUserDetails implements UserDetails, OAuth2User {
 
     // User 엔티티
     private Stf stf;
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 계정이 갖는 권한 목록
         log.info("user.getRole() : " + stf.getStfRole());
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(stf.getStfRole()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_"+stf.getStfRole()));
+        log.info("authorities33333: " + authorities);
         return authorities;
     }
 

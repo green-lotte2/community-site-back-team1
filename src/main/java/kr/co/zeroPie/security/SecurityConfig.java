@@ -1,5 +1,6 @@
 package kr.co.zeroPie.security;
 
+import kr.co.zeroPie.oauth2.OAuth2UserService;
 import kr.co.zeroPie.security.filter.JWTAuthenticationFilter;
 import kr.co.zeroPie.util.JWTProvider;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JWTProvider jwtProvider;
+    private final OAuth2UserService oauth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -42,10 +44,13 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)    // 기본 HTTP 인증 방식 비활성
                 .formLogin(FormLoginConfigurer::disable)
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oauth2UserService)))
                 // 토큰 검사 필터 등록
                 .addFilterBefore(new JWTAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/**").permitAll()
                         .anyRequest().permitAll());
 
