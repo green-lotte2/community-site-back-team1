@@ -22,4 +22,8 @@ public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryC
 
     // 전화번호 중복 검사
     public Optional<Stf> findByStfPh(String stfPh);
+
+    Optional<Stf> findByStfEmail(String stfEmail);
+
+    public Stf findByStfNo(String uid);
 }

@@ -57,6 +57,12 @@ public class StfService {
     //회원 가입기능
     public Stf register(StfDTO stfDTO) {
 
+        if (stfDTO.getStfPass() == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+
+        log.info("");
+
         String encoded = passwordEncoder.encode(stfDTO.getStfPass());
         stfDTO.setStfPass(encoded);
 
@@ -474,6 +480,32 @@ public void updatePass(String id, String pass){
        }
 
        return null;
+
+    }
+
+    //oauth에 사용됨
+    public Stf findByUid(String uid){
+        return stfRepository.findByStfNo(uid);
+    }
+
+
+    //카카오전용 회원가입
+
+    public Stf kakaoRegister(StfDTO stfDTO){
+
+        /*
+        if (stfDTO.getStfPass() == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+        log.info("");*/
+        if (stfDTO.getStfPass() == null) {
+            String encoded = passwordEncoder.encode("kakao");
+            stfDTO.setStfPass(encoded);
+        }
+        Stf stf = modelMapper.map(stfDTO, Stf.class);
+        Stf savedStf = stfRepository.save(stf);
+
+        return savedStf;
 
     }
 }
