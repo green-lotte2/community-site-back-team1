@@ -14,4 +14,6 @@ public interface CalendarRepository extends JpaRepository<Calendar, Long> {
 
     @Query("SELECT c FROM Calendar c JOIN CalendarMember cm ON c.calendarId = cm.calendarId WHERE cm.stfNo = :stfNo")
     List<Calendar> findAllSharedCalendars(@Param("stfNo") String stfNo);
+
+    void deleteById(Long calendarId);
 }
