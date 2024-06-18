@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'kr.co.zeroPie'
-version = '0.1.6-SNAPSHOT'
+version = '0.1.7-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
@@ -72,6 +72,9 @@ dependencies {
 
     //채팅
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //oauth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 }
 

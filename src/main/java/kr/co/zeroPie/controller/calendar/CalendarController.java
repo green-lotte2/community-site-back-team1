@@ -4,6 +4,7 @@ import kr.co.zeroPie.dto.CalendarDTO;
 import kr.co.zeroPie.service.calendar.CalendarService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,5 +31,12 @@ public class CalendarController {
         CalendarDTO createdCalendar = calendarService.createNewCalendar(calendarDTO);
         log.info("Created calendar: {}", createdCalendar);
         return createdCalendar;
+    }
+
+    // 캘린더 삭제
+    @DeleteMapping("/{calendarId}")
+    public ResponseEntity<Void> deleteCalendar(@PathVariable Long calendarId) {
+        calendarService.deleteCalendar(calendarId);
+        return ResponseEntity.noContent().build();
     }
 }

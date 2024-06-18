@@ -72,6 +72,8 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
             }
             if (rnk!=null){
                 stfDTO.setStrRnkNo(rnk.getRnkName());
+            }else {
+                stfDTO.setStrRnkNo("미분류");
             }
             if (dpt!=null){
                 stfDTO.setStrDptName(dpt.getDptName());
@@ -172,6 +174,17 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                 .fetchOne();
 
         return count;
+
+    }
+
+    public List<Stf> findStfRole(){
+        List<Stf> AdminRole = jpaQueryFactory
+                .select(qStf)
+                .from(qStf)
+                .where(qStf.stfRole.eq("MANAGER"))
+                .fetch();
+
+        return AdminRole;
 
     }
 }

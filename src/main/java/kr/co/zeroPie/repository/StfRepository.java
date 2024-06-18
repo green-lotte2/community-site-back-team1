@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryCustom {
@@ -18,4 +19,11 @@ public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryC
 
     // 생일자 조회
     public List<Stf> findByStfBirth(LocalDate today);
+
+    // 전화번호 중복 검사
+    public Optional<Stf> findByStfPh(String stfPh);
+
+    Optional<Stf> findByStfEmail(String stfEmail);
+
+    public Stf findByStfNo(String uid);
 }

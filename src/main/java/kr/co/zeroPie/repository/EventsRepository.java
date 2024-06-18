@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface EventsRepository extends JpaRepository<Events, Integer>, EventsRepositoryCustom {
     List<Events> findByCalendarId(Long calendarId);
-    List<Events> findByEventNo(int eventNo);
+    void deleteByCalendarId(Long calendarId);
 }

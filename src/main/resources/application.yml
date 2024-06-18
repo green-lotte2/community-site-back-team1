@@ -40,14 +40,45 @@ spring:
                 format_sql: true
                 show_sql: true
 
+    security:
+        oauth2:
+            client:
+                provider:
+                    kakao:
+                        authorization-uri: https://kauth.kakao.com/oauth/authorize
+                        user-name-attribute: id
+                        token-uri: https://kauth.kakao.com/oauth/token
+                        user-info-uri: https://kapi.kakao.com/v2/user/me
+
+
+
+                registration:
+                    kakao:
+                        client-name: kakao
+                        authorization-grant-type: authorization_code
+
+                        # 카카오 > 내 애플리케이션 > 카카오 로그인 > 등록한 Redirect URI 입력
+                        #redirect-uri: http://localhost:8080/onepie/auth
+                        redirect-uri: http://ec2-15-165-24-202.ap-northeast-2.compute.amazonaws.com:8080/onepie/auth
+
+                        # 카카오 > 내 애플리케이션 > 요약정보 > REST API 키 입력
+                        client-id: 3227ae68356a2d41ac3d1a0a451d3676
+
+                        # 카카오 > 내 애플리케이션 > 카카오 로그인 > 보안 > Client Secret 생성 후 입력
+                        client-secret: LypzViPdKrOEqoDneoYdF3j84fw9WAlK
+
+                        client-authentication-method: client_secret_post
+                        scope: profile_nickname, profile_image, account_email
+
+
     session:
         store-type: redis
 
     mail:
         host: smtp.gmail.com
         port: 587
-        username: kdehgogo104@gmail.com
-        password: tovh lfoa vshl lmdd
+        username: oharam0413@gmail.com
+        password: xwov wdxm kafb vhun
         properties:
             mail:
                 smtp:

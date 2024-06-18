@@ -8,6 +8,9 @@ import kr.co.zeroPie.repository.DptRepository;
 import kr.co.zeroPie.repository.RnkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +22,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class AdminConfigService {
+    private final ModelMapper modelMapper;
     private final DptRepository dptRepository;
     private final RnkRepository rnkRepository;
 
     public void deleteDpt(int dptNo){
         dptRepository.findById(dptNo)
                 .ifPresent(dptRepository::delete);
+    }
+
+    public ResponseEntity<?> deleteRnk(int rnkNo){
+        try {
+            rnkRepository.findById(rnkNo).ifPresent(rnkRepository::delete);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
     public DptDTO updateDpt(DptDTO dptDTO) {
@@ -53,5 +67,12 @@ public class AdminConfigService {
 
             return new RnkDTO(savedRank.getRnkNo(), savedRank.getRnkName(), savedRank.getRnkIndex());
         }).collect(Collectors.toList());
+    }
+
+    // dpt 생성
+    public ResponseEntity<?> insertRnk(RnkDTO rnkDTO){
+        Rnk rnk = modelMapper.map(rnkDTO, Rnk.class);
+        Rnk savedRnk = rnkRepository.save(rnk);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedRnk);
     }
 }

@@ -57,6 +57,12 @@ public class StfService {
     //회원 가입기능
     public Stf register(StfDTO stfDTO) {
 
+        if (stfDTO.getStfPass() == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+
+        log.info("");
+
         String encoded = passwordEncoder.encode(stfDTO.getStfPass());
         stfDTO.setStfPass(encoded);
 
@@ -98,7 +104,7 @@ public class StfService {
 
                 log.info("stf1 : " + stf1);
 
-                stf1.setPlanStatusNo(1);
+                //stf1.setPlanStatusNo(1);
 
                 stf1.setStfStatus("Active");
 
@@ -231,6 +237,8 @@ public class StfService {
 
             javaMailSender.send(message);
 
+            log.info("sendEmailCode - 여기서 한 번 더 찍어보자 : " +savedCode);
+
             return savedCode;
 
         } catch (Exception e) {
@@ -250,7 +258,7 @@ public class StfService {
     }
     
     //아이디 찾기
-public String findId(String email,String name){
+    public String findId(String email,String name){
 
     log.info("email2 : "+email);
     log.info("name2 : "+name);
@@ -375,6 +383,7 @@ public void updatePass(String id, String pass){
     }
 
 
+    //내가 가입한 플랜을 저장
     public void savePlan(String user,int planNo){
 
         log.info("내가 가입한 플랜 번호 : "+planNo);
@@ -389,11 +398,11 @@ public void updatePass(String id, String pass){
     }
 
 
-    public void freePlan(String stfNo) {
-        PlanStatus planStatus = new PlanStatus();
+    //무료 플랜을 선택하면 결제 없이 바로 저장
+    public ResponseEntity<?> freePlan(String stfNo) {
+        PlanStatus planStatus = new PlanStatus(1);
 
         planStatus.setPlanEdate();
-        planStatus.setPlanNo(1);
 
         planStatusRepository.save(planStatus);
 
@@ -406,6 +415,8 @@ public void updatePass(String id, String pass){
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+
+        return ResponseEntity.status(HttpStatus.OK).body(1);
     }
 
     
@@ -419,8 +430,10 @@ public void updatePass(String id, String pass){
             StfDTO stfDTO = modelMapper.map(optStf, StfDTO.class);
             Optional<Dpt> optDpt = dptRepository.findById(optStf.get().getDptNo());
             Optional<Rnk> optRnk = rnkRepository.findById(optStf.get().getRnkNo());
+            Optional<PlanStatus> optPlan = planStatusRepository.findById(optStf.get().getPlanStatusNo());
             stfDTO.setStrDptName(optDpt.get().getDptName());
             stfDTO.setStrRnkNo(optRnk.get().getRnkName());
+            stfDTO.setPlanNo(optPlan.get().getPlanNo());
             stfDTOList.add(stfDTO);
             return stfDTOList;
         }
@@ -439,7 +452,60 @@ public void updatePass(String id, String pass){
                     each.setStrRnkNo(optRnk.get().getRnkName());
                     return each;
                 }).toList();
+    }
 
+    // 전화 번호 중복 검사
+    public ResponseEntity<?> checkStfPh(String stfPh) {
+      Optional<Stf> stf = stfRepository.findByStfPh(stfPh);
+
+            if (stf.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(1);
+            }else {
+                return ResponseEntity.status(HttpStatus.OK).body(0);
+            }
+    }
+    
+    
+    //관리자 플랜 찾기
+    public ResponseEntity<?> findAdminPlan(){
+
+       List<Stf> adminPlan=  stfRepository.findStfRole();
+
+       if(!adminPlan.isEmpty()) {
+           Stf first = adminPlan.get(0);
+
+           log.info("첫 번째 Admin 정보 : "+first);
+
+           return ResponseEntity.status(HttpStatus.OK).body(first.getPlanStatusNo());
+       }
+
+       return null;
+
+    }
+
+    //oauth에 사용됨
+    public Stf findByUid(String uid){
+        return stfRepository.findByStfNo(uid);
+    }
+
+
+    //카카오전용 회원가입
+
+    public Stf kakaoRegister(StfDTO stfDTO){
+
+        /*
+        if (stfDTO.getStfPass() == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+        log.info("");*/
+        if (stfDTO.getStfPass() == null) {
+            String encoded = passwordEncoder.encode("kakao");
+            stfDTO.setStfPass(encoded);
+        }
+        Stf stf = modelMapper.map(stfDTO, Stf.class);
+        Stf savedStf = stfRepository.save(stf);
+
+        return savedStf;
 
     }
 }
