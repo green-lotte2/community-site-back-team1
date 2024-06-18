@@ -72,6 +72,8 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
             }
             if (rnk!=null){
                 stfDTO.setStrRnkNo(rnk.getRnkName());
+            }else {
+                stfDTO.setStrRnkNo("미분류");
             }
             if (dpt!=null){
                 stfDTO.setStrDptName(dpt.getDptName());
