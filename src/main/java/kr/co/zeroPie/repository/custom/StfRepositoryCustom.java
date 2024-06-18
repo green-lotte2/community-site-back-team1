@@ -26,4 +26,6 @@ public interface StfRepositoryCustom {
 
     public Long countByUser();
 
+    public List<Stf> findStfRole();
+
 }

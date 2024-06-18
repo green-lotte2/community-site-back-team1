@@ -168,6 +168,10 @@ public class StfController {
 
             lists.put("result", "성공");
             lists.put("savedCode", String.valueOf(savedCode));
+
+            log.info("지금 이게 문제라 들어와야함 : "+String.valueOf(savedCode));
+
+
             return ResponseEntity.ok().body(lists);
         } else {
 
@@ -261,7 +265,7 @@ public class StfController {
         }
     }
 
-
+    //아이디 찾기
     @GetMapping("/findId")
     public ResponseEntity<?> findId(@RequestParam("email")String email, @RequestParam("name")String name){
 
@@ -279,6 +283,7 @@ public class StfController {
 
     }
 
+    //비밀번호 변경
     @PostMapping("/updatePass")
     public ResponseEntity<?> updatePass(StfDTO stfDTO){
 
@@ -321,7 +326,7 @@ public class StfController {
         return  ResponseEntity.ok().body(stfDTO);
     }
 
-
+    //"기본값 * 유저 수"를 출력하기 위해 유저수를 구함
     @GetMapping("/getCountUser")
     public ResponseEntity<?> getCountUser(){
 
@@ -334,6 +339,7 @@ public class StfController {
         return ResponseEntity.ok().body(count);
     }
 
+    //플랜 결제
     @PostMapping("/postPay")
     public ResponseEntity<?> postPay(@RequestBody PlanOrderDTO planOrderDTO){
 
@@ -345,6 +351,7 @@ public class StfController {
 
     }
 
+    //선택한 플랜 저장
     @GetMapping("/savePlan")
     public ResponseEntity<?> savePlan(@RequestParam("user")String user, @RequestParam("planNo")int planNo){
 
@@ -359,9 +366,17 @@ public class StfController {
 
     //무료플랜
     @GetMapping("/freePlan")
-    public void freePlan(@RequestParam("stfNo")String stfNo){
+    public ResponseEntity<?> freePlan(@RequestParam("stfNo")String stfNo){
 
-        stfService.freePlan(stfNo);
+         return stfService.freePlan(stfNo);
+
+    }
+    
+    //관리자 플랜 구하기
+    @GetMapping("/getPlanStatusNo")
+    public ResponseEntity<?> getPlanStatusNo(){
+
+       return stfService.findAdminPlan();
 
     }
 
