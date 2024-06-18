@@ -4,32 +4,31 @@ import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.ArticleDTO;
 import kr.co.zeroPie.dto.ArticlePageRequestDTO;
 import kr.co.zeroPie.dto.ArticlePageResponseDTO;
-
+import kr.co.zeroPie.dto.ImageFileDTO;
 import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
+import kr.co.zeroPie.entity.ImageFile;
 import kr.co.zeroPie.repository.ArticleCateRepository;
 import kr.co.zeroPie.repository.ArticleRepository;
 import kr.co.zeroPie.repository.CommentRepository;
-import kr.co.zeroPie.repository.FileRepository;
+import kr.co.zeroPie.repository.ImageFileRepository;
+import kr.co.zeroPie.util.FilePathUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,12 +40,11 @@ public class ArticleService {
     private final ArticleCateRepository articleCateRepository;
     private final FileService fileService;
     private final CommentRepository commentRepository;
+    private final ImageFileRepository imageFileRepository;
 
     // 게시판 카테고리 표시
-    public ResponseEntity<?> selectArticleCate(int articleCateNo){
-
+    public ResponseEntity<?> selectArticleCate(int articleCateNo) {
         Optional<ArticleCate> articleCate = articleCateRepository.findById(articleCateNo);
-
         if (articleCate.isPresent()) {
             log.info("게시판 카테고리 조회 : " + articleCate);
             return ResponseEntity.status(HttpStatus.OK).body(articleCate.get());
@@ -57,20 +55,13 @@ public class ArticleService {
 
     // 게시판 글목록 출력(일반)
     public ArticlePageResponseDTO selectArticles(ArticlePageRequestDTO articlePageRequestDTO) {
-
-        Pageable pageable =  articlePageRequestDTO.getPageable("articleNo");
-
+        Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
         Page<Article> pageArticle = articleRepository.selectArticles(articlePageRequestDTO, pageable);
-
         List<Article> articleList = pageArticle.getContent();
-
-        List<ArticleDTO> articleDTOList = new ArrayList<>();
-        for (Article each : articleList) {
-            articleDTOList.add(modelMapper.map(each, ArticleDTO.class));
-        }
-
+        List<ArticleDTO> articleDTOList = articleList.stream()
+                .map(article -> modelMapper.map(article, ArticleDTO.class))
+                .collect(Collectors.toList());
         int total = (int) pageArticle.getTotalElements();
-
         return ArticlePageResponseDTO.builder()
                 .articlePageRequestDTO(articlePageRequestDTO)
                 .dtoList(articleDTOList)
@@ -80,20 +71,13 @@ public class ArticleService {
 
     // 게시판 글목록 출력(검색)
     public ArticlePageResponseDTO searchArticles(ArticlePageRequestDTO articlePageRequestDTO) {
-
         Pageable pageable = articlePageRequestDTO.getPageable("articleNo");
-
         Page<Article> pageArticle = articleRepository.searchArticles(articlePageRequestDTO, pageable);
-
         List<Article> articleList = pageArticle.getContent();
-
-        List<ArticleDTO> articleDTOList = new ArrayList<>();
-        for (Article each : articleList) {
-            articleDTOList.add(modelMapper.map(each, ArticleDTO.class));
-        }
-
+        List<ArticleDTO> articleDTOList = articleList.stream()
+                .map(article -> modelMapper.map(article, ArticleDTO.class))
+                .collect(Collectors.toList());
         int total = (int) pageArticle.getTotalElements();
-
         return ArticlePageResponseDTO.builder()
                 .articlePageRequestDTO(articlePageRequestDTO)
                 .dtoList(articleDTOList)
@@ -102,35 +86,47 @@ public class ArticleService {
     }
 
     public ResponseEntity<?> articleWrite(ArticleDTO articleDTO) {
-        // 글 작성 시작을 로그에 기록
         log.info("Start writing article");
-
-        // 게시글 상태를 'view'로 설정
         articleDTO.setArticleStatus("view");
-
-        // DTO를 Entity로 변환
         Article article = modelMapper.map(articleDTO, Article.class);
         Article savedArticle;
         try {
-            // 게시글을 데이터베이스에 저장
             savedArticle = articleRepository.save(article);
         } catch (Exception e) {
-            // 저장 중 에러 발생 시 로그에 기록하고 HTTP 500 상태 코드 반환
             log.error("Error saving article: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving article");
         }
-
-        // 게시글 내용이 있는지 확인
         if (savedArticle.getArticleCnt() != null) {
-            // 게시글 작성 성공을 로그에 기록하고 HTTP 200 상태 코드 반환
             int articleNo = savedArticle.getArticleNo();
             log.info("Article written successfully with ID: " + savedArticle.getArticleNo());
+            saveImagePaths(savedArticle.getArticleNo(), articleDTO.getArticleCnt());
             return ResponseEntity.status(HttpStatus.OK).body(articleNo);
         } else {
-            // 게시글 내용이 없을 경우 로그에 경고를 기록하고 HTTP 404 상태 코드 반환
             log.warn("Article content is null");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
+    }
+
+    // 이미지 경로 저장 로직
+    private void saveImagePaths(int articleNo, String articleContent) {
+        List<String> imagePaths = extractImagePaths(articleContent);
+        imagePaths.forEach(imagePath -> {
+            ImageFileDTO imageFileDTO = ImageFileDTO.builder()
+                    .articleNo(articleNo)
+                    .filePath(imagePath)
+                    .build();
+            ImageFile imageFile = imageFileDTO.toEntity();
+            imageFileRepository.save(imageFile);
+        });
+    }
+
+    // 이미지 경로 추출 로직
+    private List<String> extractImagePaths(String content) {
+        Pattern pattern = Pattern.compile("src=\"(.*?)\"");
+        Matcher matcher = pattern.matcher(content);
+        return matcher.results()
+                .map(match -> match.group(1))
+                .collect(Collectors.toList());
     }
 
     // 게시판 글보기(view)
@@ -138,27 +134,16 @@ public class ArticleService {
         log.info("게시판 글 ");
         Optional<Article> optArticle = articleRepository.findById(articleNo);
         log.info(optArticle.toString());
-
-        ArticleDTO articleDTO = null;
-
-        if (optArticle.isPresent()) {
-            articleDTO = modelMapper.map(optArticle.get(), ArticleDTO.class);
-        }
-        return articleDTO;
+        return optArticle.map(article -> modelMapper.map(article, ArticleDTO.class)).orElse(null);
     }
 
-
     // 수정할 글보기(modifyForm)
-    public ResponseEntity<?> articleView(int articleNo){
-
-        Optional<?> optionalArticle = articleRepository.findById(articleNo);
-
+    public ResponseEntity<?> articleView(int articleNo) {
+        Optional<Article> optionalArticle = articleRepository.findById(articleNo);
         if (optionalArticle.isPresent()) {
-            Article article = modelMapper.map(optionalArticle,Article.class);//게시글번호에 해당하는 게시글 데이터
-
+            Article article = modelMapper.map(optionalArticle.get(), Article.class);
             return ResponseEntity.status(HttpStatus.OK).body(article);
-        }else{
-
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
     }
@@ -166,11 +151,10 @@ public class ArticleService {
     // 조회수 증가
     public void updateHit(int articleNo) {
         Optional<Article> optArticle = articleRepository.findById(articleNo);
-
-        if (optArticle.isPresent()) {
-            optArticle.get().setArticleHit(optArticle.get().getArticleHit()+1);
-            articleRepository.save(optArticle.get());
-        }
+        optArticle.ifPresent(article -> {
+            article.setArticleHit(article.getArticleHit() + 1);
+            articleRepository.save(article);
+        });
     }
 
     // 게시글 수정(modify)
@@ -178,24 +162,33 @@ public class ArticleService {
         log.info("서비스 들어옴? : " + articleDTO);
         try {
             Optional<Article> optionalArticle = articleRepository.findById(articleDTO.getArticleNo());
-
             if (!optionalArticle.isPresent()) {
                 return ResponseEntity.status(404).body("Article not found");
             }
-
             Article oArticle = optionalArticle.get();
-            ArticleDTO oArticleDTO = modelMapper.map(oArticle, ArticleDTO.class);
 
-            oArticleDTO.setArticleTitle(articleDTO.getArticleTitle());
-            oArticleDTO.setArticleCnt(articleDTO.getArticleCnt());
+            // 기존 이미지 파일 경로 추출
+            List<String> existingImagePaths = extractImagePaths(oArticle.getArticleCnt());
 
-            // articleThumb이 null이면 기존 썸네일 유지
+            oArticle.setArticleTitle(articleDTO.getArticleTitle());
+            oArticle.setArticleCnt(articleDTO.getArticleCnt());
             if (articleDTO.getArticleThumb() != null) {
-                oArticleDTO.setArticleThumb(articleDTO.getArticleThumb());
+                oArticle.setArticleThumb(articleDTO.getArticleThumb());
             }
 
-            Article article = modelMapper.map(oArticleDTO, Article.class);
-            articleRepository.save(article);
+            articleRepository.save(oArticle);
+
+            // 새로운 이미지 파일 경로 추출
+            List<String> newImagePaths = extractImagePaths(articleDTO.getArticleCnt());
+
+            // 사용되지 않는 기존 이미지 파일 삭제
+            List<String> unusedImagePaths = existingImagePaths.stream()
+                    .filter(path -> !newImagePaths.contains(path))
+                    .collect(Collectors.toList());
+            deleteUnusedImages(unusedImagePaths);
+
+            // 새로운 이미지 파일 경로 저장
+            saveImagePaths(articleDTO.getArticleNo(), articleDTO.getArticleCnt());
 
             return ResponseEntity.status(HttpStatus.OK).body(1);
         } catch (Exception e) {
@@ -204,18 +197,54 @@ public class ArticleService {
         }
     }
 
+    // 사용되지 않는 이미지 파일 삭제 로직
+    private void deleteUnusedImages(List<String> unusedImagePaths) {
+        for (String imagePath : unusedImagePaths) {
+            try {
+                String filePath = FilePathUtil.extractFilePathFromURL(imagePath);
+                Path path = Paths.get(filePath);
+                Files.deleteIfExists(path);
+            } catch (Exception e) {
+                log.error("Error deleting unused image file: " + imagePath, e);
+            }
+        }
+    }
+
     // 게시글 삭제(delete)
     @Transactional
     public ResponseEntity<?> articleDelete(int articleNo) {
+        // 관련된 파일 삭제
         fileService.fileDeleteWithArticle(articleNo);
+        // 관련된 댓글 삭제
         commentRepository.deleteByArticleNo(articleNo);
-        articleRepository.deleteById(articleNo);
-        Optional<Article> optArticle = articleRepository.findById(articleNo);
 
+        // 이미지 파일 삭제
+        List<ImageFile> imageFiles = imageFileRepository.findByArticleNo(articleNo);
+        deleteImageFiles(imageFiles);
+        // 이미지 파일 DB 레코드 삭제
+        imageFileRepository.deleteByArticleNo(articleNo);
+
+        // 게시글 삭제
+        articleRepository.deleteById(articleNo);
+
+        Optional<Article> optArticle = articleRepository.findById(articleNo);
         if (optArticle.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(1);
-        }else {
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
+
+    // 이미지 파일 삭제 로직
+    private void deleteImageFiles(List<ImageFile> imageFiles) {
+        for (ImageFile imageFile : imageFiles) {
+            try {
+                String filePath = FilePathUtil.extractFilePathFromURL(imageFile.getFilePath());
+                Path path = Paths.get(filePath);
+                Files.deleteIfExists(path);
+            } catch (Exception e) {
+                log.error("Error deleting image file: " + imageFile.getFilePath(), e);
+            }
         }
     }
 }

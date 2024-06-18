@@ -27,7 +27,7 @@ public class CalendarMemberController {
     }
 
     // 새로운 멤버를 캘린더에 추가
-    @PostMapping("/add")
+    @PostMapping
     public List<CalendarMemberDTO> addMembers(@RequestBody List<CalendarMemberDTO> calendarMemberDTOs) {
         return calendarMemberService.addMembers(calendarMemberDTOs);
     }

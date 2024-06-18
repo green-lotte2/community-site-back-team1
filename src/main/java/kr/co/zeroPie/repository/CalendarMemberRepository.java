@@ -12,4 +12,6 @@ public interface CalendarMemberRepository extends JpaRepository<CalendarMember, 
     List<CalendarMember> findByStfNo(String stfNo);
     List<CalendarMember> findByCalendarId(Long calendarId);
     Optional<CalendarMember> findByCalendarIdAndStfNo(Long calendarId, String stfNo);
+
+    void deleteByCalendarId(Long calendarId);
 }
