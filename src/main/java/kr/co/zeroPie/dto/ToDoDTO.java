@@ -5,6 +5,7 @@ package kr.co.zeroPie.dto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -22,7 +23,7 @@ public class ToDoDTO {
 
     private String todoContent;//할일 내용
 
-    private LocalDateTime todoDate;
+    private LocalDate todoDate;
 
     private String stfNo;//사원번호
 }

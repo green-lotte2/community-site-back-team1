@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +41,8 @@ public class OAuth2TokenController {
         Map<String, Object> StfMap = kakaoTokenService.getStf(kakaoAccessToken);
         String StfEmail = (String) StfMap.get("email");
         String nick = (String) ((Map<String, Object>) StfMap.get("profile")).get("nickname");
+        LocalDate currentDate = LocalDate.now();
+
         log.info("StfMap체크 {}", StfMap);
         log.info("Stfnick체크 {}", nick);
         log.info("Kakao access token: {}", kakaoAccessToken);
@@ -53,6 +57,8 @@ public class OAuth2TokenController {
                     .stfName(nick)
                     .stfEmail(StfEmail)
                     .stfRole("USER")
+                    .stfEnt(currentDate)
+                    .stfStatus("Active")
                     .dptNo(1)
                     .rnkNo(1)
                     .planStatusNo(1)
@@ -81,7 +87,7 @@ public class OAuth2TokenController {
         map.put("userRole", stf.getStfRole());
         map.put("planState", stf.getPlanStatusNo());
         map.put("profile", stf.getStfImg());
-        //map.put("rdate", stf.getStfEnt());
+        map.put("rdate", stf.getStfEnt());
        // map.put("department", stf.getDptNo());
         //map.put("position", stf.getRnkNo());
         map.put("accessToken", accessToken);

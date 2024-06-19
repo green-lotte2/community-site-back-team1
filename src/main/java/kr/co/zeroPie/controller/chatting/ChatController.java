@@ -68,7 +68,7 @@ public class ChatController {
     @PostMapping("/saveUser")
     public List<Stf> saveUser(@RequestBody List<ChatUserDTO> chatUserDTOList){
 
-        log.info("멤버 추가 - Post_saveUser - chatUserDTOList : "+chatUserDTOList);
+        //log.info("멤버 추가 - Post_saveUser - chatUserDTOList : "+chatUserDTOList);
 
         //멤버의 이름을 리스트로 만들어서 반환하면 반환된 이름으로 입장하였습니다. 메시지 띄우기
 

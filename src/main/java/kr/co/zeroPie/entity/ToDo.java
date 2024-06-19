@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "todo")
 public class ToDo {
 
     @Id
@@ -24,8 +26,7 @@ public class ToDo {
 
     private String todoContent;//할일 내용
 
-    @CreationTimestamp
-    private LocalDateTime todoDate;
+    private LocalDate todoDate;
     
     private String stfNo;//사원번호
 }
