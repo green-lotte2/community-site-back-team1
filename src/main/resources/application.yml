@@ -49,8 +49,8 @@ spring:
                         authorization-grant-type: authorization_code
 
                         # 카카오 > 내 애플리케이션 > 카카오 로그인 > 등록한 Redirect URI 입력
-                        ##redirect-uri: http://localhost:3000/onepie/auth
-                        redirect-uri: http://15.165.24.202/auth
+                        redirect-uri: http://localhost:3000/auth
+                        #redirect-uri: http://15.165.24.202/auth
 
                         # 카카오 > 내 애플리케이션 > 요약정보 > REST API 키 입력
                         client-id: 3227ae68356a2d41ac3d1a0a451d3676
@@ -98,7 +98,7 @@ file:
         path: uploads/
 
 front:
-    #url: 'http://localhost:3000'        # 개발용
-    url: 'http://15.165.24.202' # 배포용
+    url: 'http://localhost:3000'        # 개발용
+    #url: 'http://15.165.24.202' # 배포용
 
 
