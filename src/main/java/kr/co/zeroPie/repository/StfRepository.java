@@ -26,4 +26,6 @@ public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryC
     Optional<Stf> findByStfEmail(String stfEmail);
 
     public Stf findByStfNo(String uid);
+
+    long countByStfStatus(String stfStatus);
 }
