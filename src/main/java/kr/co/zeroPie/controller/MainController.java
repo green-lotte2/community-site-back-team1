@@ -2,18 +2,18 @@ package kr.co.zeroPie.controller;
 
 import kr.co.zeroPie.dto.CsDTO;
 import kr.co.zeroPie.dto.StfDTO;
+import kr.co.zeroPie.dto.ToDoDTO;
 import kr.co.zeroPie.repository.CsRepository;
 import kr.co.zeroPie.service.CsService;
+import kr.co.zeroPie.service.MainService;
 import kr.co.zeroPie.service.StfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +26,7 @@ public class MainController {
 
     private final StfService stfService;
     private final CsService csService;
+    private final MainService mainService;
 
     // 메인 페이지 정보 조회
     @PostMapping("/main")
@@ -43,6 +44,9 @@ public class MainController {
         // 생일 정보 조회
         resultMap.put("birthDTO", stfService.selectStfForBrith());
 
+        // todo 조회
+        resultMap.put("todoDTO", stfService.selectStfTodo(userId));
+        
         return ResponseEntity.status(HttpStatus.OK).body(resultMap);
     }
 
@@ -54,5 +58,43 @@ public class MainController {
         List<StfDTO> stfDTOList = stfService.selectStfInfo(userId);
         return ResponseEntity.status(HttpStatus.OK).body(stfDTOList.get(0));
     }
-    
+
+    // 마이페이지 연락처 수정 정보 저장
+    @GetMapping("/myPage/stfPhSave")
+    public ResponseEntity<?> stfPhSave(@RequestParam("stfPh") String stfPh, @RequestParam("stfNo") String stfNo) {
+        return mainService.stfPhSave(stfPh, stfNo);
+    }
+
+    // 마이페이지 이메일 수정 정보 저장
+    @GetMapping("/myPage/stfEmailSave")
+    public ResponseEntity<?> stfEmailSave(@RequestParam("stfEmail") String stfEmail, @RequestParam("stfNo") String stfNo) {
+        return mainService.stfEmailSave(stfEmail, stfNo);
+    }
+
+    // 마이페이지 주소 수정 정보 저장
+    @PostMapping("/myPage/stfAddrSave")
+    public ResponseEntity<?> stfAddrSave(@RequestBody Map<String, Object> requestMap) {
+        return mainService.stfAddrSave(requestMap);
+    }
+
+    // 마이페이지 프로필 수정 정보 저장
+    @PostMapping("/myPage/stfProfileSave")
+    public ResponseEntity<?> stfProfileSave(@RequestParam("file") MultipartFile file,
+                                            @RequestParam("stfNo") String stfNo) {
+        return mainService.stfProfileSave(file, stfNo);
+    }
+
+    // 메인페이지 todo 완료
+    @GetMapping("/todo/complete")
+    public ResponseEntity<?> todoComplete(@RequestParam("todoNo") int todoNo) {
+        log.info("todoNo : " + todoNo);
+        return mainService.todoComplete(todoNo);
+    }
+
+    // 메인페이지 todo 생성
+    @PostMapping("/todo/create")
+    public ResponseEntity<?> create(@RequestBody ToDoDTO toDoDTO) {
+        log.info("toDoDTO : " + toDoDTO);
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import kr.co.zeroPie.dto.PlanDTO;
 import kr.co.zeroPie.dto.PlanOrderDTO;
 import kr.co.zeroPie.dto.StfDTO;
+import kr.co.zeroPie.dto.ToDoDTO;
 import kr.co.zeroPie.entity.*;
 import kr.co.zeroPie.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class StfService {
     private final PlanRepository planRepository;
     private final PlanOrderRepository planOrderRepository;
     private final PlanStatusRepository planStatusRepository;
+    private final TodoRepository todoRepository;
 
     private final JavaMailSender javaMailSender;
 
@@ -507,5 +509,12 @@ public void updatePass(String id, String pass){
 
         return savedStf;
 
+    }
+
+
+    // 메인 페이지 todo 목록 조회
+    public List<ToDoDTO> selectStfTodo(String stfNo) {
+        List<ToDo> todoList = todoRepository.findByStfNoAndTodoStatusOrderByTodoDateDesc(stfNo, "Y");
+        return todoList.stream().map(each -> modelMapper.map(each, ToDoDTO.class)).toList();
     }
 }
