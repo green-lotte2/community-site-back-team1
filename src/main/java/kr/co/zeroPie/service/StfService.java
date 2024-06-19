@@ -154,7 +154,7 @@ public class StfService {
                 java.io.File dest = new File(path, sName);
 
                 Thumbnails.of(file.getInputStream())
-                        .size(140, 140)//여기를 size에서 forceSize로 강제 사이즈 변환
+                        .size(200, 200)//여기를 size에서 forceSize로 강제 사이즈 변환
                         .toFile(dest);
 
 
