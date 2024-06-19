@@ -96,7 +96,7 @@ public class KanbanService {
 
         int index = 0;
         for (BoardDTO boardDTO : boardDTOList) {
-            log.info("인서트 폴문안");
+            //log.info("인서트 폴문안");
             log.info("boardDTO: " + boardDTO.toString());
 
             ObjectMapper objectMapper = new ObjectMapper();
