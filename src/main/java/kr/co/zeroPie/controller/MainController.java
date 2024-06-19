@@ -93,8 +93,8 @@ public class MainController {
 
     // 메인페이지 todo 생성
     @PostMapping("/todo/create")
-    public ResponseEntity<?> create(@RequestBody ToDoDTO toDoDTO) {
+    public ResponseEntity<?> createTodo(@RequestBody ToDoDTO toDoDTO) {
         log.info("toDoDTO : " + toDoDTO);
-        return null;
+        return mainService.createTodo(toDoDTO);
     }
 }

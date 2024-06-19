@@ -1,12 +1,14 @@
 package kr.co.zeroPie.service;
 
 import kr.co.zeroPie.dto.StfDTO;
+import kr.co.zeroPie.dto.ToDoDTO;
 import kr.co.zeroPie.entity.Stf;
 import kr.co.zeroPie.entity.ToDo;
 import kr.co.zeroPie.repository.StfRepository;
 import kr.co.zeroPie.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ public class MainService {
 
     private final StfRepository stfRepository;
     private final TodoRepository todoRepository;
+    private final ModelMapper modelMapper;
     private final StfService stfService;
 
     // 마이페이지 연락처 변경
@@ -112,5 +115,12 @@ public class MainService {
         }else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
         }
+    }
+
+    // todo 생성
+    public ResponseEntity<?> createTodo(ToDoDTO toDoDTO) {
+
+        todoRepository.save(modelMapper.map(toDoDTO, ToDo.class));
+        return ResponseEntity.status(HttpStatus.OK).body(1);
     }
 }
