@@ -15,7 +15,7 @@ public class KakaoTokenService {
     private static final String CLIENT_ID = "3227ae68356a2d41ac3d1a0a451d3676";
     private static final String CLIENT_SECRET = "LypzViPdKrOEqoDneoYdF3j84fw9WAlK";
     //private static final String REDIRECT_URI = "http://15.165.24.202/auth";
-    private static final String REDIRECT_URI = "http://localhost:8080/auth";
+    private static final String REDIRECT_URI = "http://localhost:3000/auth";
     private static final String GRANT_TYPE = "authorization_code";
 
     public String getAccessToken(String authorizationCode) {
