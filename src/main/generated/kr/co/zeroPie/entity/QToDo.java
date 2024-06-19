@@ -23,7 +23,7 @@ public class QToDo extends EntityPathBase<ToDo> {
 
     public final StringPath todoContent = createString("todoContent");
 
-    public final DateTimePath<java.time.LocalDateTime> todoDate = createDateTime("todoDate", java.time.LocalDateTime.class);
+    public final DatePath<java.time.LocalDate> todoDate = createDate("todoDate", java.time.LocalDate.class);
 
     public final NumberPath<Integer> todoNo = createNumber("todoNo", Integer.class);
 
