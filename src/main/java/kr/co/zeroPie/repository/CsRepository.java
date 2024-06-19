@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -14,4 +15,8 @@ import java.util.List;
 public interface CsRepository extends JpaRepository<Cs,Integer>, CsRepositoryCustom {
     // 최신순 5개만 조회
     public List<Cs> findTop5ByOrderByCsRdateDesc();
+    // 최근 2일간의 신규 문의 수
+    int countByCsRdateAfter(LocalDateTime dateTime);
+    // 답변 대기 중인 글 수
+    int countByCsReply(int csReply);
 }
