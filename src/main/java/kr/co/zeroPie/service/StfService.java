@@ -228,7 +228,64 @@ public class StfService {
         log.info("savedCode={}", savedCode);
 
         String title = "zeroPie 인증코드 입니다.";
-        String content = "<h1>인증코드는 " + code + "입니다.<h1>";
+        String content = "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "    <meta charset='UTF-8'>"
+                + "    <style>"
+                + "        body {"
+                + "            font-family: Arial, sans-serif;"
+                + "            background-color: #f4f4f4;"
+                + "            margin: 0;"
+                + "            padding: 0;"
+                + "        }"
+                + "        .container {"
+                + "            background-color: #ffffff;"
+                + "            max-width: 600px;"
+                + "            margin: 20px auto;"
+                + "            padding: 20px;"
+                + "            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"
+                + "        }"
+                + "        .header {"
+                + "            background-color: #007bff;"
+                + "            color: #ffffff;"
+                + "            padding: 10px 20px;"
+                + "            text-align: center;"
+                + "        }"
+                + "        .content {"
+                + "            padding: 20px;"
+                + "            text-align: center;"
+                + "        }"
+                + "        .code {"
+                + "            font-size: 24px;"
+                + "            font-weight: bold;"
+                + "            color: #007bff;"
+                + "        }"
+                + "        .footer {"
+                + "            margin-top: 20px;"
+                + "            font-size: 12px;"
+                + "            color: #888888;"
+                + "            text-align: center;"
+                + "        }"
+                + "    </style>"
+                + "</head>"
+                + "<body>"
+                + "    <div class='container'>"
+                + "        <div class='header'>"
+                + "            <h1>인증코드 안내</h1>"
+                + "        </div>"
+                + "        <div class='content'>"
+                + "            <p>안녕하세요, zeroPie 에 오신걸 환영합니다.</p>"
+                + "            <p>인증코드는 다음과 같습니다:</p>"
+                + "            <p class='code'>" + code + "</p>"
+                + "            <p>이 코드를 사용하여 인증을 완료해 주세요.</p>"
+                + "        </div>"
+                + "        <div class='footer'>"
+                + "            <p>이 메일은 자동으로 생성된 메일입니다. 회신하지 말아주세요.</p>"
+                + "        </div>"
+                + "    </div>"
+                + "</body>"
+                + "</html>";
 
         try {
             message.setSubject(title);
@@ -385,7 +442,7 @@ public void updatePass(String id, String pass){
     }
 
 
-    //내가 가입한 플랜을 저장
+    //내가 가입한 플랜을 저장(무료 제외)
     public void savePlan(String user,int planNo){
 
         log.info("내가 가입한 플랜 번호 : "+planNo);
@@ -397,10 +454,22 @@ public void updatePass(String id, String pass){
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+
+        //여기서부터 회원가입이 되어 있는 사용자들 플랜정보 변경해주기(planNo로 바꿔주기)
+
+        List<Stf> userList = stfRepository.findAll();
+
+        log.info("플랜 변경할 userList 보기 : "+userList);
+
+        for(Stf change:userList){
+            change.setPlanStatusNo(planNo);
+            stfRepository.save(change);
+        }
+        //여기까지 변경 완료
     }
 
 
-    //무료 플랜을 선택하면 결제 없이 바로 저장
+    //무료 플랜을 선택하면 결제 없이 바로 저장(+회원 가입이 다 되어있는 사용자들도 변경해주기)
     public ResponseEntity<?> freePlan(String stfNo) {
         PlanStatus planStatus = new PlanStatus(1);
 
@@ -417,6 +486,18 @@ public void updatePass(String id, String pass){
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+
+        //여기서부터 회원가입이 되어 있는 사용자들 플랜정보 변경해주기(planNo로 바꿔주기)
+
+        List<Stf> userList = stfRepository.findAll();
+
+        log.info("플랜 변경할 userList 보기 : "+userList);
+
+        for(Stf change:userList){
+            change.setPlanStatusNo(planNo);
+            stfRepository.save(change);
+        }
+        //여기까지 변경 완료
 
         return ResponseEntity.status(HttpStatus.OK).body(1);
     }
