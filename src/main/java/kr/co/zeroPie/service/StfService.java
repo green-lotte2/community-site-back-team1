@@ -442,7 +442,7 @@ public void updatePass(String id, String pass){
     }
 
 
-    //내가 가입한 플랜을 저장
+    //내가 가입한 플랜을 저장(무료 제외)
     public void savePlan(String user,int planNo){
 
         log.info("내가 가입한 플랜 번호 : "+planNo);
@@ -454,10 +454,22 @@ public void updatePass(String id, String pass){
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+
+        //여기서부터 회원가입이 되어 있는 사용자들 플랜정보 변경해주기(planNo로 바꿔주기)
+
+        List<Stf> userList = stfRepository.findAll();
+
+        log.info("플랜 변경할 userList 보기 : "+userList);
+
+        for(Stf change:userList){
+            change.setPlanStatusNo(planNo);
+            stfRepository.save(change);
+        }
+        //여기까지 변경 완료
     }
 
 
-    //무료 플랜을 선택하면 결제 없이 바로 저장
+    //무료 플랜을 선택하면 결제 없이 바로 저장(+회원 가입이 다 되어있는 사용자들도 변경해주기)
     public ResponseEntity<?> freePlan(String stfNo) {
         PlanStatus planStatus = new PlanStatus(1);
 
@@ -474,6 +486,18 @@ public void updatePass(String id, String pass){
         stf.setPlanStatusNo(planNo);
 
         stfRepository.save(stf);
+
+        //여기서부터 회원가입이 되어 있는 사용자들 플랜정보 변경해주기(planNo로 바꿔주기)
+
+        List<Stf> userList = stfRepository.findAll();
+
+        log.info("플랜 변경할 userList 보기 : "+userList);
+
+        for(Stf change:userList){
+            change.setPlanStatusNo(planNo);
+            stfRepository.save(change);
+        }
+        //여기까지 변경 완료
 
         return ResponseEntity.status(HttpStatus.OK).body(1);
     }
