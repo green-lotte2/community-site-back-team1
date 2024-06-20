@@ -91,4 +91,10 @@ public class PageController {
         log.info("pno : " + pno);
         return pageService.deleteDoc(pno);
     }
+
+    // 현재 문서 나가기
+    @PostMapping("/doc/exit")
+    public ResponseEntity<?> docExit(@RequestBody Map<String, Object> requestData) {
+        return pageService.exitDoc(requestData);
+    }
 }
