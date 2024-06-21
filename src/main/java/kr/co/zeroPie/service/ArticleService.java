@@ -1,12 +1,10 @@
 package kr.co.zeroPie.service;
 
 import jakarta.transaction.Transactional;
-import kr.co.zeroPie.dto.ArticleDTO;
-import kr.co.zeroPie.dto.ArticlePageRequestDTO;
-import kr.co.zeroPie.dto.ArticlePageResponseDTO;
-import kr.co.zeroPie.dto.ImageFileDTO;
+import kr.co.zeroPie.dto.*;
 import kr.co.zeroPie.entity.Article;
 import kr.co.zeroPie.entity.ArticleCate;
+import kr.co.zeroPie.entity.Cs;
 import kr.co.zeroPie.entity.ImageFile;
 import kr.co.zeroPie.repository.ArticleCateRepository;
 import kr.co.zeroPie.repository.ArticleRepository;
@@ -247,4 +245,11 @@ public class ArticleService {
             }
         }
     }
+
+    // 메인 페이지 공지사항 출력용
+    public List<ArticleDTO> selectNoticeForMain() {
+        List<Article> noticeList = articleRepository.findTop5ByArticleCateNoOrderByArticleRdateDesc(1);
+        return noticeList.stream().map(Article -> modelMapper.map(Article, ArticleDTO.class)).toList();
+    }
+
 }

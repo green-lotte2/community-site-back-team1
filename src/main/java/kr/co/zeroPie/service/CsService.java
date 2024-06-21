@@ -266,14 +266,6 @@ public class CsService {
         //댓글을 삭제
         csCommentRepository.deleteById(csComNo);
 
-
-
         return ResponseEntity.status(HttpStatus.OK).body(1);
-    }
-
-    // 메인 페이지 공지사항 출력용
-    public List<CsDTO> selectCsForMain() {
-        List<Cs> csList = csRepository.findTop5ByOrderByCsRdateDesc();
-        return csList.stream().map(cs -> modelMapper.map(cs, CsDTO.class)).toList();
     }
 }
