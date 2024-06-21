@@ -13,8 +13,7 @@ import java.util.List;
 
 @Repository
 public interface CsRepository extends JpaRepository<Cs,Integer>, CsRepositoryCustom {
-    // 최신순 5개만 조회
-    public List<Cs> findTop5ByOrderByCsRdateDesc();
+
     // 최근 2일간의 신규 문의 수
     int countByCsRdateAfter(LocalDateTime dateTime);
     // 답변 대기 중인 글 수
