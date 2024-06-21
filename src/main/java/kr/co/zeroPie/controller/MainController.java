@@ -4,6 +4,7 @@ import kr.co.zeroPie.dto.CsDTO;
 import kr.co.zeroPie.dto.StfDTO;
 import kr.co.zeroPie.dto.ToDoDTO;
 import kr.co.zeroPie.repository.CsRepository;
+import kr.co.zeroPie.service.ArticleService;
 import kr.co.zeroPie.service.CsService;
 import kr.co.zeroPie.service.MainService;
 import kr.co.zeroPie.service.StfService;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class MainController {
 
     private final StfService stfService;
-    private final CsService csService;
+    private final ArticleService articleService;
     private final MainService mainService;
 
     // 메인 페이지 정보 조회
@@ -36,7 +37,7 @@ public class MainController {
         Map<String, List<?>> resultMap = new HashMap<>();
 
         // 공지사항 조회
-        resultMap.put("csDTO", csService.selectCsForMain());
+        resultMap.put("noticeDTO", articleService.selectNoticeForMain());
 
         // 개인 정보 조회
         resultMap.put("stfDTO", stfService.selectStfInfo(userId));
@@ -54,7 +55,6 @@ public class MainController {
     @PostMapping("/myPage")
     public ResponseEntity<?> myPageInfo(@RequestBody Map<String, String> request) {
         String userId = request.get("userId");
-
         List<StfDTO> stfDTOList = stfService.selectStfInfo(userId);
         return ResponseEntity.status(HttpStatus.OK).body(stfDTOList.get(0));
     }
