@@ -31,7 +31,31 @@ public class CsController {
 
     //고객센터 리스트 전체 출력
     @PostMapping("/cs/list")
-    public ResponseEntity<?> csList(@RequestBody PageRequestDTO pageRequestDTO) {//검색조건이 있을때와 제일처음에는 그냥 다 출력해야함
+    public ResponseEntity<?> csList(@RequestBody PageRequestDTO pageRequestDTO) {
+
+
+        log.info("문의하기 리스트 띄웁니다.");
+        log.info("받아온고니 ?  : pageRequestDTO: {}", pageRequestDTO);
+
+        ResponseEntity<?> csList = null;
+
+        log.info("자 검색을 시작하러 가볼까?");
+
+        log.info("이제 search쪽으로 와야제 ? pageRequestDTO: {}", pageRequestDTO);
+
+        csList = csService.list(pageRequestDTO);
+
+        log.info("자 여기는 거의 끝나는 지점 - list");
+
+        log.info("여기는 컨트롤러에 있는 csList: {}", csList.getBody());
+
+        return ResponseEntity.status(HttpStatus.OK).body(csList.getBody());
+    }
+
+
+    //고객센터 검색 리스트 출력
+    @PostMapping("/cs/search")///////////새로 생김////////////////////////
+    public ResponseEntity<?> csSearch(@RequestBody PageRequestDTO pageRequestDTO) {
 
 
         log.info("문의하기 리스트 띄웁니다.");
@@ -51,6 +75,9 @@ public class CsController {
 
         return ResponseEntity.status(HttpStatus.OK).body(csList.getBody());
     }
+
+
+
 
 
     //등록

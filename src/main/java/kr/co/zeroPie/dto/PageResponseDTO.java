@@ -29,6 +29,7 @@ public class PageResponseDTO<T> {
     private boolean prev, next;
 
     private String stfStatus;
+    private String stfRole;
     private int rnkNo;
     private int dptNo;
     private LocalDate startDate;
