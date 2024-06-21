@@ -182,4 +182,16 @@ public class PageService {
 
         return ResponseEntity.status(HttpStatus.OK).body(1);
     }
+
+    // 현재 문서 나가기
+    public ResponseEntity<?> exitDoc(Map<String, Object> requestData) {
+
+        Optional<MyDoc> optMyDoc = myDocRepository.findByStfNoAndPno((String)requestData.get("userId"), (Integer)requestData.get("pno"));
+        if (optMyDoc.isPresent()) {
+            myDocRepository.deleteById(optMyDoc.get().getMyDocNo());
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
+        }
+    }
 }
