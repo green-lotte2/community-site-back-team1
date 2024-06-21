@@ -198,7 +198,22 @@ public class StfService {
 
         return stfRepository.countByStfEmail(email);
     }
+    ///////추가//////////////////////////////
 
+    //이름과 이메일을 이용해서 가입한 사용자인지 체크
+    public int findStfUseFindId(String email,String name) {
+
+        return stfRepository.countByStfEmailAndStfName(email,name);
+    }
+
+    //아이디와 이메일을 이용해서 가입한 사용자인지 체크
+    public int findStfUseFindPass(String email,String id) {
+
+        return stfRepository.countByStfEmailAndStfNo(email,id);
+    }
+
+
+////////////////////추가 끝!///////////////////////
     //이메일 보내기 서비스
     @Value("${spring.mail.username}")//이메일 보내는 사람 주소
     private String sender;

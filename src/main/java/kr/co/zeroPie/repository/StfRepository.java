@@ -12,6 +12,9 @@ import java.util.Optional;
 @Repository
 public interface StfRepository extends JpaRepository<Stf, String>,StfRepositoryCustom {
     public int countByStfEmail(String stfEmail);
+    public int countByStfEmailAndStfName(String stfEmail,String stfName);///추가
+    public int countByStfEmailAndStfNo(String stfEmail,String stfNo);///추가
+
 
     public Stf findIdByStfEmailAndStfName(String stfEmail,String stfName);
 
