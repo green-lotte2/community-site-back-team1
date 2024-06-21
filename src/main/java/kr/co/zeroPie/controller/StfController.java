@@ -244,14 +244,17 @@ public class StfController {
         log.info("일단 들어오니?");
 
         log.info("email : " + email);
+        log.info("name : " + name);
+
 
         int count = stfService.findStfUseFindId(email,name);//가입한 사용자인지 체크
+
 
         log.info("count={}", count);
 
         Map<String, String> lists = new HashMap<>();
 
-        if (count >= 1) {//가입한 사용자
+        if (count >= 1) {//이메일 중복이 없어야됨
             log.info("email={}", email);
             long savedCode = stfService.sendEmailCode(email);//이메일을 보내고 서버가 보낸 코드를 저장
 
@@ -264,8 +267,8 @@ public class StfController {
             return ResponseEntity.ok().body(lists);
         }
     }
-    /////추가//////////////////////////
-    //아이디 찾기에서 이메일 인증 보내기
+
+     //아이디 찾기에서 이메일 인증 보내기
     @GetMapping("/findPassAndSendEmail")
     public ResponseEntity<?> findPassAndSendEmail(@RequestParam("email") String email,@RequestParam("id")String id) {
 

@@ -214,6 +214,7 @@ public class StfService {
 
 
 ////////////////////추가 끝!///////////////////////
+
     //이메일 보내기 서비스
     @Value("${spring.mail.username}")//이메일 보내는 사람 주소
     private String sender;
@@ -338,8 +339,6 @@ public class StfService {
     log.info("name2 : "+name);
 
     Stf stf =  stfRepository.findIdByStfEmailAndStfName(email,name);
-
-
 
     log.info("아이디 : "+stf.getStfNo());
 
