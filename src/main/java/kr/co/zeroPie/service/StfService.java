@@ -199,6 +199,21 @@ public class StfService {
         return stfRepository.countByStfEmail(email);
     }
 
+    //email이 중복인지 체크(email+name)
+    public int findStfByName(String email,String name) {
+
+        return stfRepository.countByStfEmailAndStfName(email,name);
+
+    }
+
+    //email이 중복인지 체크(email+id)
+    public int findStfById(String email,String id) {
+
+        return stfRepository.countByStfEmailAndStfNo(email,id);
+
+    }
+
+
     //이메일 보내기 서비스
     @Value("${spring.mail.username}")//이메일 보내는 사람 주소
     private String sender;
@@ -323,8 +338,6 @@ public class StfService {
     log.info("name2 : "+name);
 
     Stf stf =  stfRepository.findIdByStfEmailAndStfName(email,name);
-
-
 
     log.info("아이디 : "+stf.getStfNo());
 

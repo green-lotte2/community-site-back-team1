@@ -238,14 +238,45 @@ public class StfController {
 
     //아이디 찾기에서 이메일 인증 보내기
     @GetMapping("/findIdAndSendEmail")
-    public ResponseEntity<?> findIdAndSendEmail(@RequestParam("email") String email) {
+    public ResponseEntity<?> findIdAndSendEmail(@RequestParam("email") String email,@RequestParam("name")String name) {
 
 
         log.info("일단 들어오니?");
 
         log.info("email : " + email);
+        log.info("name : " + name);
 
-        int count = stfService.findStf(email);//같은 이메일이 몇개인지 체크
+        int count = stfService.findStfByName(email,name);//같은 이메일과 이름이 매칭이 되는게 몇개인지?
+
+        log.info("count={}", count);
+
+        Map<String, String> lists = new HashMap<>();
+
+        if (count >= 1) {//이메일 중복이 없어야됨
+            log.info("email={}", email);
+            long savedCode = stfService.sendEmailCode(email);//이메일을 보내고 서버가 보낸 코드를 저장
+
+            lists.put("result", "성공");
+            lists.put("savedCode", String.valueOf(savedCode));
+            return ResponseEntity.ok().body(lists);
+        } else {
+
+            lists.put("result", "실패");
+            return ResponseEntity.ok().body(lists);
+        }
+    }
+
+    //패스워드 찾기에서 이메일 인증 보내기
+    @GetMapping("/findPassAndSendEmail")
+    public ResponseEntity<?> findPassAndSendEmail(@RequestParam("email") String email,@RequestParam("id")String id) {
+
+
+        log.info("일단 들어오니?");
+
+        log.info("email : " + email);
+        log.info("name : " + id);
+
+        int count = stfService.findStfById(email,id);//같은 이메일과 아이디가 매칭이 되는게 몇개인지?
 
         log.info("count={}", count);
 
