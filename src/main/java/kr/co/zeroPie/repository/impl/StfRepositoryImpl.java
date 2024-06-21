@@ -2,6 +2,7 @@ package kr.co.zeroPie.repository.impl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.DptDTO;
@@ -18,6 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +48,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
                     stfStatusEq(pageRequestDTO.getStfStatus()),
                         rnkNoEq(pageRequestDTO.getRnkNo()),
                         dptNoEq(pageRequestDTO.getDptNo()),
-                        //stfEntBetween(pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate()),//localDtaeTime으로 변경되었습니다.
+                        stfEntBetween(pageRequestDTO.getStartDate2(), pageRequestDTO.getEndDate2()),//localDtaeTime으로 변경되었습니다.
                         keywordContains(pageRequestDTO.getType(), pageRequestDTO.getKeyword())
                 )
                 .offset(pageable.getOffset())
@@ -85,6 +89,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
         return new PageImpl<>(stfDTOList, pageable, total);
     }
 
+
     // 사원 상태
     private BooleanExpression stfStatusEq(String stfStatus){
         return stfStatus != null ? qStf.stfStatus.eq(stfStatus) : null;
@@ -109,6 +114,7 @@ public class StfRepositoryImpl implements StfRepositoryCustom {
             return null;
         }
     }
+
 
     private BooleanExpression keywordContains(String type, String keyword){
         if (keyword != null && !keyword.isEmpty()) {
