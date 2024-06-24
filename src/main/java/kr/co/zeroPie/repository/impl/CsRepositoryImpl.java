@@ -183,14 +183,15 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
 
         //조회순
         if(pageRequestDTO.getHit()!=null && !pageRequestDTO.getHit().isEmpty()){
-            log.info("여기는 조회순 조건이 있으면 들어오는곳이야");
+            log.info("여기는      조회순 조건이 있으면 들어오  는곳이야");
+            log.info("여기는      조회순 조건이 있으면 들어오  는곳이야");
 
             if(Objects.equals(pageRequestDTO.getHit(), "1")){
 
-                log.info("여기는 최신순 조건이 있으면 들어오는곳이야         !!!!!");
+                log.info("여기는 최   신순 조     건이 있으면 들어오는곳이야         !!!!!");
                 orderSpecifiers.add(qcs.csHit.desc());
             }else{
-                log.info("조회순 클릭 안함.");
+                log.info("조회순    클릭 안함.");
             }
 
         }
