@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.zeroPie.dto.PageRequestDTO;
 import kr.co.zeroPie.entity.Cs;
 import kr.co.zeroPie.entity.QCs;
+import kr.co.zeroPie.entity.QStf;
 import kr.co.zeroPie.repository.custom.CsRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,17 +38,23 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     QCs qcs = QCs.cs;
+    QStf qStf = QStf.stf;
 
 
     @Override
     public Page<Cs> CsList(Pageable pageable) {//pageRequestDTO.getCsCate(),
+
+        log.info("pageable : "+pageable);
+
         List<Cs> result = jpaQueryFactory
                 .select(qcs)
                 .from(qcs)
+                .orderBy(qcs.csRdate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        // Query for fetching the total count
         long total = jpaQueryFactory
                 .selectFrom(qcs)
                 .fetchCount();
@@ -60,30 +67,46 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
     //검색기능
     public Page<Cs> search(PageRequestDTO pageRequestDTO, Pageable pageable) {
 
+        log.info("search ....1 - pageRequestDTO : "+pageRequestDTO);//여기에 아이디가 있음!
+        log.info("search ....2 - pageable : "+pageable);
+
         BooleanBuilder builder = new BooleanBuilder();//where 절 저장
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();//orderby절 저장
+
+        DateTimePath<LocalDateTime> csRdatePath = null;
+
+        if(pageRequestDTO.getStartDate() != null || pageRequestDTO.getEndDate() != null){//날짜 값이 있기라도 하면
+            // LocalDateTime 타입의 Expression을 생성
+            csRdatePath = new PathBuilder<>(Cs.class, "cs").getDateTime("csRdate", LocalDateTime.class);
+        }
 
 
         // 시작일과 종료일 범위 검색 조건 추가
         if (pageRequestDTO.getStartDate() != null && pageRequestDTO.getEndDate() != null) {
             log.info("여기는 시작일과 종료일이 있을 때 들어오는곳이야");
 
-
-           //LocalDateTime startDate = pageRequestDTO.getStartDate();
-           //LocalDateTime endDate = pageRequestDTO.getEndDate().plusDays(1);
-           //builder.and(qcs.csRdate.between(startDate, endDate));
-
-
-            // LocalDateTime 타입의 Expression을 생성합니다.
-            DateTimePath<LocalDateTime> csRdatePath = new PathBuilder<>(Cs.class, "cs").getDateTime("csRdate", LocalDateTime.class);
-
-// 시작일과 종료일을 LocalDateTime으로 변환합니다.
+            // 시작일과 종료일을 LocalDateTime으로 변환
             LocalDateTime startDate = pageRequestDTO.getStartDate();
             LocalDateTime endDate = pageRequestDTO.getEndDate();
 
-// QueryDSL의 between 메서드를 사용하여 검색 조건을 추가합니다.
-            builder.and(csRdatePath.between(startDate, endDate));
+            builder.and(csRdatePath.between(startDate, endDate.plusDays(1)));
 
+        }else if(pageRequestDTO.getStartDate() == null && pageRequestDTO.getEndDate() != null){
+
+            log.info("여기는 종료일만 있을 때 들어오는 곳이야.");
+
+            LocalDateTime endDate = pageRequestDTO.getEndDate();
+
+            builder.and(csRdatePath.before(endDate.plusDays(1)));
+
+        }else if(pageRequestDTO.getStartDate() != null && pageRequestDTO.getEndDate() == null){
+
+            log.info("여기는 시작일만 있을 때 들어오는 곳이야.");
+
+            LocalDateTime startDate = pageRequestDTO.getStartDate();
+            LocalDateTime endDate = LocalDateTime.now();//오늘 현재날짜를 받음
+
+            builder.and(csRdatePath.between(startDate, endDate.plusDays(1)));
         }
 
         // 카테고리 검색 조건 추가
@@ -126,6 +149,10 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
                     builder.and(qcs.csTitle.containsIgnoreCase(keyword)
                             .or(qcs.csContent.containsIgnoreCase(keyword)));
                     break;
+                case "writer":
+                    log.info("글쓴이로 검색했네?");
+                    builder.and(qcs.stfName.containsIgnoreCase(keyword));
+                    break;
                 default:
                     // 기본적으로 제목 검색을 수행합니다.
                     log.info("디폴트는 제목검색이징");
@@ -167,6 +194,15 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
             }
 
         }
+
+        // 조건 추가: 관리자 또는 매니저이거나 자신이 작성한 글인 경우 비밀글 포함
+        if ("ADMIN".equals(pageRequestDTO.getStfRole()) || "MANAGER".equals(pageRequestDTO.getStfRole())) {
+            builder.and(qcs.secret.eq("비밀글"));
+        } else {
+            builder.and(qcs.secret.ne("비밀글")
+                    .or(qcs.secret.eq("비밀글").and(qcs.stfNo.eq(pageRequestDTO.getStfNo()))));
+        }
+
 
         QueryResults<Cs> results = jpaQueryFactory
                 .selectFrom(qcs)

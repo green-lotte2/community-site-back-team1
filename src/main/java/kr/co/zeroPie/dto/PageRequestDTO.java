@@ -41,6 +41,7 @@ public class PageRequestDTO {
     private String hit;
 
     private String stfStatus;
+    private String stfRole;
     private int rnkNo;
     private int dptNo;
     private LocalDateTime startDate;

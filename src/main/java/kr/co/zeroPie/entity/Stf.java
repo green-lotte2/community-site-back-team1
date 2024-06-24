@@ -37,6 +37,7 @@ public class Stf {
 
     private String stfEmail;
 
+    @CreationTimestamp
     private LocalDate stfEnt;//입사일자
 
     private Date stfQuit;//퇴사일자
