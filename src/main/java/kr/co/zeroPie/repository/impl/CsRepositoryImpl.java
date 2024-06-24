@@ -187,7 +187,7 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
 
             if(Objects.equals(pageRequestDTO.getHit(), "1")){
 
-                log.info("여기는 최신순 조건이 있으면 들어오는곳이야");
+                log.info("여기는 최신순 조건이 있으면 들어오는곳이야         !!!!!");
                 orderSpecifiers.add(qcs.csHit.desc());
             }else{
                 log.info("조회순 클릭 안함.");
