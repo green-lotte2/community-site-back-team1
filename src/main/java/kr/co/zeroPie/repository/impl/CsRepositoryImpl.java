@@ -183,11 +183,11 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
 
         //조회순
         if(pageRequestDTO.getHit()!=null && !pageRequestDTO.getHit().isEmpty()){
-            log.info("여기는 조회순 조건이 있으면 들어오는곳이야");
+            log.info("여기는 조회순 조건이 있으면 들어오  는곳이야");
 
             if(Objects.equals(pageRequestDTO.getHit(), "1")){
 
-                log.info("여기는 최신순 조건이 있으면 들어오는곳이야");
+                log.info("여기는 최신순 조건이 있으면 들어오는곳이야!!!!!");
                 orderSpecifiers.add(qcs.csHit.desc());
             }else{
                 log.info("조회순 클릭 안함.");
@@ -195,12 +195,24 @@ public class CsRepositoryImpl implements CsRepositoryCustom {
 
         }
 
+        /*
         // 조건 추가: 관리자 또는 매니저이거나 자신이 작성한 글인 경우 비밀글 포함
         if ("ADMIN".equals(pageRequestDTO.getStfRole()) || "MANAGER".equals(pageRequestDTO.getStfRole())) {
             builder.and(qcs.secret.eq("비밀글"));
         } else {
             builder.and(qcs.secret.ne("비밀글")
                     .or(qcs.secret.eq("비밀글").and(qcs.stfNo.eq(pageRequestDTO.getStfNo()))));
+        }*/
+
+        if ("ADMIN".equals(pageRequestDTO.getStfRole()) || "MANAGER".equals(pageRequestDTO.getStfRole())) {//관리자 들은 모든 글을 볼 수 있게
+            builder.and(qcs.secret.isNull().or(qcs.secret.eq("전체공개")).or(qcs.secret.eq("비밀글")));
+        } else {
+            // 일반 사용자는 비밀글이 아닌 글과 자신이 작성한 비밀글만 검색
+            builder.and(
+                    qcs.secret.isNull()
+                            .or(qcs.secret.ne("비밀글"))
+                            .or(qcs.secret.eq("비밀글").and(qcs.stfNo.eq(pageRequestDTO.getStfNo())))
+            );
         }
 
 
