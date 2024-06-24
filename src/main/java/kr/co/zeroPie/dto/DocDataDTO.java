@@ -13,4 +13,5 @@ public class DocDataDTO {
     private String dataType;
     private String value;
     private int level;
+    
 }
